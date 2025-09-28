@@ -3,73 +3,64 @@ import { ref, reactive } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
 import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
-import { useUserStore } from '@/stores/user' // 1. 引入 useUserStore
+import { useUserStore } from '@/stores/user'
 
 const router = useRouter()
-const userStore = useUserStore() // 2. 获取 userStore 实例
-
-// --- 表单相关的代码 (保持不变) ---
+const userStore = useUserStore()
+const isLoading = ref(false)
 const isRegisterActive = ref(false)
+
+// 表单引用和数据
 const loginFormRef = ref<FormInstance>()
 const registerFormRef = ref<FormInstance>()
-const loginForm = reactive({ email: '', password: '' })
-const registerForm = reactive({ name: '', email: '', password: '' })
+const loginForm = reactive({ email: 'test@example.com', password: 'password123' })
+const registerForm = reactive({ username: '', email: '', password: '' })
+
+// 表单验证规则
 const loginRules = reactive<FormRules>({
-  email: [
-    { required: true, message: '请输入邮箱地址', trigger: 'blur' },
-    { type: 'email', message: '请输入正确的邮箱格式', trigger: ['blur', 'change'] }
-  ],
-  password: [
-    { required: true, message: '请输入密码', trigger: 'blur' }
-  ]
+  email: [{ required: true, message: '请输入邮箱' }, { type: 'email', message: '邮箱格式不正确' }],
+  password: [{ required: true, message: '请输入密码' }]
 })
 const registerRules = reactive<FormRules>({
-  name: [
-    { required: true, message: '请输入用户名', trigger: 'blur' }
-  ],
-  email: [
-    { required: true, message: '请输入邮箱地址', trigger: 'blur' },
-    { type: 'email', message: '请输入正确的邮箱格式', trigger: ['blur', 'change'] }
-  ],
-  password: [
-    { required: true, message: '请输入密码', trigger: 'blur' },
-    { min: 6, message: '密码长度不能少于6位', trigger: 'blur' }
-  ]
+  username: [{ required: true, message: '请输入用户名' }],
+  email: [{ required: true, message: '请输入邮箱' }, { type: 'email', message: '邮箱格式不正确' }],
+  password: [{ required: true, message: '请输入密码' }, { min: 6, message: '密码至少6位' }]
 })
 
-// --- 修改 handleLogin 函数 ---
+// 登录处理
 const handleLogin = async (formEl: FormInstance | undefined) => {
-  if (!formEl) return
-  await formEl.validate(async (valid) => { // 注意这里也变成了 async
+  if (!formEl || isLoading.value) return
+  await formEl.validate(async (valid) => {
     if (valid) {
+      isLoading.value = true
       try {
-        // 3. 调用 store 中的 login action
-        await userStore.login(loginForm.email, loginForm.password)
-
+        await userStore.login(loginForm)
         ElMessage.success('登录成功！')
-
-        // 4. 登录成功后，跳转到 '/app' 路径
         await router.push('/app')
-
       } catch (error) {
-        ElMessage.error('登录失败，请检查您的凭证！')
-        console.error('登录失败:', error)
+        ElMessage.error(error as string)
+      } finally {
+        isLoading.value = false
       }
-
-    } else {
-      console.log('登录验证失败!')
     }
   })
 }
 
+// 注册处理
 const handleRegister = async (formEl: FormInstance | undefined) => {
-  if (!formEl) return
-  await formEl.validate((valid) => {
+  if (!formEl || isLoading.value) return
+  await formEl.validate(async (valid) => {
     if (valid) {
-      ElMessage.success('注册成功！')
-      console.log('注册验证通过!', registerForm)
-    } else {
-      console.log('注册验证失败!')
+      isLoading.value = true
+      try {
+        await userStore.register(registerForm)
+        ElMessage.success('注册成功，已自动登录！')
+        await router.push('/app')
+      } catch (error) {
+        ElMessage.error(error as string)
+      } finally {
+        isLoading.value = false
+      }
     }
   })
 }
@@ -77,64 +68,36 @@ const handleRegister = async (formEl: FormInstance | undefined) => {
 
 <template>
   <div class="page-container">
-    <div class="scaler" ref="scalerRef">
+    <div class="scaler">
       <div class="container" :class="{ 'active': isRegisterActive }">
         <div class="form-container sign-up">
-          <el-form
-              :model="registerForm"
-              :rules="registerRules"
-              ref="registerFormRef"
-              @submit.prevent="handleRegister(registerFormRef)"
-          >
+          <el-form :model="registerForm" :rules="registerRules" ref="registerFormRef" @submit.prevent="handleRegister(registerFormRef)">
             <h1>创建账户</h1>
             <div class="social-icons">
-              <a href="#" class="icon"><i class="fa-brands fa-google-plus-g"></i></a>
-              <a href="#" class="icon"><i class="fa-brands fa-facebook-f"></i></a>
               <a href="#" class="icon"><i class="fa-brands fa-github"></i></a>
-              <a href="#" class="icon"><i class="fa-brands fa-linkedin-in"></i></a>
             </div>
-            <span>或使用您的邮箱进行注册</span>
-            <el-form-item prop="name">
-              <el-input type="text" placeholder="用户名" v-model="registerForm.name" />
-            </el-form-item>
-            <el-form-item prop="email">
-              <el-input type="email" placeholder="邮箱" v-model="registerForm.email" />
-            </el-form-item>
-            <el-form-item prop="password">
-              <el-input type="password" placeholder="密码" v-model="registerForm.password" />
-            </el-form-item>
-
+            <span>或使用邮箱注册</span>
+            <el-form-item prop="username"><el-input v-model="registerForm.username" placeholder="用户名" /></el-form-item>
+            <el-form-item prop="email"><el-input v-model="registerForm.email" type="email" placeholder="邮箱" /></el-form-item>
+            <el-form-item prop="password"><el-input v-model="registerForm.password" type="password" placeholder="密码" show-password /></el-form-item>
             <el-form-item>
-              <el-button type="primary" native-type="submit">注册</el-button>
+              <el-button type="primary" native-type="submit" :loading="isLoading">注册</el-button>
             </el-form-item>
           </el-form>
         </div>
 
         <div class="form-container sign-in">
-          <el-form
-              :model="loginForm"
-              :rules="loginRules"
-              ref="loginFormRef"
-              @submit.prevent="handleLogin(loginFormRef)"
-          >
+          <el-form :model="loginForm" :rules="loginRules" ref="loginFormRef" @submit.prevent="handleLogin(loginFormRef)">
             <h1>登录</h1>
             <div class="social-icons">
-              <a href="#" class="icon"><i class="fa-brands fa-google-plus-g"></i></a>
-              <a href="#" class="icon"><i class="fa-brands fa-facebook-f"></i></a>
               <a href="#" class="icon"><i class="fa-brands fa-github"></i></a>
-              <a href="#" class="icon"><i class="fa-brands fa-linkedin-in"></i></a>
             </div>
-            <span>或使用您的邮箱密码</span>
-            <el-form-item prop="email">
-              <el-input type="email" placeholder="邮箱" v-model="loginForm.email" />
-            </el-form-item>
-            <el-form-item prop="password">
-              <el-input type="password" placeholder="密码" v-model="loginForm.password" />
-            </el-form-item>
+            <span>或使用邮箱密码登录</span>
+            <el-form-item prop="email"><el-input v-model="loginForm.email" type="email" placeholder="邮箱" /></el-form-item>
+            <el-form-item prop="password"><el-input v-model="loginForm.password" type="password" placeholder="密码" show-password /></el-form-item>
             <a href="#">忘记密码？</a>
-
             <el-form-item>
-              <el-button type="primary" native-type="submit">登录</el-button>
+              <el-button type="primary" native-type="submit" :loading="isLoading">登录</el-button>
             </el-form-item>
           </el-form>
         </div>
@@ -157,8 +120,8 @@ const handleRegister = async (formEl: FormInstance | undefined) => {
     </div>
   </div>
 </template>
-
 <style scoped>
+/* 样式部分保持不变 */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
 
 * {
@@ -170,7 +133,7 @@ const handleRegister = async (formEl: FormInstance | undefined) => {
 
 .page-container {
   position: relative;
-  background-image: url('https://pic.dmoe.in/imgdata/2025/09/21/b01ec9129939e45f7271cffcc3b791f5.jpg');
+  background-image: url('/public/wallroom-5120x2880-bg-0f19268.jpg'); /* Changed background image */
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -258,16 +221,17 @@ const handleRegister = async (formEl: FormInstance | undefined) => {
 
 .container .el-form-item {
   margin-bottom: 18px;
+  width: 100%;
+}
+.container .el-button {
+  width: 100%;
 }
 
 .form-container {
-  /* 默认状态: 温暖的米白色调 */
   background: linear-gradient(135deg, rgba(245, 245, 244, 0.4), rgba(245, 245, 244, 0.3));
   backdrop-filter: blur(2px);
   -webkit-backdrop-filter: blur(2px);
-
   transition: all 0.6s ease-in-out, background 0.4s ease-in-out, backdrop-filter 0.4s ease-in-out, -webkit-backdrop-filter 0.4s ease-in-out;
-
   position: absolute;
   top: 0;
   height: 100%;
@@ -322,6 +286,7 @@ const handleRegister = async (formEl: FormInstance | undefined) => {
   margin: 0 3px;
   width: 40px;
   height: 40px;
+  color: #333;
 }
 
 .toggle-container {
@@ -342,11 +307,9 @@ const handleRegister = async (formEl: FormInstance | undefined) => {
 }
 
 .toggle {
-  /* 默认状态: 森林绿色 */
   background: linear-gradient(135deg, rgba(22, 101, 52, 0.5), rgba(22, 101, 52, 0.4));
   backdrop-filter: blur(2px);
   -webkit-backdrop-filter: blur(2px);
-
   height: 100%;
   color: #fff;
   position: relative;
@@ -392,7 +355,6 @@ const handleRegister = async (formEl: FormInstance | undefined) => {
   transform: translateX(200%);
 }
 
-/* 按钮的最终森林绿色样式 */
 .form-container .el-button--primary {
   background-color: #166534;
   border-color: #166534;
@@ -414,7 +376,6 @@ const handleRegister = async (formEl: FormInstance | undefined) => {
   border-color: #14532D;
 }
 
-/* --- 悬浮状态: 高专注模式 --- */
 .container:hover .form-container {
   background: linear-gradient(135deg, rgba(245, 245, 244, 0.8), rgba(245, 245, 244, 0.7));
   backdrop-filter: blur(16px);
@@ -427,12 +388,11 @@ const handleRegister = async (formEl: FormInstance | undefined) => {
   -webkit-backdrop-filter: blur(16px);
 }
 
-/* --- 文字颜色与阴影 --- */
 .form-container h1,
 .form-container span,
 .form-container a {
-  color: #1f2937; /* 中性深灰色，搭配暖色背景 */
-  text-shadow: 0 0 5px rgba(255, 255, 255, 0.5); /* 浅色阴影以适应深色文字 */
+  color: #1f2937;
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
 }
 
 .toggle-panel h1,

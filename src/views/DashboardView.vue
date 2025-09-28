@@ -12,15 +12,14 @@
       <h4>学习进度一览</h4>
       <div class="stats-item">
         <span>已掌握知识点</span>
-        <span class="value">{{ userStore.progress.completed }} / {{ userStore.progress.total }}</span>
+        <span class="value">{{ userStore.progressStats.completed }} / {{ userStore.progressStats.total }}</span>
       </div>
       <div class="progress-bar">
-        <div class="progress" :style="{ width: userStore.progressPercentage + '%' }"></div>
+        <div class="progress" :style="{ width: userStore.progressStats.percentage + '%' }"></div>
       </div>
       <div class="stats-item">
         <span>总学习时长</span>
-        <span class="value">{{ userStore.studyTime }}</span>
-      </div>
+        <span class="value">8小时 21分钟</span></div>
     </div>
 
     <div class="card knowledge-graph-card">
@@ -36,15 +35,13 @@
 </template>
 
 <script setup lang="ts">
-import { useUserStore } from '@/stores/user';
-const userStore = useUserStore();
+import {useUserStore} from '@/stores/user';
 
-// 如果需要，可以在组件挂载时尝试自动登录
-// userStore.tryAutoLogin();
+const userStore = useUserStore();
 </script>
 
 <style scoped>
-/* 样式部分保持不变 */
+/* 样式保持不变 */
 .dashboard-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -83,10 +80,12 @@ const userStore = useUserStore();
   font-size: 24px;
   margin-bottom: 8px;
 }
+
 .welcome-card p {
   color: var(--text-secondary);
   margin-bottom: 24px;
 }
+
 .start-btn {
   background-color: var(--primary-color);
   color: white;
@@ -102,6 +101,7 @@ const userStore = useUserStore();
   transition: all 0.3s ease;
   box-shadow: 0 4px 12px rgba(138, 127, 251, 0.3);
 }
+
 .start-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(138, 127, 251, 0.4);
@@ -112,6 +112,7 @@ const userStore = useUserStore();
   font-weight: 500;
   margin-bottom: 16px;
 }
+
 .stats-item {
   display: flex;
   justify-content: space-between;
@@ -119,10 +120,12 @@ const userStore = useUserStore();
   color: var(--text-secondary);
   margin-bottom: 8px;
 }
+
 .stats-item .value {
   color: var(--text-primary);
   font-weight: 500;
 }
+
 .progress-bar {
   width: 100%;
   height: 6px;
@@ -130,13 +133,13 @@ const userStore = useUserStore();
   border-radius: 3px;
   margin-bottom: 16px;
 }
+
 .progress {
   height: 100%;
   background-color: var(--primary-color);
   border-radius: 3px;
-  transition: width 0.5s ease-in-out; /* 为进度条添加动画效果 */
+  transition: width 0.5s ease-in-out;
 }
-
 
 .card-header {
   display: flex;
@@ -144,12 +147,14 @@ const userStore = useUserStore();
   align-items: center;
   margin-bottom: 20px;
 }
+
 .card-header h4 {
   display: flex;
   align-items: center;
   gap: 10px;
   font-size: 18px;
 }
+
 .card-header span {
   font-size: 14px;
   color: var(--text-secondary);

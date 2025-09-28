@@ -1,9 +1,13 @@
-import { createRouter, createWebHistory } from 'vue-router'
+// src/router/index.ts
+
+// 1. 从 'vue-router' 中多导入一个 createWebHashHistory
+import { createRouter, createWebHistory, createWebHashHistory } from 'vue-router'
 import LoginView from '../views/LoginView.vue'
 import MainLayout from '../layouts/MainLayout.vue'
 
 const router = createRouter({
-    history: createWebHistory(import.meta.env.BASE_URL),
+    // 2. 将 createWebHistory(...) 修改为 createWebHashHistory()
+    history: createWebHashHistory(import.meta.env.BASE_URL),
     routes: [
         {
             path: '/',
@@ -34,18 +38,14 @@ const router = createRouter({
                     name: 'knowledge',
                     component: () => import('../views/KnowledgeBaseView.vue')
                 },
-                // 【重要新增】为学习页面添加动态路由
                 {
-                    path: 'learn/:pointId', // 使用 :pointId 作为动态参数
+                    path: 'learn/:pointId',
                     name: 'learning',
-                    // 暂时我们先创建一个空的 LearningView.vue 文件，下一步再填充内容
                     component: () => import('../views/LearningView.vue')
                 }
             ]
         }
     ]
 })
-
-// 2. 关键改动：将 router.beforeEach(...) 的全部代码从这里删除
 
 export default router
