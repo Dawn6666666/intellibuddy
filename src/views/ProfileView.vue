@@ -6,7 +6,6 @@
         <span>直观了解您的技术栈掌握程度</span>
       </div>
       <div class="chart-container">
-        <!-- 2. 使用雷达图组件 -->
         <RadarChart :chart-data="userStore.skillMastery" />
       </div>
     </div>
@@ -15,16 +14,17 @@
         <h4><i class="fa-solid fa-fire"></i> 学习热力图</h4>
         <span>保持持续学习的习惯</span>
       </div>
-      <div class="heatmap-placeholder">
-        <p>这里是未来放置学习活动热力图的区域</p>
+      <div class="heatmap-container">
+        <HeatmapChart :chart-data="userStore.studyActivityData" />
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-// 1. 引入雷达图组件和 user store
+// 1. 引入雷达图、热力图组件和 user store
 import RadarChart from '@/components/charts/RadarChart.vue';
+import HeatmapChart from '@/components/charts/HeatmapChart.vue'; // 【新增】
 import { useUserStore } from '@/stores/user';
 
 const userStore = useUserStore();
@@ -70,14 +70,11 @@ const userStore = useUserStore();
   flex-grow: 1;
 }
 
-.heatmap-placeholder {
+/* 【重要修改】替换原来的 .heatmap-placeholder 样式 */
+.heatmap-container {
   flex-grow: 1;
-  background-color: rgba(0, 0, 0, 0.2);
-  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--text-secondary);
-  border: 1px dashed var(--card-border);
 }
 </style>

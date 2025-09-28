@@ -1,7 +1,6 @@
 <template>
   <div class="dashboard-grid">
     <div class="card welcome-card">
-      <!-- 1. 使用 greeting getter -->
       <h3>{{ userStore.greeting }}</h3>
       <p>准备好开始新的学习旅程了吗？</p>
       <button class="start-btn">
@@ -13,23 +12,20 @@
       <h4>学习进度一览</h4>
       <div class="stats-item">
         <span>已掌握知识点</span>
-        <!-- 2. 动态绑定学习进度 -->
         <span class="value">{{ userStore.progress.completed }} / {{ userStore.progress.total }}</span>
       </div>
       <div class="progress-bar">
-        <!-- 3. 动态计算进度条宽度 -->
         <div class="progress" :style="{ width: userStore.progressPercentage + '%' }"></div>
       </div>
       <div class="stats-item">
         <span>总学习时长</span>
-        <!-- 4. 动态绑定学习时长 -->
         <span class="value">{{ userStore.studyTime }}</span>
       </div>
     </div>
 
     <div class="card knowledge-graph-card">
       <div class="card-header">
-        <h4><i class="fa-solid fa-sitemap"></i> Vue.js 知识图谱</h4>
+        <h4><i class="fa-solid fa-sitemap"></i> 计算机科学知识图谱</h4>
         <span>你的推荐路径已高亮显示</span>
       </div>
       <div class="graph-placeholder">

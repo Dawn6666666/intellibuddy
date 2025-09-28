@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import LoginView from '../views/LoginView.vue'
 import MainLayout from '../layouts/MainLayout.vue'
-// 1. 注意：这里不再需要导入 useUserStore
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -34,6 +33,13 @@ const router = createRouter({
                     path: 'knowledge',
                     name: 'knowledge',
                     component: () => import('../views/KnowledgeBaseView.vue')
+                },
+                // 【重要新增】为学习页面添加动态路由
+                {
+                    path: 'learn/:pointId', // 使用 :pointId 作为动态参数
+                    name: 'learning',
+                    // 暂时我们先创建一个空的 LearningView.vue 文件，下一步再填充内容
+                    component: () => import('../views/LearningView.vue')
                 }
             ]
         }

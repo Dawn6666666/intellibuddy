@@ -5,14 +5,13 @@
         <i class="fa-solid fa-brain"></i> <span>智学伴</span>
       </div>
       <nav class="navigation">
-        <router-link to="/app" class="nav-item">
+        <router-link :to="{ name: 'dashboard' }" class="nav-item">
           <i class="fa-solid fa-chart-pie"></i> 仪表盘
         </router-link>
-        <router-link to="/app/profile" class="nav-item">
+        <router-link :to="{ name: 'profile' }" class="nav-item">
           <i class="fa-solid fa-user"></i> 我的档案
         </router-link>
-        <!-- 2. 将 a 标签改为 router-link -->
-        <router-link to="/app/knowledge" class="nav-item">
+        <router-link :to="{ name: 'knowledge' }" class="nav-item">
           <i class="fa-solid fa-book"></i> 知识库
         </router-link>
       </nav>
@@ -42,7 +41,11 @@
       </router-view>
     </main>
 
-    <button class="fab"><i class="fa-solid fa-headset"></i></button>
+    <button class="fab" @click="userStore.toggleChat(true)">
+      <i class="fa-solid fa-headset"></i>
+    </button>
+
+    <AIChatWindow v-if="userStore.isChatOpen" />
   </div>
 </template>
 
@@ -50,6 +53,8 @@
 import '@fortawesome/fontawesome-free/css/all.css';
 import { useUserStore } from '@/stores/user';
 import { useRouter } from 'vue-router';
+// 【重要新增】导入聊天窗口组件
+import AIChatWindow from '@/components/AIChatWindow.vue';
 
 const userStore = useUserStore();
 const router = useRouter();
@@ -118,7 +123,7 @@ const handleLogout = () => {
   color: var(--text-primary);
 }
 
-.router-link-active {
+.router-link-exact-active {
   background-color: var(--primary-color);
   color: white !important;
   font-weight: 500;

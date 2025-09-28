@@ -1,8 +1,8 @@
 <template>
   <div class="knowledge-base-container">
     <header class="page-header">
-      <h1><i class="fa-solid fa-book-sparkles"></i> Vue.js 知识库</h1>
-      <p>探索、学习并掌握 Vue.js 的每一个角落。</p>
+      <h1><i class="fa-solid fa-book-sparkles"></i> 学习路线总览</h1>
+      <p>探索、学习并掌握计算机科学的每一个角落。</p>
     </header>
     <div class="cards-grid">
       <KnowledgeCard

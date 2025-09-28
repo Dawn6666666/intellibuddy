@@ -25,7 +25,7 @@
 /* 4. Body 基础样式 */
 body {
   font-family: 'Noto Sans SC', sans-serif;
-  background-image: url('D:/projects/intellibuddy/public/wallroom-5120x2880-bg-0f19268.jpg'); /* 您可以替换成自己的背景图 */
+  background-image: url('/public/background.png'); /* 您可以替换成自己的背景图 */
   background-size: cover;
   background-position: center;
   background-attachment: fixed;

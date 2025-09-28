@@ -1,18 +1,20 @@
 <template>
-  <div class="knowledge-card" :class="statusClass">
-    <div class="status-indicator">
-      <i :class="statusIcon"></i>
-      <span>{{ statusText }}</span>
+  <router-link :to="{ name: 'learning', params: { pointId: point.id } }" class="card-link">
+    <div class="knowledge-card" :class="statusClass">
+      <div class="status-indicator">
+        <i :class="statusIcon"></i>
+        <span>{{ statusText }}</span>
+      </div>
+      <h3 class="card-title">{{ point.title }}</h3>
+      <p class="card-snippet">{{ point.contentSnippet }}</p>
+      <div class="card-footer">
+        <span class="subject-tag">{{ point.subject }}</span>
+        <button class="learn-btn">
+          {{ point.status === 'completed' ? '回顾' : '学习' }} <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
     </div>
-    <h3 class="card-title">{{ point.title }}</h3>
-    <p class="card-snippet">{{ point.contentSnippet }}</p>
-    <div class="card-footer">
-      <span class="subject-tag">{{ point.subject }}</span>
-      <button class="learn-btn">
-        {{ point.status === 'completed' ? '回顾' : '学习' }} <i class="fa-solid fa-arrow-right"></i>
-      </button>
-    </div>
-  </div>
+  </router-link>
 </template>
 
 <script setup lang="ts">
@@ -53,6 +55,21 @@ const statusIcon = computed(() => {
 </script>
 
 <style scoped>
+/* 【重要新增】为 router-link 添加样式，去除下划线等默认效果 */
+.card-link {
+  text-decoration: none;
+  color: inherit;
+  display: block; /* 让链接占据整个卡片空间 */
+  transition: all 0.3s ease;
+}
+
+/* 将 :hover 效果从 .knowledge-card 移到 .card-link 上，确保悬浮效果正确 */
+.card-link:hover .knowledge-card {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  border-color: var(--primary-color);
+}
+
 .knowledge-card {
   background: var(--card-bg);
   border: 1px solid var(--card-border);
@@ -62,12 +79,7 @@ const statusIcon = computed(() => {
   flex-direction: column;
   transition: all 0.3s ease;
   border-left: 4px solid var(--card-border); /* 默认左侧边框 */
-}
-
-.knowledge-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-  border-color: var(--primary-color);
+  height: 100%; /* 确保卡片在链接内高度 100% */
 }
 
 /* 根据不同状态改变左侧边框颜色 */
