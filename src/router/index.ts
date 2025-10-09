@@ -1,7 +1,7 @@
 // src/router/index.ts
 
 // 1. 从 'vue-router' 中多导入一个 createWebHashHistory
-import { createRouter, createWebHistory, createWebHashHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 import LoginView from '../views/LoginView.vue'
 import MainLayout from '../layouts/MainLayout.vue'
 
