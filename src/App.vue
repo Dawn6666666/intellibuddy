@@ -1,16 +1,36 @@
 <script setup lang="ts">
-// 这个脚本块保持为空，我们不需要任何逻辑
+import { computed, watchEffect } from 'vue';
+import { useRoute } from 'vue-router';
+import { useThemeStore } from './stores/theme'; // 1. 引入 theme store
+import DynamicBackground from './components/DynamicBackground.vue';
+
+const route = useRoute();
+const themeStore = useThemeStore(); // 2. 获取 theme store 实例
+
+// 3. 监听 theme store 的变化，并相应地在 <html> 标签上添加/移除 class
+watchEffect(() => {
+  if (themeStore.theme === 'light') {
+    document.documentElement.classList.add('light-theme');
+  } else {
+    document.documentElement.classList.remove('light-theme');
+  }
+});
+
+// 动态计算背景颜色 (保持不变)
+const backgroundColors = computed(() => {
+  if (route.name === 'login') {
+    return ['#10b981', '#14b8a6', '#0ea5e9', '#22c55e'];
+  } else {
+    return ['#f43f5e', '#3b82f6', '#f97316', '#8b5cf6'];
+  }
+});
 </script>
 
 <template>
-  <!-- 这里只留下一个路由出口，让页面组件在这里显示 -->
+  <DynamicBackground :blob-colors="backgroundColors" :theme="themeStore.theme" />
+
   <router-view />
 </template>
 
 <style scoped>
-/*
-  这个样式块也保持为空。
-  App.vue 作为根组件，不应该有任何自己的 scoped 样式，
-  以免影响到子页面。
-*/
 </style>

@@ -3,45 +3,48 @@
 /* 1. 引入字体 (如果还没引入) */
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
 
-/* 2. 定义全局 CSS 变量 */
+/* 2. 定义 CSS 变量 */
+
+/* 【暗色模式 - 默认】 */
 :root {
     --primary-color: #8a7ffb;
-    --card-bg: rgba(30, 30, 30, 0.5);
+    --card-bg: rgba(30, 30, 30, 0.5);      /* 暗色毛玻璃 */
     --card-border: rgba(255, 255, 255, 0.1);
-    --text-primary: #f0f0f0;
+    --text-primary: #f0f0f0;                /* 亮色文字 */
     --text-secondary: #a0a0a0;
-    --bg-color: #0f1014;
+    --bg-color: #0f1014;                    /* 深色页面背景 */
     --border-radius: 16px;
     --backdrop-blur: 12px;
 }
 
-/* 3. 全局重置 */
+/* 【核心新增】亮色模式的变量覆盖 */
+html.light-theme {
+    --primary-color: #7c3aed; /* 亮色模式下更鲜明的紫色 */
+    --card-bg: rgba(255, 255, 255, 0.6);  /* 亮色毛玻璃 */
+    --card-border: rgba(0, 0, 0, 0.08);
+    --text-primary: #111827;            /* 深色文字 */
+    --text-secondary: #4b5563;
+    --bg-color: #f9fafb;                /* 浅色页面背景 */
+}
+
+
+/* 3. 全局重置 (保持不变) */
 *, *::before, *::after {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-/* 4. Body 基础样式 */
+/* 4. Body 基础样式 (现在完全由 CSS 变量控制) */
 body {
     font-family: 'Noto Sans SC', sans-serif;
-    background-image: url('/public/background.png');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
-    background-color: var(--bg-color);
-    color: var(--text-primary);
+    background-color: var(--bg-color); /* 应用背景色变量 */
+    color: var(--text-primary);       /* 应用文字颜色变量 */
     min-height: 100vh;
+    transition: background-color 0.3s ease, color 0.3s ease; /* 添加平滑过渡效果 */
 }
 
-a {
-    text-decoration: none;
-    color: inherit;
-}
-
-#app {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-}
+/* ... 其他样式保持不变 ... */

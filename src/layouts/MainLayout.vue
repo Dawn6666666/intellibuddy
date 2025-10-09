@@ -16,7 +16,9 @@
         </router-link>
       </nav>
       <div class="user-actions">
-        <button class="action-btn" title="切换主题"><i class="fa-solid fa-circle-half-stroke"></i></button>
+        <button class="action-btn" title="切换主题" @click="themeStore.toggleTheme">
+          <i :class="themeStore.theme === 'dark' ? 'fa-solid fa-moon' : 'fa-solid fa-sun'"></i>
+        </button>
         <button class="action-btn" title="通知"><i class="fa-solid fa-bell"></i></button>
 
         <el-dropdown>
@@ -36,7 +38,7 @@
     <main class="main-content">
       <router-view v-slot="{ Component }">
         <transition name="fade" mode="out-in">
-          <component :is="Component"/>
+          <component :is="Component" :key="$route.name"/>
         </transition>
       </router-view>
     </main>
@@ -53,10 +55,11 @@
 import '@fortawesome/fontawesome-free/css/all.css';
 import { useUserStore } from '@/stores/user';
 import { useRouter } from 'vue-router';
-// 【重要新增】导入聊天窗口组件
 import AIChatWindow from '@/components/AIChatWindow.vue';
+import { useThemeStore } from '@/stores/theme';
 
 const userStore = useUserStore();
+const themeStore = useThemeStore();
 const router = useRouter();
 
 const handleLogout = () => {
@@ -92,6 +95,7 @@ const handleLogout = () => {
   -webkit-backdrop-filter: blur(var(--backdrop-blur));
   border: 1px solid var(--card-border);
   border-radius: var(--border-radius);
+  transition: background 0.3s ease, border 0.3s ease; /* 添加平滑过渡 */
 }
 
 .logo {
@@ -119,7 +123,7 @@ const handleLogout = () => {
 }
 
 .nav-item:hover {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: rgba(128, 128, 128, 0.1); /* 适配亮暗模式的悬浮色 */
   color: var(--text-primary);
 }
 
@@ -190,7 +194,7 @@ const handleLogout = () => {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   cursor: pointer;
   z-index: 1000;
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, background-color 0.3s ease;
 }
 
 .fab:hover {

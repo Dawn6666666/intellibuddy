@@ -5,12 +5,12 @@
       <p>探索、学习并掌握计算机科学的每一个角落。</p>
     </header>
 
-    <div v-if="knowledgeStore.isLoading" class="loading-state">
+    <div v-if="userStore.isLoading" class="loading-state">
       <p>正在加载知识库...</p>
     </div>
     <div v-else-if="knowledgeStore.error" class="error-state">
       <p>{{ knowledgeStore.error }}</p>
-      <button @click="fetchData">重试</button>
+      <button @click="userStore.fetchInitialData">重试</button>
     </div>
     <div v-else class="cards-grid">
       <KnowledgeCard
@@ -23,20 +23,14 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted} from 'vue';
-import {useKnowledgeStore} from '@/stores/knowledge';
+import { useKnowledgeStore } from '@/stores/knowledge';
+import { useUserStore } from '@/stores/user'; // 引入 user store
 import KnowledgeCard from '@/components/KnowledgeCard.vue';
 
 const knowledgeStore = useKnowledgeStore();
+const userStore = useUserStore(); // 获取 user store 实例以使用其状态
 
-const fetchData = () => {
-  // 这个 action 现在只会获取课程元数据
-  knowledgeStore.fetchKnowledgePoints();
-};
-
-onMounted(() => {
-  fetchData();
-});
+// 不再需要 onMounted 和 fetchData，组件变得非常干净
 </script>
 
 <style scoped>

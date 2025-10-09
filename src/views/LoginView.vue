@@ -4,16 +4,21 @@ import type { FormInstance, FormRules } from 'element-plus'
 import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
+import DynamicBackground from '@/components/DynamicBackground.vue';
+import { useThemeStore } from '@/stores/theme';
 
 const router = useRouter()
 const userStore = useUserStore()
+const themeStore = useThemeStore();
 const isLoading = ref(false)
 const isRegisterActive = ref(false)
 
 // 表单引用和数据
 const loginFormRef = ref<FormInstance>()
 const registerFormRef = ref<FormInstance>()
-const loginForm = reactive({ email: 'test@example.com', password: 'password123' })
+
+// 【核心修改】将这里的 email 和 password 的初始值清空
+const loginForm = reactive({ email: '', password: '' })
 const registerForm = reactive({ username: '', email: '', password: '' })
 
 // 表单验证规则
@@ -120,6 +125,7 @@ const handleRegister = async (formEl: FormInstance | undefined) => {
     </div>
   </div>
 </template>
+
 <style scoped>
 /* 样式部分保持不变 */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
@@ -133,7 +139,7 @@ const handleRegister = async (formEl: FormInstance | undefined) => {
 
 .page-container {
   position: relative;
-  background-image: url('/public/wallroom-5120x2880-bg-0f19268.jpg'); /* Changed background image */
+  /* background-image: url('/public/wallroom-5120x2880-bg-0f19268.jpg'); */ /* Changed background image */
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

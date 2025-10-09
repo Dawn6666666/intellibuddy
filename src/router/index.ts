@@ -1,13 +1,13 @@
 // src/router/index.ts
 
-// 1. 从 'vue-router' 中多导入一个 createWebHashHistory
-import { createRouter, createWebHashHistory } from 'vue-router'
+// 1. 从 'vue-router' 中导入 createWebHistory，不再使用 createWebHashHistory
+import { createRouter, createWebHistory } from 'vue-router'
 import LoginView from '../views/LoginView.vue'
 import MainLayout from '../layouts/MainLayout.vue'
 
 const router = createRouter({
-    // 2. 将 createWebHistory(...) 修改为 createWebHashHistory()
-    history: createWebHashHistory(import.meta.env.BASE_URL),
+    // 2. 将 history 模式修改为 createWebHistory
+    history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
         {
             path: '/',
