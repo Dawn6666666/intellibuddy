@@ -2,7 +2,7 @@
   <div class="app-layout">
     <header class="main-header">
       <div class="logo">
-        <i class="fa-solid fa-brain"></i> <span>智学伴</span>
+        <img src="/favicon.png" alt="智学伴 Logo" class="header-logo" /> <span>智学伴</span>
       </div>
       <nav class="navigation">
         <router-link :to="{ name: 'dashboard' }" class="nav-item">
@@ -44,7 +44,7 @@
     </main>
 
     <button class="fab" @click="userStore.toggleChat(true)">
-      <i class="fa-solid fa-headset"></i>
+      <img :src="fabIcon" alt="AI 助教" class="fab-icon" />
     </button>
 
     <AIChatWindow v-if="userStore.isChatOpen" />
@@ -57,6 +57,7 @@ import { useUserStore } from '@/stores/user';
 import { useRouter } from 'vue-router';
 import AIChatWindow from '@/components/AIChatWindow.vue';
 import { useThemeStore } from '@/stores/theme';
+import fabIcon from '@/assets/images/ai-chat-logo.png';
 
 const userStore = useUserStore();
 const themeStore = useThemeStore();
@@ -69,7 +70,6 @@ const handleLogout = () => {
 </script>
 
 <style scoped>
-/* 样式部分保持不变 */
 .app-layout {
   display: flex;
   flex-direction: column;
@@ -82,7 +82,8 @@ const handleLogout = () => {
   position: fixed;
   top: 20px;
   width: 95%;
-  max-width: 1200px;
+  /* 【修改】放宽最大宽度 */
+  max-width: 1400px;
   height: 64px;
   padding: 0 24px;
   display: flex;
@@ -95,15 +96,22 @@ const handleLogout = () => {
   -webkit-backdrop-filter: blur(var(--backdrop-blur));
   border: 1px solid var(--card-border);
   border-radius: var(--border-radius);
-  transition: background 0.3s ease, border 0.3s ease; /* 添加平滑过渡 */
+  transition: background 0.3s ease, border 0.3s ease;
 }
 
 .logo {
-  font-size: 18px;
+  /* 【修改】字体单位改为 rem */
+  font-size: 1.125rem; /* 18px -> 1.125rem */
   font-weight: bold;
   display: flex;
   align-items: center;
   gap: 10px;
+}
+
+.logo .header-logo {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
 }
 
 .navigation {
@@ -116,14 +124,16 @@ const handleLogout = () => {
   padding: 8px 16px;
   border-radius: 10px;
   transition: all 0.3s ease;
-  font-size: 14px;
+  /* 【修改】字体单位改为 rem */
+  font-size: 0.875rem; /* 14px -> 0.875rem */
   display: flex;
   align-items: center;
   gap: 8px;
+  text-decoration: none;
 }
 
 .nav-item:hover {
-  background-color: rgba(128, 128, 128, 0.1); /* 适配亮暗模式的悬浮色 */
+  background-color: rgba(128, 128, 128, 0.1);
   color: var(--text-primary);
 }
 
@@ -144,7 +154,8 @@ const handleLogout = () => {
   background: transparent;
   border: none;
   color: var(--text-secondary);
-  font-size: 18px;
+  /* 【修改】字体单位改为 rem */
+  font-size: 1.125rem; /* 18px -> 1.125rem */
   cursor: pointer;
   transition: color 0.3s ease;
 }
@@ -164,7 +175,8 @@ const handleLogout = () => {
 
 .main-content {
   width: 100%;
-  max-width: 1200px;
+  /* 【修改】放宽最大宽度 */
+  max-width: 1400px;
 }
 
 .fade-enter-active,
@@ -181,23 +193,26 @@ const handleLogout = () => {
   position: fixed;
   bottom: 30px;
   right: 30px;
-  width: 56px;
-  height: 56px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
-  background-color: var(--primary-color);
+  background: transparent;
+  box-shadow: none;
   border: none;
-  color: white;
-  font-size: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   cursor: pointer;
   z-index: 1000;
-  transition: transform 0.3s ease, background-color 0.3s ease;
+  transition: transform 0.3s ease;
+  padding: 0;
 }
 
 .fab:hover {
   transform: scale(1.1);
+}
+
+.fab-icon {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
 }
 </style>

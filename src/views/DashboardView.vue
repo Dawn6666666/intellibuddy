@@ -41,10 +41,13 @@ const userStore = useUserStore();
 </script>
 
 <style scoped>
-/* 样式保持不变 */
 .dashboard-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  /* 【修改】使用 grid-template-areas 来定义布局，更利于响应式 */
+  grid-template-areas:
+    "welcome stats stats"
+    "graph   graph graph";
+  grid-template-columns: 1fr 1fr 1fr;
   grid-template-rows: auto 1fr;
   gap: 20px;
   height: 100%;
@@ -59,25 +62,23 @@ const userStore = useUserStore();
   padding: 24px;
 }
 
+/* 【修改】使用 grid-area 替代 grid-column/row */
 .welcome-card {
-  grid-column: 1 / 2;
-  grid-row: 1 / 2;
+  grid-area: welcome;
 }
 
 .stats-card {
-  grid-column: 2 / 4;
-  grid-row: 1 / 2;
+  grid-area: stats;
 }
 
 .knowledge-graph-card {
-  grid-column: 1 / 4;
-  grid-row: 2 / 3;
+  grid-area: graph;
   display: flex;
   flex-direction: column;
 }
 
 .welcome-card h3 {
-  font-size: 24px;
+  font-size: 1.5rem; /* 24px -> 1.5rem */
   margin-bottom: 8px;
 }
 
@@ -92,7 +93,7 @@ const userStore = useUserStore();
   border: none;
   border-radius: 10px;
   padding: 12px 20px;
-  font-size: 16px;
+  font-size: 1rem; /* 16px -> 1rem */
   font-weight: 500;
   cursor: pointer;
   display: flex;
@@ -108,7 +109,7 @@ const userStore = useUserStore();
 }
 
 .stats-card h4 {
-  font-size: 16px;
+  font-size: 1rem; /* 16px -> 1rem */
   font-weight: 500;
   margin-bottom: 16px;
 }
@@ -116,7 +117,7 @@ const userStore = useUserStore();
 .stats-item {
   display: flex;
   justify-content: space-between;
-  font-size: 14px;
+  font-size: 0.875rem; /* 14px -> 0.875rem */
   color: var(--text-secondary);
   margin-bottom: 8px;
 }
@@ -152,11 +153,11 @@ const userStore = useUserStore();
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 18px;
+  font-size: 1.125rem; /* 18px -> 1.125rem */
 }
 
 .card-header span {
-  font-size: 14px;
+  font-size: 0.875rem; /* 14px -> 0.875rem */
   color: var(--text-secondary);
 }
 
@@ -169,5 +170,17 @@ const userStore = useUserStore();
   justify-content: center;
   color: var(--text-secondary);
   border: 1px dashed var(--card-border);
+}
+
+/* 【新增】媒体查询，用于响应式布局 */
+@media (max-width: 1024px) {
+  .dashboard-grid {
+    grid-template-areas:
+      "welcome"
+      "stats"
+      "graph";
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+  }
 }
 </style>
