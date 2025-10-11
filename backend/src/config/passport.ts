@@ -4,13 +4,20 @@ import {Strategy as GitHubStrategy} from 'passport-github2';
 import {Strategy as QQStrategy} from 'passport-qq';
 import User from '../models/User';
 
-// 从环境变量中读取后端的公开 URL，如果不存在则回退到本地地址
-const backendUrl = process.env.BACKEND_URL || 'http://localhost:5001';
+// 从环境变量中读取后端的公开 URL
+let backendUrl = process.env.BACKEND_URL || 'http://localhost:5001';
+
+// 新增：移除末尾可能存在的多余斜杠，确保 URL 格式正确
+if (backendUrl.endsWith('/')) {
+    backendUrl = backendUrl.slice(0, -1);
+}
+
 
 // GitHub 策略
 passport.use(new GitHubStrategy({
         clientID: process.env.GITHUB_CLIENT_ID!,
         clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+        // 这里拼接后就不会有双斜杠了
         callbackURL: `${backendUrl}/api/auth/github/callback`,
         scope: ['user:email'],
     },
@@ -41,7 +48,8 @@ passport.use(new GitHubStrategy({
 // QQ 策略
 passport.use(new QQStrategy({
         clientID: process.env.QQ_APP_ID!,
-        clientSecret: process.env.QQ_APP_KEY!, // 【已修正】确保这里是 clientSecret
+        clientSecret: process.env.QQ_APP_KEY!,
+        // 这里拼接后也不会有双斜杠了
         callbackURL: `${backendUrl}/api/auth/qq/callback`,
     },
     async (accessToken: string, refreshToken: string, profile: any, done: (error: any, user?: any) => void) => {
