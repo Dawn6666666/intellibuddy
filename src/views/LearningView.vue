@@ -72,7 +72,6 @@
 </template>
 
 <script setup lang="ts">
-// 【修复】移除了未使用的 'watchEffect'
 import {computed, ref, watch, nextTick} from 'vue';
 import {useRoute, useRouter} from 'vue-router';
 import {useKnowledgeStore} from '@/stores/knowledge';
@@ -157,20 +156,23 @@ watch(activeNotePath, async (newPath) => {
       contentHtml.value = await marked.parse(markdownText);
 
       await nextTick();
-      if (contentRef.value) {
-        const headingElements = contentRef.value.querySelectorAll('h1, h2, h3, h4');
-        const newHeadings: { id: string; text: string; level: number }[] = [];
-        headingElements.forEach((el, index) => {
-          const id = `heading-${index}`;
-          el.id = id;
-          newHeadings.push({
-            id,
-            text: el.textContent || '',
-            level: parseInt(el.tagName.substring(1), 10),
-          });
+
+      // 【修复】使用 Early Return 模式确保 contentRef.value 存在
+      if (!contentRef.value) return;
+
+      const headingElements = contentRef.value.querySelectorAll('h1, h2, h3, h4');
+      const newHeadings: { id: string; text: string; level: number }[] = [];
+      headingElements.forEach((el, index) => {
+        const id = `heading-${index}`;
+        el.id = id;
+        newHeadings.push({
+          id,
+          text: el.textContent || '',
+          level: parseInt(el.tagName.substring(1), 10),
         });
-        headings.value = newHeadings;
-      }
+      });
+      headings.value = newHeadings;
+
     } catch (error) {
       console.error("加载笔记内容失败:", error);
       contentHtml.value = '<p style="color: #ff8a8a;">抱歉，该笔记的详细内容暂时无法加载。</p>';
@@ -180,6 +182,7 @@ watch(activeNotePath, async (newPath) => {
 </script>
 
 <style scoped>
+/* 样式无需改动 */
 .page-header {
   margin-bottom: 30px;
 }
