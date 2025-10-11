@@ -60,19 +60,21 @@ export interface AuthRequest extends Request {
     user?: IUser;
 }
 
-export const authMiddleware = async (req: AuthRequest, res: Response, next: NextFunction) => {
+export const authMiddleware = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const token = req.header('Authorization')?.replace('Bearer ', '');
     if (!token) {
-        return res.status(401).json({message: '未授权的访问，缺少Token'});
+        res.status(401).json({message: '未授权的访问，缺少Token'});
+        return;
     }
     try {
         const decoded = jwt.verify(token, JWT_SECRET) as { userId: string };
-        // 修改这里：在查询末尾添加 .lean()
-        const user = await User.findById(decoded.userId).select('-passwordHash').lean();
+        const user = await User.findById(decoded.userId).select('-passwordHash');
         if (!user) {
-            return res.status(401).json({message: '用户不存在'});
+            res.status(401).json({message: '用户不存在'});
+            return;
         }
-        req.user = user;
+        // 将用户信息添加到请求对象上
+        (req as any).user = user;
         next();
     } catch (error) {
         res.status(401).json({message: '无效的Token'});
@@ -80,8 +82,10 @@ export const authMiddleware = async (req: AuthRequest, res: Response, next: Next
 };
 
 // --- 获取当前用户信息的路由 ---
-router.get('/me', authMiddleware, (req: AuthRequest, res: Response) => {
-    res.json(req.user);
+// 【修正】移除了无效的 `path:` 标签
+router.get('/me', authMiddleware, (req: Request, res: Response) => {
+    const authReq = req as AuthRequest;
+    res.json(authReq.user);
 });
 
 export default router;

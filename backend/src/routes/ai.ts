@@ -1,5 +1,5 @@
 // backend/src/routes/ai.ts
-import {Router, Response} from 'express';
+import {Router, Response, Request} from 'express';
 import axios from 'axios';
 import {authMiddleware, AuthRequest} from './auth';
 
@@ -9,13 +9,18 @@ const router = Router();
 const apiKey = process.env.KIMI_API_KEY;
 const apiEndpoint = process.env.KIMI_API_ENDPOINT;
 
-router.post('/chat', authMiddleware, async (req: AuthRequest, res: Response) => {
+router.post('/chat', authMiddleware, async (req: Request, res: Response) => {
     if (!apiKey || !apiEndpoint) {
         console.error('AI 服务未在环境变量中配置');
         return res.status(500).json({message: 'AI 服务未配置'});
     }
 
     try {
+        // 类型断言以访问用户信息
+        const authReq = req as AuthRequest;
+        console.log('用户ID:', authReq.user?._id);
+
+        // 【修正】移除了 axios.post 调用中无效的 `data:` 和 `config:` 标签
         const response = await axios.post(apiEndpoint, {
             model: 'moonshot-v1-8k',
             messages: req.body.messages,
