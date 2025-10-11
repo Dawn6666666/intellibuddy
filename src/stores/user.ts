@@ -1,8 +1,17 @@
 // src/stores/user.ts
 import {defineStore} from 'pinia';
-import {apiLogin, apiRegister, apiGetMyProfile, apiGetUserProgress} from '@/services/apiService';
+import {
+    apiLogin,
+    apiRegister,
+    apiGetMyProfile,
+    apiGetUserProgress,
+    apiGetChats,
+    apiNewChat,
+    apiUpdateChat
+} from '@/services/apiService';
 import type {KnowledgePoint} from './knowledge';
-import { useKnowledgeStore } from './knowledge';
+import {useKnowledgeStore} from './knowledge';
+import type {ChatMessage} from '@/services/ai';
 
 export interface UserInfo {
     _id: string;
@@ -17,7 +26,15 @@ export interface UserProgress {
     status: 'not_started' | 'in_progress' | 'completed';
 }
 
-// 定义热力图数据的类型
+export interface ChatSession {
+    _id: string;
+    userId: string;
+    title: string;
+    messages: ChatMessage[];
+    createdAt: string;
+    updatedAt: string;
+}
+
 export type StudyActivity = [string, number][];
 
 export const useUserStore = defineStore('user', {
@@ -29,10 +46,13 @@ export const useUserStore = defineStore('user', {
         error: null as string | null,
         isChatOpen: false,
         chatContext: null as KnowledgePoint | null,
-
-        // 【核心修复】为 "我的档案" 页面添加所需的状态，并设置初始空数组以防止崩溃
         skillMastery: [] as { name: string; level: number }[],
         studyActivityData: [] as StudyActivity,
+
+        // --- 聊天状态 ---
+        chatSessions: [] as ChatSession[],
+        activeChatId: null as string | null,
+        messages: [] as ChatMessage[],
     }),
 
     getters: {
@@ -49,7 +69,7 @@ export const useUserStore = defineStore('user', {
             const total = knowledgeStore.knowledgePoints.size;
             const completed = Array.from(state.progress.values()).filter(s => s === 'completed').length;
             const percentage = total > 0 ? (completed / total) * 100 : 0;
-            return { total, completed, percentage };
+            return {total, completed, percentage};
         },
     },
 
@@ -59,24 +79,30 @@ export const useUserStore = defineStore('user', {
             this.isLoading = true;
             const knowledgeStore = useKnowledgeStore();
             try {
-                const [user, progressData] = await Promise.all([
+                const [user, progressData, chats] = await Promise.all([
                     apiGetMyProfile(this.token),
                     apiGetUserProgress(this.token),
+                    apiGetChats(this.token),
                     knowledgeStore.fetchKnowledgePoints()
                 ]);
 
                 this.user = user;
                 this.progress = new Map(progressData.map((p: UserProgress) => [p.pointId, p.status]));
+                this.chatSessions = chats;
 
-                // 【核心修复】因为后端API暂未提供图表数据，我们在这里填充模拟数据
-                // 这样 "我的档案" 页面就可以正常显示，而不会因数据缺失而崩溃
+                if (chats.length > 0) {
+                    this.loadChatSession(chats[0]._id);
+                } else {
+                    this.startNewChat();
+                }
+
                 this.skillMastery = [
-                    { name: '编程基础', level: 85 },
-                    { name: '数据结构', level: 70 },
-                    { name: '算法', level: 75 },
-                    { name: '软件工程', level: 60 },
-                    { name: '计算机网络', level: 65 },
-                    { name: '操作系统', level: 55 },
+                    {name: '编程基础', level: 85},
+                    {name: '数据结构', level: 70},
+                    {name: '算法', level: 75},
+                    {name: '软件工程', level: 60},
+                    {name: '计算机网络', level: 65},
+                    {name: '操作系统', level: 55},
                 ];
                 this.studyActivityData = this.generateMockHeatmapData();
 
@@ -88,7 +114,6 @@ export const useUserStore = defineStore('user', {
             }
         },
 
-        // 辅助方法：用于生成热力图的模拟数据
         generateMockHeatmapData(): StudyActivity {
             const year = new Date().getFullYear().toString();
             const date = new Date(Number(year), 0, 1);
@@ -149,9 +174,12 @@ export const useUserStore = defineStore('user', {
             this.progress.clear();
             knowledgeStore.$reset();
             localStorage.removeItem('authToken');
-            // 登出时也要重置档案页的数据
             this.skillMastery = [];
             this.studyActivityData = [];
+            // 登出时重置聊天状态
+            this.chatSessions = [];
+            this.activeChatId = null;
+            this.messages = [];
         },
 
         async tryLoginFromLocalStorage() {
@@ -166,8 +194,43 @@ export const useUserStore = defineStore('user', {
                 this.chatContext = null;
             }
         },
+
         setChatContext(context: KnowledgePoint | null) {
             this.chatContext = context;
-        }
+        },
+
+        startNewChat() {
+            this.activeChatId = null;
+            this.messages = [{role: 'assistant', content: '你好！我是您的专属 AI 助教，有什么可以帮助你的吗？'}];
+        },
+
+        loadChatSession(sessionId: string) {
+            const session = this.chatSessions.find(s => s._id === sessionId);
+            if (session) {
+                this.activeChatId = session._id;
+                this.messages = [...session.messages];
+            }
+        },
+
+        async addMessage(message: ChatMessage) {
+            this.messages.push(message);
+            if (!this.token) return;
+
+            try {
+                if (!this.activeChatId) {
+                    const newSession = await apiNewChat(this.token, this.messages);
+                    this.chatSessions.unshift(newSession);
+                    this.activeChatId = newSession._id;
+                } else {
+                    const updatedSession = await apiUpdateChat(this.token, this.activeChatId, this.messages);
+                    const index = this.chatSessions.findIndex(s => s._id === this.activeChatId);
+                    if (index !== -1) {
+                        this.chatSessions[index] = updatedSession;
+                    }
+                }
+            } catch (error) {
+                console.error("保存聊天记录失败:", error);
+            }
+        },
     },
 })

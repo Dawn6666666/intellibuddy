@@ -1,12 +1,10 @@
 // src/router/index.ts
-
-// 1. 从 'vue-router' 中导入 createWebHistory，不再使用 createWebHashHistory
-import { createRouter, createWebHistory } from 'vue-router'
+import {createRouter, createWebHistory} from 'vue-router'
 import LoginView from '../views/LoginView.vue'
 import MainLayout from '../layouts/MainLayout.vue'
+import AuthCallbackView from '../views/AuthCallbackView.vue' // 1. 导入回调组件
 
 const router = createRouter({
-    // 2. 将 history 模式修改为 createWebHistory
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
         {
@@ -18,10 +16,16 @@ const router = createRouter({
             name: 'login',
             component: LoginView
         },
+        // 2. 添加新的回调路由规则
+        {
+            path: '/auth/callback',
+            name: 'auth-callback',
+            component: AuthCallbackView,
+        },
         {
             path: '/app',
             component: MainLayout,
-            meta: { requiresAuth: true },
+            meta: {requiresAuth: true},
             children: [
                 {
                     path: '',

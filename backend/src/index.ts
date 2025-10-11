@@ -1,18 +1,25 @@
 // backend/src/index.ts
+import dotenv from 'dotenv';
+
+dotenv.config();
+
 import express from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import mongoose from 'mongoose';
+import passport from 'passport';
+import jwt from 'jsonwebtoken';
+
+import './config/passport';
 
 import KnowledgePoint from './models/KnowledgePoint';
 import authRoutes from './routes/auth';
-import progressRoutes from './routes/progress'; // 1. 导入进度路由
+import progressRoutes from './routes/progress';
+import chatRoutes from './routes/chat';
+import User, {IUser} from './models/User'; // 【已修正】同时导入 IUser 接口
 
-dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5001;
 
-// 连接数据库...
 const mongoUri = process.env.MONGO_URI;
 if (!mongoUri) {
     console.error("错误: MONGO_URI 未在 .env 文件中定义");
@@ -22,15 +29,46 @@ mongoose.connect(mongoUri)
     .then(() => console.log("成功连接到 MongoDB Atlas"))
     .catch(err => console.error("无法连接到 MongoDB:", err));
 
-// 中间件...
 app.use(cors());
 app.use(express.json());
+app.use(passport.initialize());
 
 // --- API 路由 ---
 app.use('/api/auth', authRoutes);
-app.use('/api/progress', progressRoutes); // 2. 使用新的进度路由
+app.use('/api/progress', progressRoutes);
+app.use('/api/chats', chatRoutes);
 
-// 知识点路由...
+// --- GitHub 认证路由 ---
+app.get('/api/auth/github',
+    passport.authenticate('github', {scope: ['user:email'], session: false})
+);
+
+app.get('/api/auth/github/callback',
+    passport.authenticate('github', {failureRedirect: '/login', session: false}),
+    (req, res) => {
+        // 【已修正】使用 IUser 接口进行类型断言
+        const user = req.user as IUser;
+        const token = jwt.sign({userId: user._id}, process.env.JWT_SECRET!, {expiresIn: '7d'});
+        res.redirect(`http://localhost:5173/auth/callback?token=${token}`);
+    }
+);
+
+// --- QQ 认证路由 ---
+app.get('/api/auth/qq',
+    passport.authenticate('qq', {session: false})
+);
+
+app.get('/api/auth/qq/callback',
+    passport.authenticate('qq', {failureRedirect: '/login', session: false}),
+    (req, res) => {
+        // 【已修正】使用 IUser 接口进行类型断言
+        const user = req.user as IUser;
+        const token = jwt.sign({userId: user._id}, process.env.JWT_SECRET!, {expiresIn: '7d'});
+        res.redirect(`http://localhost:5173/auth/callback?token=${token}`);
+    }
+);
+
+// --- 其他路由 ---
 app.get('/api/knowledge-points', async (req, res) => {
     try {
         const points = await KnowledgePoint.find({});
@@ -39,13 +77,10 @@ app.get('/api/knowledge-points', async (req, res) => {
         res.status(500).json({message: '获取知识点时发生错误'});
     }
 });
-
-// 测试路由...
 app.get('/', (req, res) => {
     res.send('智学伴后端服务已成功运行！');
 });
 
-// 启动服务器...
 app.listen(PORT, () => {
     console.log(`服务器正在 http://localhost:${PORT} 上运行`);
 });

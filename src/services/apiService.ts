@@ -2,6 +2,7 @@
 import axios from 'axios';
 import type {KnowledgePoint} from '@/stores/knowledge';
 import type {UserInfo} from '@/stores/user';
+import type {ChatMessage} from './ai';
 
 const API_BASE_URL = 'http://localhost:5001/api';
 
@@ -39,10 +40,7 @@ export const apiGetKnowledgePoints = async (): Promise<KnowledgePoint[]> => {
     }
 };
 
-// --- 新增：学习进度 API ---
-/**
- * 获取当前用户的所有学习进度
- */
+// --- 学习进度 API (保持不变) ---
 export const apiGetUserProgress = async (token: string) => {
     const response = await apiClient.get('/progress', {
         headers: {'Authorization': `Bearer ${token}`}
@@ -50,11 +48,30 @@ export const apiGetUserProgress = async (token: string) => {
     return response.data;
 };
 
-/**
- * 更新一个知识点的状态
- */
 export const apiUpdateProgress = async (token: string, pointId: string, status: string) => {
     const response = await apiClient.post('/progress/update', {pointId, status}, {
+        headers: {'Authorization': `Bearer ${token}`}
+    });
+    return response.data;
+};
+
+// --- 新增：聊天记录 API ---
+export const apiGetChats = async (token: string) => {
+    const response = await apiClient.get('/chats', {
+        headers: {'Authorization': `Bearer ${token}`}
+    });
+    return response.data;
+};
+
+export const apiNewChat = async (token: string, messages: ChatMessage[]) => {
+    const response = await apiClient.post('/chats/new', {messages}, {
+        headers: {'Authorization': `Bearer ${token}`}
+    });
+    return response.data;
+};
+
+export const apiUpdateChat = async (token: string, chatId: string, messages: ChatMessage[]) => {
+    const response = await apiClient.put(`/chats/${chatId}`, {messages}, {
         headers: {'Authorization': `Bearer ${token}`}
     });
     return response.data;

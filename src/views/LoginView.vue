@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
-import type { FormInstance, FormRules } from 'element-plus'
-import { ElMessage } from 'element-plus'
-import { useRouter } from 'vue-router'
-import { useUserStore } from '@/stores/user'
+import {ref, reactive} from 'vue'
+import type {FormInstance, FormRules} from 'element-plus'
+import {ElMessage} from 'element-plus'
+import {useRouter} from 'vue-router'
+import {useUserStore} from '@/stores/user'
 import DynamicBackground from '@/components/DynamicBackground.vue';
-import { useThemeStore } from '@/stores/theme';
+import {useThemeStore} from '@/stores/theme';
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -17,19 +17,18 @@ const isRegisterActive = ref(false)
 const loginFormRef = ref<FormInstance>()
 const registerFormRef = ref<FormInstance>()
 
-// 【核心修改】将这里的 email 和 password 的初始值清空
-const loginForm = reactive({ email: '', password: '' })
-const registerForm = reactive({ username: '', email: '', password: '' })
+const loginForm = reactive({email: '', password: ''})
+const registerForm = reactive({username: '', email: '', password: ''})
 
 // 表单验证规则
 const loginRules = reactive<FormRules>({
-  email: [{ required: true, message: '请输入邮箱' }, { type: 'email', message: '邮箱格式不正确' }],
-  password: [{ required: true, message: '请输入密码' }]
+  email: [{required: true, message: '请输入邮箱'}, {type: 'email', message: '邮箱格式不正确'}],
+  password: [{required: true, message: '请输入密码'}]
 })
 const registerRules = reactive<FormRules>({
-  username: [{ required: true, message: '请输入用户名' }],
-  email: [{ required: true, message: '请输入邮箱' }, { type: 'email', message: '邮箱格式不正确' }],
-  password: [{ required: true, message: '请输入密码' }, { min: 6, message: '密码至少6位' }]
+  username: [{required: true, message: '请输入用户名'}],
+  email: [{required: true, message: '请输入邮箱'}, {type: 'email', message: '邮箱格式不正确'}],
+  password: [{required: true, message: '请输入密码'}, {min: 6, message: '密码至少6位'}]
 })
 
 // 登录处理
@@ -76,15 +75,23 @@ const handleRegister = async (formEl: FormInstance | undefined) => {
     <div class="scaler">
       <div class="container" :class="{ 'active': isRegisterActive }">
         <div class="form-container sign-up">
-          <el-form :model="registerForm" :rules="registerRules" ref="registerFormRef" @submit.prevent="handleRegister(registerFormRef)">
+          <el-form :model="registerForm" :rules="registerRules" ref="registerFormRef"
+                   @submit.prevent="handleRegister(registerFormRef)">
             <h1>创建账户</h1>
             <div class="social-icons">
-              <a href="#" class="icon"><i class="fa-brands fa-github"></i></a>
+              <a href="http://localhost:5001/api/auth/github" class="icon"><i class="fa-brands fa-github"></i></a>
+              <a href="http://localhost:5001/api/auth/qq" class="icon"><i class="fa-brands fa-qq"></i></a>
             </div>
             <span>或使用邮箱注册</span>
-            <el-form-item prop="username"><el-input v-model="registerForm.username" placeholder="用户名" /></el-form-item>
-            <el-form-item prop="email"><el-input v-model="registerForm.email" type="email" placeholder="邮箱" /></el-form-item>
-            <el-form-item prop="password"><el-input v-model="registerForm.password" type="password" placeholder="密码" show-password /></el-form-item>
+            <el-form-item prop="username">
+              <el-input v-model="registerForm.username" placeholder="用户名"/>
+            </el-form-item>
+            <el-form-item prop="email">
+              <el-input v-model="registerForm.email" type="email" placeholder="邮箱"/>
+            </el-form-item>
+            <el-form-item prop="password">
+              <el-input v-model="registerForm.password" type="password" placeholder="密码" show-password/>
+            </el-form-item>
             <el-form-item>
               <el-button type="primary" native-type="submit" :loading="isLoading">注册</el-button>
             </el-form-item>
@@ -92,14 +99,20 @@ const handleRegister = async (formEl: FormInstance | undefined) => {
         </div>
 
         <div class="form-container sign-in">
-          <el-form :model="loginForm" :rules="loginRules" ref="loginFormRef" @submit.prevent="handleLogin(loginFormRef)">
+          <el-form :model="loginForm" :rules="loginRules" ref="loginFormRef"
+                   @submit.prevent="handleLogin(loginFormRef)">
             <h1>登录</h1>
             <div class="social-icons">
-              <a href="#" class="icon"><i class="fa-brands fa-github"></i></a>
+              <a href="http://localhost:5001/api/auth/github" class="icon"><i class="fa-brands fa-github"></i></a>
+              <a href="http://localhost:5001/api/auth/qq" class="icon"><i class="fa-brands fa-qq"></i></a>
             </div>
             <span>或使用邮箱密码登录</span>
-            <el-form-item prop="email"><el-input v-model="loginForm.email" type="email" placeholder="邮箱" /></el-form-item>
-            <el-form-item prop="password"><el-input v-model="loginForm.password" type="password" placeholder="密码" show-password /></el-form-item>
+            <el-form-item prop="email">
+              <el-input v-model="loginForm.email" type="email" placeholder="邮箱"/>
+            </el-form-item>
+            <el-form-item prop="password">
+              <el-input v-model="loginForm.password" type="password" placeholder="密码" show-password/>
+            </el-form-item>
             <a href="#">忘记密码？</a>
             <el-form-item>
               <el-button type="primary" native-type="submit" :loading="isLoading">登录</el-button>
@@ -139,7 +152,6 @@ const handleRegister = async (formEl: FormInstance | undefined) => {
 
 .page-container {
   position: relative;
-  /* background-image: url('/public/wallroom-5120x2880-bg-0f19268.jpg'); */ /* Changed background image */
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -229,6 +241,7 @@ const handleRegister = async (formEl: FormInstance | undefined) => {
   margin-bottom: 18px;
   width: 100%;
 }
+
 .container .el-button {
   width: 100%;
 }
