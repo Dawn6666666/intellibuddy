@@ -1,18 +1,18 @@
 <template>
-  <v-chart class="chart" :option="option" autoresize />
+  <v-chart class="chart" :option="option" autoresize/>
 </template>
 
 <script setup lang="ts">
-import { use } from 'echarts/core';
-import { CanvasRenderer } from 'echarts/renderers';
-import { RadarChart } from 'echarts/charts';
+import {use} from 'echarts/core';
+import {CanvasRenderer} from 'echarts/renderers';
+import {RadarChart} from 'echarts/charts';
 import {
   TitleComponent,
   TooltipComponent,
   LegendComponent,
 } from 'echarts/components';
 import VChart from 'vue-echarts';
-import { ref, computed } from 'vue';
+import {computed} from 'vue'; // 修改这里
 
 // 按需引入 ECharts 组件
 use([
@@ -41,7 +41,7 @@ const option = computed(() => ({
   },
   radar: {
     // 雷达图的指示器，对应 skillMastery 中的各项技能
-    indicator: props.chartData.map(item => ({ name: item.name, max: 100 })),
+    indicator: props.chartData.map(item => ({name: item.name, max: 100})),
     shape: 'circle', // 雷达形状
     splitNumber: 5,
     axisName: {

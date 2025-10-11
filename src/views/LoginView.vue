@@ -4,12 +4,9 @@ import type {FormInstance, FormRules} from 'element-plus'
 import {ElMessage} from 'element-plus'
 import {useRouter} from 'vue-router'
 import {useUserStore} from '@/stores/user'
-import DynamicBackground from '@/components/DynamicBackground.vue';
-import {useThemeStore} from '@/stores/theme';
 
 const router = useRouter()
 const userStore = useUserStore()
-const themeStore = useThemeStore();
 const isLoading = ref(false)
 const isRegisterActive = ref(false)
 

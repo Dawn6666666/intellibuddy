@@ -1,17 +1,17 @@
 // src/stores/knowledge.ts
 import {defineStore} from 'pinia';
 import {apiGetKnowledgePoints} from '@/services/apiService';
-import {useUserStore} from './user'; // 1. 导入 user store
+import {useUserStore} from './user';
 
 export interface KnowledgePoint {
-    _id: string;
+    _id?: string; // 修改这里
     id: string;
     title: string;
     subject: string;
     contentSnippet: string;
     status: 'completed' | 'in_progress' | 'not_started';
     prerequisites: string[];
-    __v: number;
+    __v?: number; // 修改这里
 }
 
 export const useKnowledgeStore = defineStore('knowledge', {
@@ -23,7 +23,7 @@ export const useKnowledgeStore = defineStore('knowledge', {
     }),
 
     getters: {
-        // 2. 这是最核心的改动：动态计算带有用户进度的知识点列表
+        // 这是最核心的改动：动态计算带有用户进度的知识点列表
         pointsAsArrayWithProgress(state): KnowledgePoint[] {
             const userStore = useUserStore();
             const pointsArray = Array.from(state.knowledgePoints.values());

@@ -38,19 +38,19 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useRoute } from 'vue-router'
-import { useKnowledgeStore } from '@/stores/knowledge'
-import { useUserStore } from '@/stores/user'; // 【新增】
+import {computed} from 'vue'
+import {useRoute} from 'vue-router'
+import {useKnowledgeStore} from '@/stores/knowledge'
+import {useUserStore} from '@/stores/user';
 
 const route = useRoute()
 const knowledgeStore = useKnowledgeStore()
-const userStore = useUserStore(); // 【新增】
+const userStore = useUserStore();
 
 const pointId = computed(() => route.params.pointId as string)
 
 const knowledgePoint = computed(() => {
-  return knowledgeStore.knowledgePoints.get(pointId.value)
+  return knowledgeStore.pointsAsArrayWithProgress.find(p => p.id === pointId.value);
 })
 
 // 【重要新增】处理情境提问的函数
@@ -66,28 +66,34 @@ const askWithContext = () => {
 .learning-container {
   width: 100%;
 }
+
 .page-header {
   margin-bottom: 30px;
 }
+
 .page-header h1 {
   font-size: 28px;
   margin-bottom: 8px;
 }
+
 .page-header p {
   font-size: 16px;
   color: var(--text-secondary);
 }
+
 .main-content {
   display: grid;
   grid-template-columns: 2fr 1fr;
   gap: 20px;
   align-items: flex-start;
 }
+
 .side-panel {
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
+
 .card {
   background: var(--card-bg);
   backdrop-filter: blur(var(--backdrop-blur));
@@ -96,12 +102,14 @@ const askWithContext = () => {
   border-radius: var(--border-radius);
   padding: 24px;
 }
+
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 16px;
 }
+
 .card h3 {
   font-size: 18px;
   margin: 0;
@@ -109,11 +117,13 @@ const askWithContext = () => {
   align-items: center;
   gap: 10px;
 }
+
 .placeholder-text {
   color: var(--text-secondary);
   text-align: center;
   padding: 20px 0;
 }
+
 .loading {
   text-align: center;
   padding: 50px;
@@ -135,6 +145,7 @@ const askWithContext = () => {
   align-items: center;
   gap: 8px;
 }
+
 .context-ask-btn:hover {
   background-color: var(--primary-color);
   color: white;
