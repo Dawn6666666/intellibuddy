@@ -67,7 +67,8 @@ export const authMiddleware = async (req: AuthRequest, res: Response, next: Next
     }
     try {
         const decoded = jwt.verify(token, JWT_SECRET) as { userId: string };
-        const user = await User.findById(decoded.userId).select('-passwordHash');
+        // 修改这里：在查询末尾添加 .lean()
+        const user = await User.findById(decoded.userId).select('-passwordHash').lean();
         if (!user) {
             return res.status(401).json({message: '用户不存在'});
         }
