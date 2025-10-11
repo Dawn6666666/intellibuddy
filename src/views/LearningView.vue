@@ -1,11 +1,35 @@
 <template>
   <div class="learning-container" v-if="knowledgePoint">
     <header class="page-header">
-      <h1>{{ knowledgePoint.title }}</h1>
+      <div class="header-top">
+        <h1>{{ knowledgePoint.title }}</h1>
+        <button @click="goBackToKnowledgeBase" class="back-btn">
+          <i class="fa-solid fa-arrow-left"></i> 返回知识库
+        </button>
+      </div>
       <p>{{ knowledgePoint.contentSnippet }}</p>
     </header>
 
-    <div class="main-content">
+    <div class="main-content-grid">
+      <div class="side-panel-left">
+        <div class="card file-list-card">
+          <h3><i class="fa-solid fa-folder-open"></i> 模块笔记列表</h3>
+          <ul class="file-list">
+            <li
+                v-for="note in notesForCurrentModule"
+                :key="note.path"
+                :class="{ 'active': note.path === activeNotePath }"
+                @click="selectNote(note.path)"
+            >
+              {{ note.title }}
+            </li>
+            <li v-if="!notesForCurrentModule || notesForCurrentModule.length === 0" class="no-toc-placeholder">
+              该模块暂无笔记。
+            </li>
+          </ul>
+        </div>
+      </div>
+
       <div class="card content-card" ref="contentRef">
         <div class="card-header">
           <h3><i class="fa-solid fa-book-open"></i> 学习内容</h3>
@@ -17,7 +41,7 @@
         <div class="markdown-body" v-html="contentHtml"></div>
       </div>
 
-      <div class="side-panel">
+      <div class="side-panel-right">
         <div class="card toc-card">
           <h3><i class="fa-solid fa-list-ul"></i> 章节目录</h3>
           <ul class="toc-list">
@@ -37,7 +61,6 @@
         </div>
       </div>
     </div>
-
   </div>
   <div v-else class="loading">
     <p>知识点加载中或不存在...</p>
@@ -45,15 +68,22 @@
 </template>
 
 <script setup lang="ts">
-import {computed, ref, watchEffect, nextTick} from 'vue';
-import {useRoute} from 'vue-router';
+import {computed, ref, watch, watchEffect, nextTick} from 'vue';
+// 【新增】导入 useRouter 用于导航
+import {useRoute, useRouter} from 'vue-router';
 import {useKnowledgeStore} from '@/stores/knowledge';
 import {useUserStore} from '@/stores/user';
 import {marked} from 'marked';
 
 const route = useRoute();
+const router = useRouter(); // 【新增】获取 router 实例
 const knowledgeStore = useKnowledgeStore();
 const userStore = useUserStore();
+
+// 【新增】返回知识库页面的函数
+const goBackToKnowledgeBase = () => {
+  router.push({name: 'knowledge'});
+};
 
 const pointId = computed(() => route.params.pointId as string);
 
@@ -68,31 +98,33 @@ const askWithContext = () => {
   }
 };
 
-// --- 内容加载与目录生成 ---
+const contentHtml = ref('<p>请在左侧选择一篇笔记开始学习。</p>');
+const contentRef = ref<HTMLElement | null>(null);
+const headings = ref<{ id: string; text: string; level: number }[]>([]);
 
-const contentHtml = ref('<p>正在加载学习内容...</p>');
-const contentRef = ref<HTMLElement | null>(null); // 用于引用内容区域的 DOM 元素
-const headings = ref<{ id: string; text: string; level: number }[]>([]); // 存储目录项
+const contentMap: Record<string, { title: string; path: string }[]> = {
+  'cs-y3-s6-c1': [
+    {title: 'JavaSE 笔记 (一)', path: '/笔记/JavaSE 核心内容/JavaSE 核心内容 - JavaSE 笔记（一）走进Java语言.md'},
+    {title: 'JavaSE 笔记 (二)', path: '/笔记/JavaSE 核心内容/JavaSE 核心内容 - JavaSE 笔记（二）面向过程编程.md'},
+    {title: 'JavaSE 笔记 (三)', path: '/笔记/JavaSE 核心内容/JavaSE 核心内容 - JavaSE 笔记（三）面向对象基础.md'},
+    {title: 'JavaSE 笔记 (四)', path: '/笔记/JavaSE 核心内容/JavaSE 核心内容 - JavaSE 笔记（四）面向对象高级篇.md'},
+    {title: 'JavaSE 笔记 (五)', path: '/笔记/JavaSE 核心内容/JavaSE 核心内容 - JavaSE 笔记（五）泛型程序设计.md'},
+    {title: 'JavaSE 笔记 (六)', path: '/笔记/JavaSE 核心内容/JavaSE 核心内容 - JavaSE 笔记（六）集合类与IO.md'},
+    {title: 'JavaSE 笔记 (七)', path: '/笔记/JavaSE 核心内容/JavaSE 核心内容 - JavaSE 笔记（七）多线程与反射.md'},
+    {title: 'JavaSE 笔记 (八)', path: '/笔记/JavaSE 核心内容/JavaSE 核心内容 - JavaSE 笔记（八）GUI程序开发.md'},
+    {title: 'JavaWeb 笔记 (一)', path: '/笔记/JavaWeb/JavaWeb 旧版 - JavaWeb 笔记（一）Java网络编程.md'},
+    {title: 'JavaWeb 笔记 (二)', path: '/笔记/JavaWeb/JavaWeb 旧版 - JavaWeb 笔记（二）数据库基础.md'},
+    {title: 'JavaWeb 笔记 (三)', path: '/笔记/JavaWeb/JavaWeb 旧版 - JavaWeb 笔记（三）Java与数据库.md'},
+    {title: 'JavaWeb 笔记 (四)', path: '/笔记/JavaWeb/JavaWeb 旧版 - JavaWeb 笔记（四）前端基础.md'},
+    {title: 'JavaWeb 笔记 (五)', path: '/笔记/JavaWeb/JavaWeb 旧版 - JavaWeb 笔记（五）后端开发.md'},
+  ],
+};
 
-// 知识点 ID 到 Markdown 文件路径的映射
-const contentMap: Record<string, string> = {
-  // --- JavaSE 笔记映射 ---
-  'cs-y1-s1-c1': '/笔记/JavaSE 核心内容/JavaSE 核心内容 - JavaSE 笔记（一）走进Java语言.md',
-  'cs-y1-s2-c1': '/笔记/JavaSE 核心内容/JavaSE 核心内容 - JavaSE 笔记（四）面向对象高级篇.md',
-  'cs-y1-s1-c2': '/笔记/JavaSE 核心内容/JavaSE 核心内容 - JavaSE 笔记（二）面向过程编程.md',
-  'cs-y1-s2-c3': '/笔记/JavaSE 核心内容/JavaSE 核心内容 - JavaSE 笔记（五）泛型程序设计.md',
-  'cs-y2-s3-c1': '/笔记/JavaSE 核心内容/JavaSE 核心内容 - JavaSE 笔记（八）GUI程序开发.md',
-  'cs-y2-s3-c2': '/笔记/JavaSE 核心内容/JavaSE 核心内容 - JavaSE 笔记（六）集合类与IO.md',
-  'cs-y3-s5-c1': '/笔记/JavaSE 核心内容/JavaSE 核心内容 - JavaSE 笔记（七）多线程与反射.md',
+const notesForCurrentModule = computed(() => contentMap[pointId.value] || []);
+const activeNotePath = ref('');
 
-  // --- JavaWeb 笔记映射 ---
-  'cs-y2-s4-c3': '/笔记/JavaWeb/JavaWeb 旧版 - JavaWeb 笔记（二）数据库基础.md',
-  'cs-y3-s5-c2': '/笔记/JavaWeb/JavaWeb 旧版 - JavaWeb 笔记（一）Java网络编程.md',
-
-  // --- 按照您的要求，将“软件工程基础”替换为JavaWeb后端开发笔记 ---
-  'cs-y2-s3-c3': '/笔记/JavaWeb/JavaWeb 旧版 - JavaWeb 笔记（五）后端开发.md',
-
-  // 您可以继续在这里补充其他知识点与笔记的映射
+const selectNote = (path: string) => {
+  activeNotePath.value = path;
 };
 
 const scrollToHeading = (id: string) => {
@@ -102,57 +134,55 @@ const scrollToHeading = (id: string) => {
   }
 };
 
-watchEffect(async () => {
-  if (pointId.value) {
-    headings.value = []; // 先清空旧目录
-    const filePath = contentMap[pointId.value];
-    if (filePath) {
-      try {
-        const response = await fetch(filePath);
-        if (!response.ok) throw new Error(`File not found: ${filePath}`);
-        const markdownText = await response.text();
-        contentHtml.value = await marked.parse(markdownText);
-
-        await nextTick();
-        if (contentRef.value) {
-          const headingElements = contentRef.value.querySelectorAll('h1, h2, h3, h4');
-          const newHeadings: { id: string; text: string; level: number }[] = [];
-          headingElements.forEach((el, index) => {
-            const id = `heading-${index}`;
-            el.id = id; // 给标题元素添加 ID
-            newHeadings.push({
-              id,
-              text: el.textContent || '',
-              level: parseInt(el.tagName.substring(1), 10),
-            });
-          });
-          headings.value = newHeadings;
-        }
-
-      } catch (error) {
-        console.error("加载知识点内容失败:", error);
-        contentHtml.value = '<p style="color: #ff8a8a;">抱歉，该知识点的详细内容暂时无法加载。</p>';
-      }
+watch(pointId, (newId) => {
+  if (newId) {
+    const notes = contentMap[newId];
+    if (notes && notes.length > 0) {
+      selectNote(notes[0].path);
     } else {
+      activeNotePath.value = '';
       contentHtml.value = '<p>该知识点的详细内容即将上线，敬请期待！</p>';
+      headings.value = [];
+    }
+  }
+}, {immediate: true});
+
+watch(activeNotePath, async (newPath) => {
+  if (newPath) {
+    headings.value = [];
+    contentHtml.value = '<p>正在加载学习内容...</p>';
+    try {
+      const response = await fetch(newPath);
+      if (!response.ok) throw new Error(`File not found: ${newPath}`);
+      const markdownText = await response.text();
+      contentHtml.value = await marked.parse(markdownText);
+
+      await nextTick();
+      if (contentRef.value) {
+        const headingElements = contentRef.value.querySelectorAll('h1, h2, h3, h4');
+        const newHeadings: { id: string; text: string; level: number }[] = [];
+        headingElements.forEach((el, index) => {
+          const id = `heading-${index}`;
+          el.id = id;
+          newHeadings.push({
+            id,
+            text: el.textContent || '',
+            level: parseInt(el.tagName.substring(1), 10),
+          });
+        });
+        headings.value = newHeadings;
+      }
+    } catch (error) {
+      console.error("加载笔记内容失败:", error);
+      contentHtml.value = '<p style="color: #ff8a8a;">抱歉，该笔记的详细内容暂时无法加载。</p>';
     }
   }
 });
-
 </script>
 
 <style scoped>
-.learning-container {
-  width: 100%;
-}
-
 .page-header {
   margin-bottom: 30px;
-}
-
-.page-header h1 {
-  font-size: 28px;
-  margin-bottom: 8px;
 }
 
 .page-header p {
@@ -160,19 +190,50 @@ watchEffect(async () => {
   color: var(--text-secondary);
 }
 
-.main-content {
+/* 【新增】样式用于放置标题和返回按钮 */
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.page-header h1 {
+  font-size: 28px;
+  margin: 0;
+}
+
+.back-btn {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  color: var(--text-secondary);
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.back-btn:hover {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+/* --- */
+
+.main-content-grid {
   display: grid;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: 250px 1fr 250px;
   gap: 20px;
   align-items: flex-start;
 }
 
-.side-panel {
+.side-panel-left, .side-panel-right {
   position: sticky;
   top: 100px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
 }
 
 .card {
@@ -185,7 +246,7 @@ watchEffect(async () => {
 }
 
 .content-card {
-  min-height: 500px;
+  min-height: calc(100vh - 200px);
 }
 
 .card-header {
@@ -201,46 +262,55 @@ watchEffect(async () => {
   display: flex;
   align-items: center;
   gap: 10px;
-}
-
-.loading {
-  text-align: center;
-  padding: 50px;
-  font-size: 18px;
-  color: var(--text-secondary);
-}
-
-.context-ask-btn {
-  background: transparent;
-  border: 1px solid var(--primary-color);
-  color: var(--primary-color);
-  padding: 8px 16px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 14px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.context-ask-btn:hover {
-  background-color: var(--primary-color);
-  color: white;
-}
-
-.toc-card h3 {
-  margin-bottom: 20px;
   border-bottom: 1px solid var(--card-border);
   padding-bottom: 15px;
+  margin-bottom: 20px;
+}
+
+.file-list-card {
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+}
+
+.file-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.file-list li {
+  padding: 10px 15px;
+  margin-bottom: 5px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-list li:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+}
+
+.file-list li.active {
+  background-color: var(--primary-color);
+  color: white;
+  font-weight: 500;
+}
+
+.toc-card {
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
 }
 
 .toc-list {
   list-style: none;
   padding: 0;
   margin: 0;
-  max-height: 70vh;
-  overflow-y: auto;
 }
 
 .toc-list li {
@@ -334,5 +404,12 @@ watchEffect(async () => {
   max-width: 100%;
   border-radius: 8px;
   margin: 16px 0;
+}
+
+.markdown-body ::v-deep(hr) {
+  border: none;
+  height: 2px;
+  background-image: linear-gradient(to right, transparent, var(--card-border), transparent);
+  margin: 40px 0;
 }
 </style>
