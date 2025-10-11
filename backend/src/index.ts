@@ -50,7 +50,9 @@ app.get('/api/auth/github/callback',
     (req, res) => {
         const user = req.user as IUser;
         const token = jwt.sign({userId: user._id}, process.env.JWT_SECRET!, {expiresIn: '7d'});
-        res.redirect(`http://localhost:5173/auth/callback?token=${token}`);
+        // 【修改处】从环境变量读取前端 URL
+        const frontendUrl = process.env.FRONTEND_URL;
+        res.redirect(`${frontendUrl}/auth/callback?token=${token}`);
     }
 );
 
@@ -64,7 +66,9 @@ app.get('/api/auth/qq/callback',
     (req, res) => {
         const user = req.user as IUser;
         const token = jwt.sign({userId: user._id}, process.env.JWT_SECRET!, {expiresIn: '7d'});
-        res.redirect(`http://localhost:5173/auth/callback?token=${token}`);
+        // 【修改处】从环境变量读取前端 URL
+        const frontendUrl = process.env.FRONTEND_URL;
+        res.redirect(`${frontendUrl}/auth/callback?token=${token}`);
     }
 );
 
