@@ -10,21 +10,18 @@
       <p>{{ knowledgePoint.contentSnippet }}</p>
     </header>
 
-    <div class="main-content-grid">
+    <div v-if="pointId === 'cs-y3-s6-c1'" class="main-content-grid">
       <div class="side-panel-left">
         <div class="card file-list-card">
-          <h3><i class="fa-solid fa-folder-open"></i> 模块笔记列表</h3>
+          <h3><i class="fa-solid fa-folder-open"></i> Java 学习笔记</h3>
           <ul class="file-list">
             <li
-                v-for="note in notesForCurrentModule"
+                v-for="note in notesForSoftwareEngineering"
                 :key="note.path"
                 :class="{ 'active': note.path === activeNotePath }"
                 @click="selectNote(note.path)"
             >
               {{ note.title }}
-            </li>
-            <li v-if="!notesForCurrentModule || notesForCurrentModule.length === 0" class="no-toc-placeholder">
-              该模块暂无笔记。
             </li>
           </ul>
         </div>
@@ -61,6 +58,13 @@
         </div>
       </div>
     </div>
+
+    <div v-else class="main-content-single">
+      <div class="card content-card">
+        <div class="markdown-body" v-html="contentHtml"></div>
+      </div>
+    </div>
+
   </div>
   <div v-else class="loading">
     <p>知识点加载中或不存在...</p>
@@ -68,19 +72,18 @@
 </template>
 
 <script setup lang="ts">
-import {computed, ref, watch, watchEffect, nextTick} from 'vue';
-// 【新增】导入 useRouter 用于导航
+// 【修复】移除了未使用的 'watchEffect'
+import {computed, ref, watch, nextTick} from 'vue';
 import {useRoute, useRouter} from 'vue-router';
 import {useKnowledgeStore} from '@/stores/knowledge';
 import {useUserStore} from '@/stores/user';
 import {marked} from 'marked';
 
 const route = useRoute();
-const router = useRouter(); // 【新增】获取 router 实例
+const router = useRouter();
 const knowledgeStore = useKnowledgeStore();
 const userStore = useUserStore();
 
-// 【新增】返回知识库页面的函数
 const goBackToKnowledgeBase = () => {
   router.push({name: 'knowledge'});
 };
@@ -98,29 +101,26 @@ const askWithContext = () => {
   }
 };
 
-const contentHtml = ref('<p>请在左侧选择一篇笔记开始学习。</p>');
+const contentHtml = ref('<p>正在加载内容...</p>');
 const contentRef = ref<HTMLElement | null>(null);
 const headings = ref<{ id: string; text: string; level: number }[]>([]);
 
-const contentMap: Record<string, { title: string; path: string }[]> = {
-  'cs-y3-s6-c1': [
-    {title: 'JavaSE 笔记 (一)', path: '/笔记/JavaSE 核心内容/JavaSE 核心内容 - JavaSE 笔记（一）走进Java语言.md'},
-    {title: 'JavaSE 笔记 (二)', path: '/笔记/JavaSE 核心内容/JavaSE 核心内容 - JavaSE 笔记（二）面向过程编程.md'},
-    {title: 'JavaSE 笔记 (三)', path: '/笔记/JavaSE 核心内容/JavaSE 核心内容 - JavaSE 笔记（三）面向对象基础.md'},
-    {title: 'JavaSE 笔记 (四)', path: '/笔记/JavaSE 核心内容/JavaSE 核心内容 - JavaSE 笔记（四）面向对象高级篇.md'},
-    {title: 'JavaSE 笔记 (五)', path: '/笔记/JavaSE 核心内容/JavaSE 核心内容 - JavaSE 笔记（五）泛型程序设计.md'},
-    {title: 'JavaSE 笔记 (六)', path: '/笔记/JavaSE 核心内容/JavaSE 核心内容 - JavaSE 笔记（六）集合类与IO.md'},
-    {title: 'JavaSE 笔记 (七)', path: '/笔记/JavaSE 核心内容/JavaSE 核心内容 - JavaSE 笔记（七）多线程与反射.md'},
-    {title: 'JavaSE 笔记 (八)', path: '/笔记/JavaSE 核心内容/JavaSE 核心内容 - JavaSE 笔记（八）GUI程序开发.md'},
-    {title: 'JavaWeb 笔记 (一)', path: '/笔记/JavaWeb/JavaWeb 旧版 - JavaWeb 笔记（一）Java网络编程.md'},
-    {title: 'JavaWeb 笔记 (二)', path: '/笔记/JavaWeb/JavaWeb 旧版 - JavaWeb 笔记（二）数据库基础.md'},
-    {title: 'JavaWeb 笔记 (三)', path: '/笔记/JavaWeb/JavaWeb 旧版 - JavaWeb 笔记（三）Java与数据库.md'},
-    {title: 'JavaWeb 笔记 (四)', path: '/笔记/JavaWeb/JavaWeb 旧版 - JavaWeb 笔记（四）前端基础.md'},
-    {title: 'JavaWeb 笔记 (五)', path: '/笔记/JavaWeb/JavaWeb 旧版 - JavaWeb 笔记（五）后端开发.md'},
-  ],
-};
+const notesForSoftwareEngineering = [
+  {title: 'JavaSE 笔记 (一)', path: '/笔记/JavaSE 核心内容/JavaSE 核心内容 - JavaSE 笔记（一）走进Java语言.md'},
+  {title: 'JavaSE 笔记 (二)', path: '/笔记/JavaSE 核心内容/JavaSE 核心内容 - JavaSE 笔记（二）面向过程编程.md'},
+  {title: 'JavaSE 笔记 (三)', path: '/笔记/JavaSE 核心内容/JavaSE 核心内容 - JavaSE 笔记（三）面向对象基础.md'},
+  {title: 'JavaSE 笔记 (四)', path: '/笔记/JavaSE 核心内容/JavaSE 核心内容 - JavaSE 笔记（四）面向对象高级篇.md'},
+  {title: 'JavaSE 笔记 (五)', path: '/笔记/JavaSE 核心内容/JavaSE 核心内容 - JavaSE 笔记（五）泛型程序设计.md'},
+  {title: 'JavaSE 笔记 (六)', path: '/笔记/JavaSE 核心内容/JavaSE 核心内容 - JavaSE 笔记（六）集合类与IO.md'},
+  {title: 'JavaSE 笔记 (七)', path: '/笔记/JavaSE 核心内容/JavaSE 核心内容 - JavaSE 笔记（七）多线程与反射.md'},
+  {title: 'JavaSE 笔记 (八)', path: '/笔记/JavaSE 核心内容/JavaSE 核心内容 - JavaSE 笔记（八）GUI程序开发.md'},
+  {title: 'JavaWeb 笔记 (一)', path: '/笔记/JavaWeb/JavaWeb 旧版 - JavaWeb 笔记（一）Java网络编程.md'},
+  {title: 'JavaWeb 笔记 (二)', path: '/笔记/JavaWeb/JavaWeb 旧版 - JavaWeb 笔记（二）数据库基础.md'},
+  {title: 'JavaWeb 笔记 (三)', path: '/笔记/JavaWeb/JavaWeb 旧版 - JavaWeb 笔记（三）Java与数据库.md'},
+  {title: 'JavaWeb 笔记 (四)', path: '/笔记/JavaWeb/JavaWeb 旧版 - JavaWeb 笔记（四）前端基础.md'},
+  {title: 'JavaWeb 笔记 (五)', path: '/笔记/JavaWeb/JavaWeb 旧版 - JavaWeb 笔记（五）后端开发.md'},
+];
 
-const notesForCurrentModule = computed(() => contentMap[pointId.value] || []);
 const activeNotePath = ref('');
 
 const selectNote = (path: string) => {
@@ -135,15 +135,14 @@ const scrollToHeading = (id: string) => {
 };
 
 watch(pointId, (newId) => {
-  if (newId) {
-    const notes = contentMap[newId];
-    if (notes && notes.length > 0) {
-      selectNote(notes[0].path);
-    } else {
-      activeNotePath.value = '';
-      contentHtml.value = '<p>该知识点的详细内容即将上线，敬请期待！</p>';
-      headings.value = [];
+  if (newId === 'cs-y3-s6-c1') {
+    if (notesForSoftwareEngineering.length > 0) {
+      selectNote(notesForSoftwareEngineering[0].path);
     }
+  } else {
+    activeNotePath.value = '';
+    contentHtml.value = '<p>该知识点的详细内容即将上线，敬请期待！</p>';
+    headings.value = [];
   }
 }, {immediate: true});
 
@@ -190,7 +189,6 @@ watch(activeNotePath, async (newPath) => {
   color: var(--text-secondary);
 }
 
-/* 【新增】样式用于放置标题和返回按钮 */
 .header-top {
   display: flex;
   justify-content: space-between;
@@ -222,13 +220,16 @@ watch(activeNotePath, async (newPath) => {
   color: var(--primary-color);
 }
 
-/* --- */
-
 .main-content-grid {
   display: grid;
   grid-template-columns: 250px 1fr 250px;
   gap: 20px;
   align-items: flex-start;
+}
+
+.main-content-single {
+  max-width: 900px;
+  margin: 0 auto;
 }
 
 .side-panel-left, .side-panel-right {
@@ -267,7 +268,7 @@ watch(activeNotePath, async (newPath) => {
   margin-bottom: 20px;
 }
 
-.file-list-card {
+.file-list-card, .toc-card {
   max-height: calc(100vh - 120px);
   overflow-y: auto;
 }
@@ -300,11 +301,6 @@ watch(activeNotePath, async (newPath) => {
   background-color: var(--primary-color);
   color: white;
   font-weight: 500;
-}
-
-.toc-card {
-  max-height: calc(100vh - 120px);
-  overflow-y: auto;
 }
 
 .toc-list {
@@ -364,46 +360,6 @@ watch(activeNotePath, async (newPath) => {
 
 .markdown-body ::v-deep(h3) {
   font-size: 1.25em;
-}
-
-.markdown-body ::v-deep(p) {
-  margin-bottom: 16px;
-}
-
-.markdown-body ::v-deep(ul),
-.markdown-body ::v-deep(ol) {
-  padding-left: 20px;
-  margin-bottom: 16px;
-}
-
-.markdown-body ::v-deep(li) {
-  margin-bottom: 8px;
-}
-
-.markdown-body ::v-deep(code) {
-  background-color: rgba(0, 0, 0, 0.2);
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-family: 'Courier New', Courier, monospace;
-}
-
-.markdown-body ::v-deep(pre) {
-  background-color: rgba(0, 0, 0, 0.3);
-  padding: 16px;
-  border-radius: 8px;
-  overflow-x: auto;
-  margin-bottom: 16px;
-}
-
-.markdown-body ::v-deep(pre) code {
-  background-color: transparent;
-  padding: 0;
-}
-
-.markdown-body ::v-deep(img) {
-  max-width: 100%;
-  border-radius: 8px;
-  margin: 16px 0;
 }
 
 .markdown-body ::v-deep(hr) {
