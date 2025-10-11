@@ -10,7 +10,6 @@ dotenv.config();
 const router = Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'a-very-secret-key';
 
-// --- 注册和登录路由 ---
 router.post('/register', async (req, res) => {
     try {
         const {username, email, password} = req.body;
@@ -39,7 +38,6 @@ router.post('/login', async (req, res) => {
         if (!user) {
             return res.status(400).json({message: '邮箱或密码错误'});
         }
-        // 假设您的 User 模型中 passwordHash 是可选的，所以在使用前最好做个检查
         if (!user.passwordHash) {
             return res.status(400).json({message: '用户未设置密码'});
         }
@@ -54,12 +52,6 @@ router.post('/login', async (req, res) => {
     }
 });
 
-// --- Token 验证中间件和类型定义 ---
-
-export interface AuthRequest extends Request {
-    user?: IUser;
-}
-
 export const authMiddleware = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const token = req.header('Authorization')?.replace('Bearer ', '');
     if (!token) {
@@ -73,19 +65,15 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
             res.status(401).json({message: '用户不存在'});
             return;
         }
-        // 将用户信息添加到请求对象上
-        (req as any).user = user;
+        req.user = user;
         next();
     } catch (error) {
         res.status(401).json({message: '无效的Token'});
     }
 };
 
-// --- 获取当前用户信息的路由 ---
-// 【修正】移除了无效的 `path:` 标签
 router.get('/me', authMiddleware, (req: Request, res: Response) => {
-    const authReq = req as AuthRequest;
-    res.json(authReq.user);
+    res.json(req.user);
 });
 
 export default router;
