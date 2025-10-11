@@ -4,6 +4,8 @@ import type {FormInstance, FormRules} from 'element-plus'
 import {ElMessage} from 'element-plus'
 import {useRouter} from 'vue-router'
 import {useUserStore} from '@/stores/user'
+// 导入动态的基础 URL
+import {API_BASE_URL} from '@/services/apiService';
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -76,8 +78,8 @@ const handleRegister = async (formEl: FormInstance | undefined) => {
                    @submit.prevent="handleRegister(registerFormRef)">
             <h1>创建账户</h1>
             <div class="social-icons">
-              <a href="http://localhost:5001/api/auth/github" class="icon"><i class="fa-brands fa-github"></i></a>
-              <a href="http://localhost:5001/api/auth/qq" class="icon"><i class="fa-brands fa-qq"></i></a>
+              <a :href="`${API_BASE_URL}/auth/github`" class="icon"><i class="fa-brands fa-github"></i></a>
+              <a :href="`${API_BASE_URL}/auth/qq`" class="icon"><i class="fa-brands fa-qq"></i></a>
             </div>
             <span>或使用邮箱注册</span>
             <el-form-item prop="username">
@@ -100,8 +102,8 @@ const handleRegister = async (formEl: FormInstance | undefined) => {
                    @submit.prevent="handleLogin(loginFormRef)">
             <h1>登录</h1>
             <div class="social-icons">
-              <a href="http://localhost:5001/api/auth/github" class="icon"><i class="fa-brands fa-github"></i></a>
-              <a href="http://localhost:5001/api/auth/qq" class="icon"><i class="fa-brands fa-qq"></i></a>
+              <a :href="`${API_BASE_URL}/auth/github`" class="icon"><i class="fa-brands fa-github"></i></a>
+              <a :href="`${API_BASE_URL}/auth/qq`" class="icon"><i class="fa-brands fa-qq"></i></a>
             </div>
             <span>或使用邮箱密码登录</span>
             <el-form-item prop="email">

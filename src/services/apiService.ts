@@ -4,7 +4,8 @@ import type {KnowledgePoint} from '@/stores/knowledge';
 import type {UserInfo} from '@/stores/user';
 import type {ChatMessage} from './ai';
 
-const API_BASE_URL = 'http://localhost:5001/api';
+// 修改这里：从环境变量 VITE_API_BASE_URL 读取，如果没有则默认为 /api
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
 const apiClient = axios.create({
     baseURL: API_BASE_URL,
@@ -12,6 +13,10 @@ const apiClient = axios.create({
         'Content-Type': 'application/json',
     }
 });
+
+// 导出 API_BASE_URL 供其他组件使用
+export {API_BASE_URL};
+
 
 // --- 认证相关 API (保持不变) ---
 export const apiRegister = async (userData: any) => {
