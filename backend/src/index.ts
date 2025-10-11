@@ -15,7 +15,8 @@ import KnowledgePoint from './models/KnowledgePoint';
 import authRoutes from './routes/auth';
 import progressRoutes from './routes/progress';
 import chatRoutes from './routes/chat';
-import User, {IUser} from './models/User'; // 【已修正】同时导入 IUser 接口
+import aiRoutes from './routes/ai'; // 1. 导入新的 AI 路由
+import User, {IUser} from './models/User';
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -37,6 +38,7 @@ app.use(passport.initialize());
 app.use('/api/auth', authRoutes);
 app.use('/api/progress', progressRoutes);
 app.use('/api/chats', chatRoutes);
+app.use('/api/ai', aiRoutes); // 2. 使用新的 AI 路由
 
 // --- GitHub 认证路由 ---
 app.get('/api/auth/github',
@@ -46,7 +48,6 @@ app.get('/api/auth/github',
 app.get('/api/auth/github/callback',
     passport.authenticate('github', {failureRedirect: '/login', session: false}),
     (req, res) => {
-        // 【已修正】使用 IUser 接口进行类型断言
         const user = req.user as IUser;
         const token = jwt.sign({userId: user._id}, process.env.JWT_SECRET!, {expiresIn: '7d'});
         res.redirect(`http://localhost:5173/auth/callback?token=${token}`);
@@ -61,7 +62,6 @@ app.get('/api/auth/qq',
 app.get('/api/auth/qq/callback',
     passport.authenticate('qq', {failureRedirect: '/login', session: false}),
     (req, res) => {
-        // 【已修正】使用 IUser 接口进行类型断言
         const user = req.user as IUser;
         const token = jwt.sign({userId: user._id}, process.env.JWT_SECRET!, {expiresIn: '7d'});
         res.redirect(`http://localhost:5173/auth/callback?token=${token}`);
@@ -81,4 +81,5 @@ app.get('/', (req, res) => {
     res.send('智学伴后端服务已成功运行！');
 });
 
+// 导出 app 实例，供 Vercel 调用
 export default app;

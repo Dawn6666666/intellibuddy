@@ -10,7 +10,7 @@ dotenv.config();
 const router = Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'a-very-secret-key';
 
-// --- 注册和登录路由 (保持不变) ... ---
+// --- 注册和登录路由 ---
 router.post('/register', async (req, res) => {
     try {
         const {username, email, password} = req.body;
@@ -39,6 +39,10 @@ router.post('/login', async (req, res) => {
         if (!user) {
             return res.status(400).json({message: '邮箱或密码错误'});
         }
+        // 假设您的 User 模型中 passwordHash 是可选的，所以在使用前最好做个检查
+        if (!user.passwordHash) {
+            return res.status(400).json({message: '用户未设置密码'});
+        }
         const isMatch = await bcrypt.compare(password, user.passwordHash);
         if (!isMatch) {
             return res.status(400).json({message: '邮箱或密码错误'});
@@ -52,12 +56,10 @@ router.post('/login', async (req, res) => {
 
 // --- Token 验证中间件和类型定义 ---
 
-// 1. 新增 export
 export interface AuthRequest extends Request {
     user?: IUser;
 }
 
-// 2. 新增 export
 export const authMiddleware = async (req: AuthRequest, res: Response, next: NextFunction) => {
     const token = req.header('Authorization')?.replace('Bearer ', '');
     if (!token) {
@@ -76,7 +78,7 @@ export const authMiddleware = async (req: AuthRequest, res: Response, next: Next
     }
 };
 
-// --- 获取当前用户信息的路由 (保持不变) ---
+// --- 获取当前用户信息的路由 ---
 router.get('/me', authMiddleware, (req: AuthRequest, res: Response) => {
     res.json(req.user);
 });
