@@ -81,6 +81,4 @@ app.get('/', (req, res) => {
     res.send('智学伴后端服务已成功运行！');
 });
 
-app.listen(PORT, () => {
-    console.log(`服务器正在 http://localhost:${PORT} 上运行`);
-});
+export default app;
