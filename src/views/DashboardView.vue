@@ -19,7 +19,7 @@
       </div>
       <div class="stats-item">
         <span>总学习时长</span>
-        <span class="value">8小时 21分钟</span></div>
+        <span class="value">{{ studyTimeDisplay }}</span></div>
     </div>
 
     <div class="card knowledge-graph-card">
@@ -38,12 +38,44 @@
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted, watch } from 'vue';
+import { useRoute } from 'vue-router';
 import {useUserStore} from '@/stores/user';
 import {useKnowledgeStore} from '@/stores/knowledge';
 import KnowledgeGraph from '@/components/KnowledgeGraph.vue';
+import { apiGetStudyTimeStats } from '@/services/apiService';
 
 const userStore = useUserStore();
 const knowledgeStore = useKnowledgeStore();
+const route = useRoute();
+
+const studyTimeDisplay = ref('0小时 0分钟');
+
+// 加载学习时长统计
+const loadStudyTime = async () => {
+  if (!userStore.token) return;
+  
+  try {
+    const stats = await apiGetStudyTimeStats(userStore.token);
+    const hours = stats.totalHours || 0;
+    const minutes = stats.totalMinutes || 0;
+    studyTimeDisplay.value = `${hours}小时 ${minutes}分钟`;
+  } catch (error) {
+    console.error('加载学习时长失败:', error);
+    studyTimeDisplay.value = '0小时 0分钟';
+  }
+};
+
+onMounted(() => {
+  loadStudyTime();
+});
+
+// 监听路由变化，当返回到 dashboard 时重新加载数据
+watch(() => route.name, (newName) => {
+  if (newName === 'dashboard') {
+    loadStudyTime();
+  }
+});
 </script>
 
 <style scoped>

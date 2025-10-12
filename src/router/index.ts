@@ -22,6 +22,11 @@ const router = createRouter({
             name: 'auth-callback',
             component: AuthCallbackView,
         },
+        // 添加 /dashboard 的重定向
+        {
+            path: '/dashboard',
+            redirect: '/app'
+        },
         {
             path: '/app',
             component: MainLayout,
@@ -51,6 +56,16 @@ const router = createRouter({
                     path: 'assessment',
                     name: 'assessment',
                     component: () => import('../views/AssessmentView.vue')
+                },
+                {
+                    path: 'wrong-questions',
+                    name: 'wrong-questions',
+                    component: () => import('../views/WrongQuestionsView.vue')
+                },
+                {
+                    path: 'code-explainer',
+                    name: 'code-explainer',
+                    component: () => import('../views/CodeExplainerView.vue')
                 }
             ]
         }

@@ -14,6 +14,12 @@
         <router-link :to="{ name: 'knowledge' }" class="nav-item">
           <i class="fa-solid fa-book"></i> 知识库
         </router-link>
+        <router-link :to="{ name: 'wrong-questions' }" class="nav-item">
+          <i class="fa-solid fa-book-bookmark"></i> 错题本
+        </router-link>
+        <router-link :to="{ name: 'code-explainer' }" class="nav-item">
+          <i class="fa-solid fa-code"></i> 代码解释器
+        </router-link>
       </nav>
       <div class="user-actions">
         <button class="action-btn" title="切换主题" @click="themeStore.toggleTheme">
@@ -181,6 +187,9 @@ const handleLogout = () => {
   /* 确保sticky定位正常工作 */
   position: relative;
   overflow: visible;
+  /* 【修复】添加最小高度，确保内容可见 */
+  min-height: calc(100vh - 140px);
+  flex: 1;
 }
 
 .fade-enter-active,

@@ -19,6 +19,8 @@ import aiRoutes from './routes/ai';
 import quizRoutes from './routes/quiz';
 import assessmentRoutes from './routes/assessment';
 import learningPathRoutes from './routes/learning-path';
+import wrongQuestionsRoutes from './routes/wrong-questions';
+import studyTimeRoutes from './routes/study-time';
 import User, {IUser} from './models/User';
 
 const app = express();
@@ -45,6 +47,8 @@ app.use('/api/ai', aiRoutes);
 app.use('/api/quiz', quizRoutes);
 app.use('/api/assessment', assessmentRoutes);
 app.use('/api/learning-path', learningPathRoutes);
+app.use('/api/wrong-questions', wrongQuestionsRoutes);
+app.use('/api/study-time', studyTimeRoutes);
 
 // --- GitHub 认证路由 ---
 app.get('/api/auth/github',

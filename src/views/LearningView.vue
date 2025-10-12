@@ -3,9 +3,15 @@
     <header class="page-header">
       <div class="header-top">
         <h1>{{ knowledgePoint.title }}</h1>
-        <button @click="goBackToKnowledgeBase" class="back-btn">
-          <i class="fa-solid fa-arrow-left"></i> 返回知识库
-        </button>
+        <div class="header-actions">
+          <div v-if="studyTimer.isRunning" class="study-timer">
+            <i class="fa-solid fa-clock"></i>
+            <span>{{ studyTimer.formattedTime }}</span>
+          </div>
+          <button @click="goBackToKnowledgeBase" class="back-btn">
+            <i class="fa-solid fa-arrow-left"></i> 返回知识库
+          </button>
+        </div>
       </div>
       <p>{{ knowledgePoint.contentSnippet }}</p>
     </header>
@@ -101,6 +107,7 @@ import hljs from 'highlight.js';
 import QuizPanel from '@/components/QuizPanel.vue';
 import {apiUpdateProgress} from '@/services/apiService';
 import {useAIIntervention} from '@/composables/useAIIntervention';
+import {useStudyTimer} from '@/composables/useStudyTimer';
 
 // 配置 marked 以支持代码高亮
 const renderer = new marked.Renderer();
@@ -243,6 +250,9 @@ const {recordFailure, resetFailureCount} = useAIIntervention(knowledgePoint.valu
   failureThreshold: 2, // 连续失败2次触发
 });
 
+// 启用学习计时器
+const studyTimer = useStudyTimer(pointId.value);
+
 const askWithContext = () => {
   if (knowledgePoint.value) {
     userStore.setChatContext(knowledgePoint.value);
@@ -288,6 +298,8 @@ const handleQuizCompleted = async () => {
       // 同步更新前端进度
       await userStore.fetchInitialData();
       alert('恭喜！知识点已完成，继续加油！');
+      // 停止学习计时器
+      await studyTimer.stop();
     } catch (error) {
       console.error('更新进度失败:', error);
     }
@@ -430,11 +442,15 @@ const copyCodeToClipboard = async (button: HTMLButtonElement) => {
 // 注册全局复制函数
 onMounted(() => {
   (window as any).copyCode = copyCodeToClipboard;
+  // 开始学习计时器
+  studyTimer.start();
 });
 
 // 清理全局函数
 onUnmounted(() => {
   delete (window as any).copyCode;
+  // 停止学习计时器
+  studyTimer.stop();
 });
 </script>
 
@@ -466,6 +482,38 @@ onUnmounted(() => {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 8px;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.study-timer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(138, 127, 251, 0.15);
+  border: 1px solid rgba(138, 127, 251, 0.3);
+  border-radius: 12px;
+  color: var(--primary-color);
+  font-weight: 500;
+  font-size: 0.9375rem;
+}
+
+.study-timer i {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
 .page-header h1 {

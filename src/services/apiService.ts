@@ -133,3 +133,123 @@ export const apiCheckUnlock = async (token: string, pointId: string) => {
     });
     return response.data;
 };
+
+// --- 错题本 API ---
+export const apiGetWrongQuestions = async (token: string, filters?: {
+    subject?: string;
+    mastered?: boolean;
+    pointId?: string;
+}) => {
+    const params = new URLSearchParams();
+    if (filters?.subject) params.append('subject', filters.subject);
+    if (filters?.mastered !== undefined) params.append('mastered', filters.mastered.toString());
+    if (filters?.pointId) params.append('pointId', filters.pointId);
+
+    const response = await apiClient.get(`/wrong-questions?${params.toString()}`, {
+        headers: {'Authorization': `Bearer ${token}`}
+    });
+    return response.data;
+};
+
+export const apiGetWrongQuestionStats = async (token: string) => {
+    const response = await apiClient.get('/wrong-questions/stats', {
+        headers: {'Authorization': `Bearer ${token}`}
+    });
+    return response.data;
+};
+
+export const apiAddWrongQuestion = async (token: string, wrongQuestionData: {
+    pointId: string;
+    question: string;
+    options: string[];
+    type: 'single' | 'multiple' | 'boolean';
+    userAnswer: number | number[];
+    correctAnswer: number | number[];
+    explanation: string;
+    difficulty?: number;
+}) => {
+    const response = await apiClient.post('/wrong-questions', wrongQuestionData, {
+        headers: {'Authorization': `Bearer ${token}`}
+    });
+    return response.data;
+};
+
+export const apiAnalyzeWrongQuestion = async (token: string, questionId: string) => {
+    const response = await apiClient.post(`/wrong-questions/${questionId}/analyze`, {}, {
+        headers: {'Authorization': `Bearer ${token}`}
+    });
+    return response.data;
+};
+
+export const apiMarkQuestionMastered = async (token: string, questionId: string) => {
+    const response = await apiClient.put(`/wrong-questions/${questionId}/master`, {}, {
+        headers: {'Authorization': `Bearer ${token}`}
+    });
+    return response.data;
+};
+
+export const apiResetQuestionMastery = async (token: string, questionId: string) => {
+    const response = await apiClient.put(`/wrong-questions/${questionId}/reset`, {}, {
+        headers: {'Authorization': `Bearer ${token}`}
+    });
+    return response.data;
+};
+
+export const apiDeleteWrongQuestion = async (token: string, questionId: string) => {
+    const response = await apiClient.delete(`/wrong-questions/${questionId}`, {
+        headers: {'Authorization': `Bearer ${token}`}
+    });
+    return response.data;
+};
+
+// --- 学习时长 API ---
+export const apiStartStudySession = async (token: string, pointId?: string) => {
+    const response = await apiClient.post('/study-time/start', { pointId }, {
+        headers: {'Authorization': `Bearer ${token}`}
+    });
+    return response.data;
+};
+
+export const apiStudyHeartbeat = async (token: string, sessionId: string) => {
+    const response = await apiClient.post('/study-time/heartbeat', { sessionId }, {
+        headers: {'Authorization': `Bearer ${token}`}
+    });
+    return response.data;
+};
+
+export const apiEndStudySession = async (token: string, sessionId: string) => {
+    const response = await apiClient.post('/study-time/end', { sessionId }, {
+        headers: {'Authorization': `Bearer ${token}`}
+    });
+    return response.data;
+};
+
+export const apiGetStudyTimeStats = async (token: string, filters?: {
+    startDate?: string;
+    endDate?: string;
+}) => {
+    const params = new URLSearchParams();
+    if (filters?.startDate) params.append('startDate', filters.startDate);
+    if (filters?.endDate) params.append('endDate', filters.endDate);
+
+    const response = await apiClient.get(`/study-time/stats?${params.toString()}`, {
+        headers: {'Authorization': `Bearer ${token}`}
+    });
+    return response.data;
+};
+
+export const apiGetHeatmapData = async (token: string, year?: number) => {
+    const params = year ? `?year=${year}` : '';
+    const response = await apiClient.get(`/study-time/heatmap${params}`, {
+        headers: {'Authorization': `Bearer ${token}`}
+    });
+    return response.data;
+};
+
+// --- 代码解释器 API ---
+export const apiExplainCode = async (token: string, code: string, language?: string) => {
+    const response = await apiClient.post('/ai/explain-code', { code, language }, {
+        headers: {'Authorization': `Bearer ${token}`}
+    });
+    return response.data;
+};

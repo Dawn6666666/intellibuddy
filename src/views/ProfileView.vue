@@ -158,6 +158,7 @@ import { ref, computed } from 'vue';
 import RadarChart from '@/components/charts/RadarChart.vue';
 import HeatmapChart from '@/components/charts/HeatmapChart.vue';
 import { useUserStore } from '@/stores/user';
+import { apiGetHeatmapData } from '@/services/apiService';
 
 // 雷达图引用
 const radarChartRef = ref();

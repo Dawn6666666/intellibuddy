@@ -144,7 +144,7 @@
 
 <script setup lang="ts">
 import {ref, computed, onMounted} from 'vue';
-import {apiGetQuiz, apiSubmitQuiz} from '@/services/apiService';
+import {apiGetQuiz, apiSubmitQuiz, apiAddWrongQuestion} from '@/services/apiService';
 import {useUserStore} from '@/stores/user';
 
 interface Props {
@@ -242,6 +242,29 @@ const submitQuiz = async () => {
     const response = await apiSubmitQuiz(userStore.token, props.pointId, userAnswers.value);
     result.value = response;
     isSubmitted.value = true;
+
+    // 自动记录错题
+    if (response.results && Array.isArray(response.results)) {
+      for (let i = 0; i < response.results.length; i++) {
+        const resultItem = response.results[i];
+        if (!resultItem.isCorrect && quiz.value[i]) {
+          try {
+            await apiAddWrongQuestion(userStore.token, {
+              pointId: props.pointId,
+              question: quiz.value[i].question,
+              options: quiz.value[i].options,
+              type: quiz.value[i].type,
+              userAnswer: userAnswers.value[i],
+              correctAnswer: resultItem.correctAnswer,
+              explanation: resultItem.explanation
+            });
+          } catch (error) {
+            console.error('记录错题失败:', error);
+            // 不影响主流程，只记录日志
+          }
+        }
+      }
+    }
 
     // 如果通过，触发完成事件；否则触发失败事件
     if (response.passed) {
