@@ -76,6 +76,7 @@ const handleLogout = () => {
   align-items: center;
   padding: 100px 20px 20px;
   min-height: 100vh;
+  width: 100%;
 }
 
 .main-header {
@@ -177,6 +178,9 @@ const handleLogout = () => {
   width: 100%;
   /* 【修改】放宽最大宽度 */
   max-width: 1400px;
+  /* 确保sticky定位正常工作 */
+  position: relative;
+  overflow: visible;
 }
 
 .fade-enter-active,

@@ -72,26 +72,122 @@
 </template>
 
 <script setup lang="ts">
-import {computed, ref, watch, nextTick} from 'vue';
+import {computed, ref, watch, nextTick, onMounted, onUnmounted} from 'vue';
 import {useRoute, useRouter} from 'vue-router';
 import {useKnowledgeStore} from '@/stores/knowledge';
 import {useUserStore} from '@/stores/user';
 import {marked} from 'marked';
 import hljs from 'highlight.js';
 
-// 配置 marked 使用 highlight.js (保持不变)
-marked.setOptions({
-  highlight: (code, lang) => {
-    const codeString = typeof code === 'string' ? code : '';
-    const language = lang && hljs.getLanguage(lang) ? lang : 'plaintext';
+// 配置 marked 以支持代码高亮
+const renderer = new marked.Renderer();
+
+// 代码块计数器，用于检测内容密度
+let codeBlockCount = 0;
+let totalContentLength = 0;
+
+// 重写代码块渲染器
+renderer.code = function({ text, lang }: { text: string; lang?: string }) {
+  const codeString = typeof text === 'string' ? text : '';
+  let language = lang || '';
+  let detectedLanguage = '';
+  let highlightedCode = '';
+  
+  // 增加代码块计数
+  codeBlockCount++;
+  totalContentLength += codeString.length;
+  
+  // 计算代码块密度
+  const codeDensity = codeBlockCount / Math.max(1, totalContentLength / 1000);
+  
+  // 根据密度调整样式类
+  const densityClass = codeDensity > 0.5 ? 'code-dense' : 'code-sparse';
+  
+  // 如果没有指定语言，尝试自动检测
+  if (!language) {
+    try {
+      const detected = hljs.highlightAuto(codeString);
+      detectedLanguage = detected.language || 'plaintext';
+      highlightedCode = detected.value;
+    } catch (e) {
+      detectedLanguage = 'plaintext';
+      highlightedCode = hljs.highlight(codeString, {language: 'plaintext'}).value;
+    }
+  } else if (hljs.getLanguage(language)) {
+    // 检查语言是否被支持
     try {
       const result = hljs.highlight(codeString, {language, ignoreIllegals: true});
-      return result.value;
+      detectedLanguage = language;
+      highlightedCode = result.value;
     } catch (e) {
-      return hljs.highlight(codeString, {language: 'plaintext', ignoreIllegals: true}).value;
+      // 如果高亮失败，回退到纯文本
+      detectedLanguage = 'plaintext';
+      highlightedCode = hljs.highlight(codeString, {language: 'plaintext'}).value;
     }
-  },
-  langPrefix: 'hljs language-',
+  } else {
+    // 不支持的语言，尝试自动检测
+    try {
+      const detected = hljs.highlightAuto(codeString);
+      detectedLanguage = detected.language || 'plaintext';
+      highlightedCode = detected.value;
+    } catch (e) {
+      detectedLanguage = 'plaintext';
+      highlightedCode = hljs.highlight(codeString, {language: 'plaintext'}).value;
+    }
+  }
+  
+  // 语言显示名称映射
+  const languageNameMap: Record<string, string> = {
+    'javascript': 'JavaScript',
+    'typescript': 'TypeScript',
+    'python': 'Python',
+    'java': 'Java',
+    'cpp': 'C++',
+    'c': 'C',
+    'csharp': 'C#',
+    'php': 'PHP',
+    'ruby': 'Ruby',
+    'go': 'Go',
+    'rust': 'Rust',
+    'swift': 'Swift',
+    'kotlin': 'Kotlin',
+    'html': 'HTML',
+    'css': 'CSS',
+    'scss': 'SCSS',
+    'sql': 'SQL',
+    'bash': 'Bash',
+    'shell': 'Shell',
+    'json': 'JSON',
+    'xml': 'XML',
+    'yaml': 'YAML',
+    'markdown': 'Markdown',
+    'plaintext': 'Plain Text'
+  };
+  
+  const displayLanguage = languageNameMap[detectedLanguage] || detectedLanguage.toUpperCase();
+  
+  // 转义代码用于复制（保留原始代码）
+  const escapedCode = codeString.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  
+  return `
+    <div class="code-container ${densityClass}">
+      <div class="code-header">
+        <span class="code-language">${displayLanguage}</span>
+        <button class="code-copy-btn" onclick="copyCode(this)" data-code="${escapedCode}" title="复制代码">
+          <i class="fa-regular fa-copy"></i>
+          <span class="copy-text">复制</span>
+        </button>
+      </div>
+      <pre class="code-block"><code class="hljs language-${detectedLanguage}">${highlightedCode}</code></pre>
+    </div>
+  `;
+};
+
+marked.setOptions({
+  renderer,
+  gfm: true,
+  pedantic: false,
+  breaks: false,
 });
 
 const route = useRoute();
@@ -151,8 +247,11 @@ const scrollToHeading = (id: string) => {
 
 watch(pointId, (newId) => {
   if (newId === 'cs-y3-s6-c1') {
-    if (notesForSoftwareEngineering.length > 0) {
-      selectNote(notesForSoftwareEngineering[0].path);
+    if (notesForSoftwareEngineering.length > 1 && !activeNotePath.value) {
+      const secondNote = notesForSoftwareEngineering[1];
+      if (secondNote) {
+        selectNote(secondNote.path);
+      }
     }
   } else {
     activeNotePath.value = '';
@@ -165,15 +264,21 @@ watch(activeNotePath, async (newPath) => {
   if (newPath) {
     headings.value = [];
     contentHtml.value = '<p>正在加载学习内容...</p>';
+    
+    // 重置代码块计数器
+    codeBlockCount = 0;
+    totalContentLength = 0;
+    
     try {
       const response = await fetch(newPath);
       if (!response.ok) throw new Error(`File not found: ${newPath}`);
       const markdownText = await response.text();
 
-      contentHtml.value = await marked.parse(markdownText);
+      // 解析 markdown 内容
+      const parsedHtml = marked.parse(markdownText);
+      contentHtml.value = typeof parsedHtml === 'string' ? parsedHtml : parsedHtml.toString();
 
       await nextTick();
-
       const contentEl = contentRef.value;
       if (contentEl) {
         const headingElements = contentEl.querySelectorAll('h1, h2, h3, h4');
@@ -189,19 +294,83 @@ watch(activeNotePath, async (newPath) => {
         });
         headings.value = newHeadings;
       }
-
     } catch (error) {
       console.error("加载笔记内容失败:", error);
       contentHtml.value = '<p style="color: #ff8a8a;">抱歉，该笔记的详细内容暂时无法加载。</p>';
     }
   }
+}, {immediate: true});
+
+// 复制代码功能
+const copyCodeToClipboard = async (button: HTMLButtonElement) => {
+  const code = button.getAttribute('data-code');
+  if (!code) return;
+  
+  // HTML 解码
+  const textarea = document.createElement('textarea');
+  textarea.innerHTML = code;
+  const decodedCode = textarea.value;
+  
+  try {
+    await navigator.clipboard.writeText(decodedCode);
+    
+    // 更新按钮状态
+    const copyText = button.querySelector('.copy-text');
+    const icon = button.querySelector('i');
+    
+    if (copyText) copyText.textContent = '已复制';
+    if (icon) {
+      icon.className = 'fa-solid fa-check';
+    }
+    button.classList.add('copied');
+    
+    // 2秒后恢复
+    setTimeout(() => {
+      if (copyText) copyText.textContent = '复制';
+      if (icon) {
+        icon.className = 'fa-regular fa-copy';
+      }
+      button.classList.remove('copied');
+    }, 2000);
+  } catch (err) {
+    console.error('复制失败:', err);
+    const copyText = button.querySelector('.copy-text');
+    if (copyText) {
+      copyText.textContent = '复制失败';
+      setTimeout(() => {
+        copyText.textContent = '复制';
+      }, 2000);
+    }
+  }
+};
+
+// 注册全局复制函数
+onMounted(() => {
+  (window as any).copyCode = copyCodeToClipboard;
+});
+
+// 清理全局函数
+onUnmounted(() => {
+  delete (window as any).copyCode;
 });
 </script>
 
 <style scoped>
-/* 样式部分无需修改 */
+/* 根容器样式 - 防止页面级别溢出 */
+.learning-container {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: visible; /* 改为visible以支持sticky定位 */
+  box-sizing: border-box;
+  position: relative; /* 确保sticky定位正常工作 */
+  min-height: 100vh; /* 确保有足够的滚动空间 */
+}
+
+/* 保持所有基础布局样式不变 */
 .page-header {
   margin-bottom: 30px;
+  position: relative;
+  z-index: 1; /* 确保header在侧栏上方 */
 }
 
 .page-header p {
@@ -242,9 +411,14 @@ watch(activeNotePath, async (newPath) => {
 
 .main-content-grid {
   display: grid;
-  grid-template-columns: 250px 1fr 250px;
+  grid-template-columns: 250px minmax(0, 1fr) 250px; /* 防止中间列挤压两侧 */
   gap: 20px;
-  align-items: flex-start;
+  align-items: start;
+  width: 100%;
+  max-width: 100%;
+  overflow: visible; /* 必须是visible才能让sticky生效 */
+  box-sizing: border-box;
+  /* 不使用position: relative，让sticky相对于视口定位 */
 }
 
 .main-content-single {
@@ -253,8 +427,59 @@ watch(activeNotePath, async (newPath) => {
 }
 
 .side-panel-left, .side-panel-right {
-  position: sticky;
-  top: 100px;
+  position: sticky; /* 侧边栏随页面滚动保持在视口 */
+  top: 104px; /* header的top(20px) + header高度(64px) + 间距(20px) = 104px */
+  align-self: start;
+  max-height: calc(100vh - 124px); /* 视口高度 - top(104px) - 底部间距(20px) = 124px */
+  overflow: hidden;
+}
+
+/* 侧边栏内卡片独立滚动，标题固定在顶部区域 */
+.file-list-card, .toc-card {
+  display: flex;
+  flex-direction: column;
+  max-height: 100%; /* 限制最大高度为父容器高度 */
+  height: auto; /* 允许根据内容自适应高度 */
+  overflow: hidden;
+}
+
+.file-list-card h3, .toc-card h3 { 
+  flex-shrink: 0; /* 标题不参与滚动 */
+  margin-bottom: 12px !important; /* 覆盖 .card h3 的样式 */
+}
+
+.file-list, .toc-list { 
+  flex: 1;
+  overflow-y: auto !important; /* 列表独立滚动 - 强制生效 */
+  overflow-x: hidden;
+  min-height: 0; /* 确保 flex 子元素可以正确收缩 */
+  padding-right: 4px; /* 为滚动条留出空间 */
+  scroll-behavior: smooth; /* 平滑滚动 */
+  -webkit-overflow-scrolling: touch; /* iOS 平滑滚动 */
+  max-height: 600px; /* 临时添加：限制最大高度，便于测试滚动效果 */
+}
+
+/* 美化滚动条 */
+.file-list::-webkit-scrollbar,
+.toc-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.file-list::-webkit-scrollbar-track,
+.toc-list::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+}
+
+.file-list::-webkit-scrollbar-thumb,
+.toc-list::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 3px;
+}
+
+.file-list::-webkit-scrollbar-thumb:hover,
+.toc-list::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-color-dark, #6366f1);
 }
 
 .card {
@@ -267,7 +492,13 @@ watch(activeNotePath, async (newPath) => {
 }
 
 .content-card {
-  min-height: calc(100vh - 200px);
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  min-width: 0; /* 防止内容撑开导致侧栏被挤压 */
+  overflow: visible; /* 由页面滚动 */
+  position: relative;
+  z-index: 0; /* 确保内容在侧栏下方 */
 }
 
 .card-header {
@@ -275,6 +506,26 @@ watch(activeNotePath, async (newPath) => {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 16px;
+}
+
+.context-ask-btn {
+  background: var(--primary-color);
+  border: none;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.context-ask-btn:hover {
+  background: var(--primary-color-dark, #6366f1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
 }
 
 .card h3 {
@@ -288,10 +539,7 @@ watch(activeNotePath, async (newPath) => {
   margin-bottom: 20px;
 }
 
-.file-list-card, .toc-card {
-  max-height: calc(100vh - 120px);
-  overflow-y: auto;
-}
+/* 桌面端保持由父级限制高度与内部滚动；移动端的放开在 media 查询中处理 */
 
 .file-list {
   list-style: none;
@@ -327,6 +575,7 @@ watch(activeNotePath, async (newPath) => {
   list-style: none;
   padding: 0;
   margin: 0;
+  /* 注意：滚动样式已在统一的 .file-list, .toc-list 规则中定义（第346行） */
 }
 
 .toc-list li {
@@ -359,10 +608,7 @@ watch(activeNotePath, async (newPath) => {
   color: var(--text-primary);
 }
 
-.markdown-body ::v-deep(h1),
-.markdown-body ::v-deep(h2),
-.markdown-body ::v-deep(h3),
-.markdown-body ::v-deep(h4) {
+.markdown-body :deep(h1), .markdown-body :deep(h2), .markdown-body :deep(h3), .markdown-body :deep(h4) {
   border-bottom: 1px solid var(--card-border);
   padding-bottom: 10px;
   margin-top: 24px;
@@ -370,67 +616,260 @@ watch(activeNotePath, async (newPath) => {
   scroll-margin-top: 100px;
 }
 
-.markdown-body ::v-deep(h1) {
+.markdown-body :deep(h1) {
   font-size: 1.8em;
 }
 
-.markdown-body ::v-deep(h2) {
+.markdown-body :deep(h2) {
   font-size: 1.5em;
 }
 
-.markdown-body ::v-deep(h3) {
+.markdown-body :deep(h3) {
   font-size: 1.25em;
 }
 
-.markdown-body ::v-deep(hr) {
+.markdown-body :deep(hr) {
   border: none;
   height: 2px;
   background-image: linear-gradient(to right, transparent, var(--card-border), transparent);
   margin: 40px 0;
 }
 
-.markdown-body ::v-deep(img) {
+.markdown-body :deep(img) {
   max-width: 100%;
   height: auto;
   border-radius: 8px;
   margin: 16px 0;
 }
 
-.markdown-body ::v-deep(table) {
+.markdown-body :deep(table) {
   max-width: 100%;
   overflow-x: auto;
 }
 
-/* --- 【核心修复】: 优化代码块样式，让主题文件完全控制样式 --- */
-.markdown-body ::v-deep(pre) {
-  /* 统一添加圆角和阴影，增加视觉效果 */
+/* 代码块样式优化 - 彻底修复布局溢出问题 */
+.markdown-body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  min-width: 0; /* 避免撑破中间列 */
+}
+
+/* 强制限制所有 markdown 内容的宽度 */
+.markdown-body :deep(*) {
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* 特别处理可能溢出的元素 */
+.markdown-body :deep(p),
+.markdown-body :deep(div),
+.markdown-body :deep(span),
+.markdown-body :deep(h1),
+.markdown-body :deep(h2),
+.markdown-body :deep(h3),
+.markdown-body :deep(h4),
+.markdown-body :deep(h5),
+.markdown-body :deep(h6) {
+  max-width: 100% !important;
+  overflow-wrap: break-word !important;
+  word-wrap: break-word !important;
+}
+
+/* 独立代码块样式（非容器包裹的） - 使用 highlight.js 原生样式 */
+.markdown-body :deep(pre) {
   border-radius: 8px;
-  margin: 24px 0;
-  /* 我们移除自定义背景和边框，让主题文件完全控制背景 */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  overflow-x: auto; /* 仅在代码超长时滚动 */
-  overflow-y: hidden;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-
-  /* 确保不再有任何自定义的黑色背景/边框冲突 */
-  background: none !important;
-  border: none;
-  padding: 0;
+  margin: 1.5rem 0;
+  overflow-x: auto;
+  position: relative;
 }
 
-.markdown-body ::v-deep(pre code.hljs) {
-  /* 确保 highlight.js 的样式能正确应用 */
-  padding: 16px;
-  font-family: 'SF Mono', 'Fira Code', 'Fira Mono', 'Roboto Mono', monospace;
+/* 代码容器样式 - 使用 highlight.js 原生主题背景 */
+.markdown-body :deep(.code-container) {
+  margin: 1.5rem 0;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease;
+}
+
+.markdown-body :deep(.code-container:hover) {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* 代码容器密度样式 */
+.markdown-body :deep(.code-container.code-dense) {
+  margin: 1rem 0;
+}
+
+.markdown-body :deep(.code-container.code-sparse) {
+  margin: 2rem 0;
+}
+
+/* 代码头部样式 - 轻微半透明背景 */
+.markdown-body :deep(.code-header) {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px;
+  background: rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+html.light-theme .markdown-body :deep(.code-header) {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.markdown-body :deep(.code-language) {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--primary-color);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* 复制按钮样式 */
+.markdown-body :deep(.code-copy-btn) {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: transparent;
+  border: 1px solid rgba(124, 58, 237, 0.3);
+  border-radius: 4px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.markdown-body :deep(.code-copy-btn:hover) {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+.markdown-body :deep(.code-copy-btn.copied) {
+  background: #10b981;
+  color: white;
+  border-color: #10b981;
+}
+
+.markdown-body :deep(.code-copy-btn i) {
+  font-size: 13px;
+}
+
+/* 代码块样式 - 让 highlight.js 主题接管背景和颜色 */
+.markdown-body :deep(.code-block) {
+  margin: 0;
+  border-radius: 0 0 8px 8px;
+}
+
+.markdown-body :deep(.code-block code) {
+  display: block;
+  padding: 1rem;
+  overflow-x: auto;
   font-size: 14px;
-  /* 确保背景和颜色由 highlight.js 主题文件控制 */
-  background: none;
-  color: inherit;
-
-  white-space: pre-wrap;
-  word-wrap: break-word;
+  line-height: 1.6;
+  font-family: 'Fira Code', Consolas, 'Courier New', monospace;
 }
 
-/* --- 修改结束 --- */
+/* 代码稀疏样式 */
+.markdown-body :deep(.code-container.code-sparse .code-block code) {
+  font-size: 15px;
+  line-height: 1.7;
+  padding: 1.25rem;
+}
+
+/* 独立代码块内的 code 元素 */
+.markdown-body :deep(pre code) {
+  padding: 1rem;
+  font-family: 'Fira Code', Consolas, 'Courier New', monospace;
+  font-size: 14px;
+  display: block;
+  overflow-x: auto;
+}
+
+/* 响应式设计 - 处理不同屏幕尺寸 */
+@media (max-width: 1200px) {
+  .main-content-grid {
+    grid-template-columns: 200px 1fr 200px;
+    gap: 15px;
+  }
+}
+
+@media (max-width: 992px) {
+  .main-content-grid {
+    grid-template-columns: 180px 1fr 180px;
+    gap: 12px;
+  }
+  
+  .side-panel-left, .side-panel-right {
+    position: static; /* 小屏取消sticky */
+    max-height: none; /* 移除高度限制 */
+    overflow: visible;
+  }
+  
+  .file-list-card, .toc-card {
+    max-height: 500px; /* 给一个合理的最大高度 */
+    height: auto;
+  }
+  
+  .file-list, .toc-list {
+    max-height: 400px; /* 确保列表不会太长 */
+  }
+}
+
+@media (max-width: 768px) {
+  .main-content-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .side-panel-left, .side-panel-right {
+    order: 1;
+    position: static;
+    max-height: none;
+  }
+  
+  .content-card {
+    order: 0;
+  }
+  
+  .file-list-card, .toc-card {
+    max-height: 400px; /* 移动端更小的高度 */
+  }
+  
+  .file-list, .toc-list {
+    max-height: 300px;
+  }
+  
+  .markdown-body :deep(pre) {
+    margin: 1rem 0;
+    font-size: 13px;
+  }
+  
+  .markdown-body :deep(pre code) {
+    padding: 1em;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-content-grid {
+    gap: 15px;
+  }
+  
+  .card {
+    padding: 16px;
+  }
+  
+  .markdown-body :deep(pre code) {
+    padding: 0.8em;
+    font-size: 12px;
+  }
+}
 </style>
