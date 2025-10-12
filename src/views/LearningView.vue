@@ -72,11 +72,27 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch, nextTick } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import { useKnowledgeStore } from '@/stores/knowledge';
-import { useUserStore } from '@/stores/user';
-import { marked } from 'marked';
+import {computed, ref, watch, nextTick} from 'vue';
+import {useRoute, useRouter} from 'vue-router';
+import {useKnowledgeStore} from '@/stores/knowledge';
+import {useUserStore} from '@/stores/user';
+import {marked} from 'marked';
+import hljs from 'highlight.js';
+
+// 配置 marked 使用 highlight.js (保持不变)
+marked.setOptions({
+  highlight: (code, lang) => {
+    const codeString = typeof code === 'string' ? code : '';
+    const language = lang && hljs.getLanguage(lang) ? lang : 'plaintext';
+    try {
+      const result = hljs.highlight(codeString, {language, ignoreIllegals: true});
+      return result.value;
+    } catch (e) {
+      return hljs.highlight(codeString, {language: 'plaintext', ignoreIllegals: true}).value;
+    }
+  },
+  langPrefix: 'hljs language-',
+});
 
 const route = useRoute();
 const router = useRouter();
@@ -84,7 +100,7 @@ const knowledgeStore = useKnowledgeStore();
 const userStore = useUserStore();
 
 const goBackToKnowledgeBase = () => {
-  router.push({ name: 'knowledge' });
+  router.push({name: 'knowledge'});
 };
 
 const pointId = computed(() => route.params.pointId as string);
@@ -105,19 +121,19 @@ const contentRef = ref<HTMLElement | null>(null);
 const headings = ref<{ id: string; text: string; level: number }[]>([]);
 
 const notesForSoftwareEngineering = [
-  { title: 'JavaSE 笔记 (一)', path: '/笔记/JavaSE 核心内容/JavaSE 核心内容 - JavaSE 笔记（一）走进Java语言.md' },
-  { title: 'JavaSE 笔记 (二)', path: '/笔记/JavaSE 核心内容/JavaSE 核心内容 - JavaSE 笔记（二）面向过程编程.md' },
-  { title: 'JavaSE 笔记 (三)', path: '/笔记/JavaSE 核心内容/JavaSE 核心内容 - JavaSE 笔记（三）面向对象基础.md' },
-  { title: 'JavaSE 笔记 (四)', path: '/笔记/JavaSE 核心内容/JavaSE 核心内容 - JavaSE 笔记（四）面向对象高级篇.md' },
-  { title: 'JavaSE 笔记 (五)', path: '/笔记/JavaSE 核心内容/JavaSE 核心内容 - JavaSE 笔记（五）泛型程序设计.md' },
-  { title: 'JavaSE 笔记 (六)', path: '/笔记/JavaSE 核心内容/JavaSE 核心内容 - JavaSE 笔记（六）集合类与IO.md' },
-  { title: 'JavaSE 笔记 (七)', path: '/笔记/JavaSE 核心内容/JavaSE 核心内容 - JavaSE 笔记（七）多线程与反射.md' },
-  { title: 'JavaSE 笔记 (八)', path: '/笔记/JavaSE 核心内容/JavaSE 核心内容 - JavaSE 笔记（八）GUI程序开发.md' },
-  { title: 'JavaWeb 笔记 (一)', path: '/笔记/JavaWeb/JavaWeb 旧版 - JavaWeb 笔记（一）Java网络编程.md' },
-  { title: 'JavaWeb 笔记 (二)', path: '/笔记/JavaWeb/JavaWeb 旧版 - JavaWeb 笔记（二）数据库基础.md' },
-  { title: 'JavaWeb 笔记 (三)', path: '/笔记/JavaWeb/JavaWeb 旧版 - JavaWeb 笔记（三）Java与数据库.md' },
-  { title: 'JavaWeb 笔记 (四)', path: '/笔记/JavaWeb/JavaWeb 旧版 - JavaWeb 笔记（四）前端基础.md' },
-  { title: 'JavaWeb 笔记 (五)', path: '/笔记/JavaWeb/JavaWeb 旧版 - JavaWeb 笔记（五）后端开发.md' },
+  {title: 'JavaSE 笔记 (一)', path: '/笔记/JavaSE 核心内容/JavaSE 核心内容 - JavaSE 笔记（一）走进Java语言.md'},
+  {title: 'JavaSE 笔记 (二)', path: '/笔记/JavaSE 核心内容/JavaSE 核心内容 - JavaSE 笔记（二）面向过程编程.md'},
+  {title: 'JavaSE 笔记 (三)', path: '/笔记/JavaSE 核心内容/JavaSE 核心内容 - JavaSE 笔记（三）面向对象基础.md'},
+  {title: 'JavaSE 笔记 (四)', path: '/笔记/JavaSE 核心内容/JavaSE 核心内容 - JavaSE 笔记（四）面向对象高级篇.md'},
+  {title: 'JavaSE 笔记 (五)', path: '/笔记/JavaSE 核心内容/JavaSE 核心内容 - JavaSE 笔记（五）泛型程序设计.md'},
+  {title: 'JavaSE 笔记 (六)', path: '/笔记/JavaSE 核心内容/JavaSE 核心内容 - JavaSE 笔记（六）集合类与IO.md'},
+  {title: 'JavaSE 笔记 (七)', path: '/笔记/JavaSE 核心内容/JavaSE 核心内容 - JavaSE 笔记（七）多线程与反射.md'},
+  {title: 'JavaSE 笔记 (八)', path: '/笔记/JavaSE 核心内容/JavaSE 核心内容 - JavaSE 笔记（八）GUI程序开发.md'},
+  {title: 'JavaWeb 笔记 (一)', path: '/笔记/JavaWeb/JavaWeb 旧版 - JavaWeb 笔记（一）Java网络编程.md'},
+  {title: 'JavaWeb 笔记 (二)', path: '/笔记/JavaWeb/JavaWeb 旧版 - JavaWeb 笔记（二）数据库基础.md'},
+  {title: 'JavaWeb 笔记 (三)', path: '/笔记/JavaWeb/JavaWeb 旧版 - JavaWeb 笔记（三）Java与数据库.md'},
+  {title: 'JavaWeb 笔记 (四)', path: '/笔记/JavaWeb/JavaWeb 旧版 - JavaWeb 笔记（四）前端基础.md'},
+  {title: 'JavaWeb 笔记 (五)', path: '/笔记/JavaWeb/JavaWeb 旧版 - JavaWeb 笔记（五）后端开发.md'},
 ];
 
 const activeNotePath = ref('');
@@ -129,7 +145,7 @@ const selectNote = (path: string) => {
 const scrollToHeading = (id: string) => {
   const element = document.getElementById(id);
   if (element) {
-    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    element.scrollIntoView({behavior: 'smooth', block: 'start'});
   }
 };
 
@@ -143,7 +159,7 @@ watch(pointId, (newId) => {
     contentHtml.value = '<p>该知识点的详细内容即将上线，敬请期待！</p>';
     headings.value = [];
   }
-}, { immediate: true });
+}, {immediate: true});
 
 watch(activeNotePath, async (newPath) => {
   if (newPath) {
@@ -153,6 +169,7 @@ watch(activeNotePath, async (newPath) => {
       const response = await fetch(newPath);
       if (!response.ok) throw new Error(`File not found: ${newPath}`);
       const markdownText = await response.text();
+
       contentHtml.value = await marked.parse(markdownText);
 
       await nextTick();
@@ -183,15 +200,27 @@ watch(activeNotePath, async (newPath) => {
 
 <style scoped>
 /* 样式部分无需修改 */
-.page-header { margin-bottom: 30px; }
-.page-header p { font-size: 16px; color: var(--text-secondary); }
+.page-header {
+  margin-bottom: 30px;
+}
+
+.page-header p {
+  font-size: 16px;
+  color: var(--text-secondary);
+}
+
 .header-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 8px;
 }
-.page-header h1 { font-size: 28px; margin: 0; }
+
+.page-header h1 {
+  font-size: 28px;
+  margin: 0;
+}
+
 .back-btn {
   background: var(--card-bg);
   border: 1px solid var(--card-border);
@@ -205,24 +234,29 @@ watch(activeNotePath, async (newPath) => {
   align-items: center;
   gap: 8px;
 }
+
 .back-btn:hover {
   border-color: var(--primary-color);
   color: var(--primary-color);
 }
+
 .main-content-grid {
   display: grid;
   grid-template-columns: 250px 1fr 250px;
   gap: 20px;
   align-items: flex-start;
 }
+
 .main-content-single {
   max-width: 900px;
   margin: 0 auto;
 }
+
 .side-panel-left, .side-panel-right {
   position: sticky;
   top: 100px;
 }
+
 .card {
   background: var(--card-bg);
   backdrop-filter: blur(var(--backdrop-blur));
@@ -231,13 +265,18 @@ watch(activeNotePath, async (newPath) => {
   border-radius: var(--border-radius);
   padding: 24px;
 }
-.content-card { min-height: calc(100vh - 200px); }
+
+.content-card {
+  min-height: calc(100vh - 200px);
+}
+
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 16px;
 }
+
 .card h3 {
   font-size: 18px;
   margin: 0;
@@ -248,15 +287,18 @@ watch(activeNotePath, async (newPath) => {
   padding-bottom: 15px;
   margin-bottom: 20px;
 }
+
 .file-list-card, .toc-card {
   max-height: calc(100vh - 120px);
   overflow-y: auto;
 }
+
 .file-list {
   list-style: none;
   padding: 0;
   margin: 0;
 }
+
 .file-list li {
   padding: 10px 15px;
   margin-bottom: 5px;
@@ -269,17 +311,28 @@ watch(activeNotePath, async (newPath) => {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 .file-list li:hover {
   background-color: rgba(255, 255, 255, 0.1);
   color: var(--text-primary);
 }
+
 .file-list li.active {
   background-color: var(--primary-color);
   color: white;
   font-weight: 500;
 }
-.toc-list { list-style: none; padding: 0; margin: 0; }
-.toc-list li { margin-bottom: 12px; }
+
+.toc-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.toc-list li {
+  margin-bottom: 12px;
+}
+
 .toc-list a {
   text-decoration: none;
   color: var(--text-secondary);
@@ -290,9 +343,22 @@ watch(activeNotePath, async (newPath) => {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.toc-list a:hover { color: var(--primary-color); }
-.no-toc-placeholder { color: var(--text-secondary); font-size: 14px; font-style: italic; }
-.markdown-body { line-height: 1.7; color: var(--text-primary); }
+
+.toc-list a:hover {
+  color: var(--primary-color);
+}
+
+.no-toc-placeholder {
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-style: italic;
+}
+
+.markdown-body {
+  line-height: 1.7;
+  color: var(--text-primary);
+}
+
 .markdown-body ::v-deep(h1),
 .markdown-body ::v-deep(h2),
 .markdown-body ::v-deep(h3),
@@ -303,13 +369,68 @@ watch(activeNotePath, async (newPath) => {
   margin-bottom: 16px;
   scroll-margin-top: 100px;
 }
-.markdown-body ::v-deep(h1) { font-size: 1.8em; }
-.markdown-body ::v-deep(h2) { font-size: 1.5em; }
-.markdown-body ::v-deep(h3) { font-size: 1.25em; }
+
+.markdown-body ::v-deep(h1) {
+  font-size: 1.8em;
+}
+
+.markdown-body ::v-deep(h2) {
+  font-size: 1.5em;
+}
+
+.markdown-body ::v-deep(h3) {
+  font-size: 1.25em;
+}
+
 .markdown-body ::v-deep(hr) {
   border: none;
   height: 2px;
   background-image: linear-gradient(to right, transparent, var(--card-border), transparent);
   margin: 40px 0;
 }
+
+.markdown-body ::v-deep(img) {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 16px 0;
+}
+
+.markdown-body ::v-deep(table) {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+/* --- 【核心修复】: 优化代码块样式，让主题文件完全控制样式 --- */
+.markdown-body ::v-deep(pre) {
+  /* 统一添加圆角和阴影，增加视觉效果 */
+  border-radius: 8px;
+  margin: 24px 0;
+  /* 我们移除自定义背景和边框，让主题文件完全控制背景 */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  overflow-x: auto; /* 仅在代码超长时滚动 */
+  overflow-y: hidden;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+
+  /* 确保不再有任何自定义的黑色背景/边框冲突 */
+  background: none !important;
+  border: none;
+  padding: 0;
+}
+
+.markdown-body ::v-deep(pre code.hljs) {
+  /* 确保 highlight.js 的样式能正确应用 */
+  padding: 16px;
+  font-family: 'SF Mono', 'Fira Code', 'Fira Mono', 'Roboto Mono', monospace;
+  font-size: 14px;
+  /* 确保背景和颜色由 highlight.js 主题文件控制 */
+  background: none;
+  color: inherit;
+
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+/* --- 修改结束 --- */
 </style>

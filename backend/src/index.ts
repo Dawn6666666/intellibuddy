@@ -87,3 +87,10 @@ app.get('/', (req, res) => {
 
 // 导出 app 实例，供 Vercel 调用
 export default app;
+
+// 只有在不是 Vercel 环境时才启动本地服务器
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, () => {
+        console.log(`[SUCCESS] 本地开发服务器已启动，正在监听 http://localhost:${PORT}`);
+    });
+}

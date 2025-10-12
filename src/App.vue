@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { computed, watchEffect } from 'vue';
-import { useRoute } from 'vue-router';
-import { useThemeStore } from './stores/theme'; // 1. 引入 theme store
+import {computed, watchEffect} from 'vue';
+import {useRoute} from 'vue-router';
+import {useThemeStore} from './stores/theme';
 import DynamicBackground from './components/DynamicBackground.vue';
 
 const route = useRoute();
-const themeStore = useThemeStore(); // 2. 获取 theme store 实例
+const themeStore = useThemeStore();
 
-// 3. 监听 theme store 的变化，并相应地在 <html> 标签上添加/移除 class
+// 【核心修改 2】: 仅保留主题切换逻辑，删除 highlight.js 动态切换函数调用
 watchEffect(() => {
   if (themeStore.theme === 'light') {
     document.documentElement.classList.add('light-theme');
@@ -27,9 +27,8 @@ const backgroundColors = computed(() => {
 </script>
 
 <template>
-  <DynamicBackground :blob-colors="backgroundColors" :theme="themeStore.theme" />
-
-  <router-view />
+  <DynamicBackground :blob-colors="backgroundColors" :theme="themeStore.theme"/>
+  <router-view/>
 </template>
 
 <style scoped>
