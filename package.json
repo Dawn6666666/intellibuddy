@@ -9,6 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@antv/x6": "^2.18.1",
+    "@antv/x6-vue-shape": "^2.1.2",
     "@element-plus/icons-vue": "^2.3.2",
     "@fortawesome/fontawesome-free": "^7.0.1",
     "@types/highlight.js": "^10.1.0",

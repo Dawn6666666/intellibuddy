@@ -1,9 +1,12 @@
 <template>
   <div :class="['dynamic-blur-background', { 'light-mode': theme === 'light' }]">
-    <div class="blob" :style="{ backgroundColor: blobColors[0] }"></div>
-    <div class="blob" :style="{ backgroundColor: blobColors[1] }"></div>
-    <div class.="blob" :style="{ backgroundColor: blobColors[2] }"></div>
-    <div class="blob" :style="{ backgroundColor: blobColors[3] }"></div>
+    <div class="blob blob-1" :style="{ backgroundColor: blobColors[0] }"></div>
+    <div class="blob blob-2" :style="{ backgroundColor: blobColors[1] }"></div>
+    <div class="blob blob-3" :style="{ backgroundColor: blobColors[2] }"></div>
+    <div class="blob blob-4" :style="{ backgroundColor: blobColors[3] }"></div>
+    <!-- 添加更多色块让效果更丰富 -->
+    <div class="blob blob-5" :style="{ backgroundColor: blobColors[0] }"></div>
+    <div class="blob blob-6" :style="{ backgroundColor: blobColors[2] }"></div>
   </div>
 </template>
 
@@ -22,7 +25,6 @@ defineProps({
 </script>
 
 <style scoped>
-/* ... .dynamic-blur-background, .blob, nth-child, @keyframes 样式保持不变 ... */
 .dynamic-blur-background {
   position: fixed;
   top: 0;
@@ -38,57 +40,162 @@ defineProps({
   position: absolute;
   border-radius: 50%;
   mix-blend-mode: screen;
-  opacity: 0.8;
-  filter: blur(10vh);
-  transition: opacity 0.5s ease, mix-blend-mode 0.5s ease; /* 添加过渡效果 */
+  opacity: 0.7;
+  /* 增加模糊强度，让效果更梦幻 */
+  filter: blur(120px);
+  transition: opacity 0.8s ease, mix-blend-mode 0.8s ease;
   will-change: transform;
 }
 
-.blob:nth-child(1) {
-  width: 60vmax;
-  height: 60vmax;
-  top: -20vmax;
-  left: -25vmax;
-  animation: move 45s infinite alternate;
+/* 第一个色块：左上角大型色块 */
+.blob-1 {
+  width: 70vmax;
+  height: 70vmax;
+  top: -30vmax;
+  left: -30vmax;
+  animation: float-1 22s ease-in-out infinite alternate;
 }
 
-.blob:nth-child(2) {
+/* 第二个色块：右下角大型色块 */
+.blob-2 {
+  width: 65vmax;
+  height: 65vmax;
+  bottom: -25vmax;
+  right: -30vmax;
+  animation: float-2 26s ease-in-out infinite alternate-reverse;
+}
+
+/* 第三个色块：左下角中型色块 */
+.blob-3 {
   width: 50vmax;
   height: 50vmax;
-  bottom: -20vmax;
-  right: -25vmax;
-  animation: move 50s infinite alternate-reverse;
+  bottom: -10vmax;
+  left: 5vw;
+  animation: float-3 20s ease-in-out infinite alternate;
 }
 
-.blob:nth-child(3) {
+/* 第四个色块：右上角中型色块 */
+.blob-4 {
+  width: 45vmax;
+  height: 45vmax;
+  top: -5vmax;
+  right: 10vw;
+  animation: float-4 24s ease-in-out infinite alternate-reverse;
+}
+
+/* 第五个色块：中央偏左小型色块 */
+.blob-5 {
+  width: 35vmax;
+  height: 35vmax;
+  top: 30vh;
+  left: 15vw;
+  animation: float-5 18s ease-in-out infinite alternate;
+}
+
+/* 第六个色块：中央偏右小型色块 */
+.blob-6 {
   width: 40vmax;
   height: 40vmax;
-  bottom: 5vh;
-  left: 10vw;
-  animation: move 35s infinite alternate;
+  top: 40vh;
+  right: 20vw;
+  animation: float-6 28s ease-in-out infinite alternate-reverse;
 }
 
-.blob:nth-child(4) {
-  width: 30vmax;
-  height: 30vmax;
-  top: 0vh;
-  right: 5vw;
-  animation: move 40s infinite alternate-reverse;
-}
-
-@keyframes move {
-  from {
-    transform: translate(0, 0) rotate(0deg);
+/* 动态浮动动画 - 每个色块有不同的随机路径 */
+@keyframes float-1 {
+  0% {
+    transform: translate(0, 0) scale(1) rotate(0deg);
   }
-  to {
-    transform: translate(20vw, 20vh) rotate(180deg);
+  33% {
+    transform: translate(30vw, 20vh) scale(1.3) rotate(120deg);
+  }
+  66% {
+    transform: translate(15vw, 35vh) scale(0.8) rotate(240deg);
+  }
+  100% {
+    transform: translate(0, 0) scale(1) rotate(360deg);
   }
 }
 
+@keyframes float-2 {
+  0% {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+  }
+  33% {
+    transform: translate(-35vw, -25vh) scale(1.25) rotate(-100deg);
+  }
+  66% {
+    transform: translate(-20vw, -40vh) scale(0.75) rotate(-200deg);
+  }
+  100% {
+    transform: translate(0, 0) scale(1) rotate(-360deg);
+  }
+}
 
-/* 【核心新增】当处于亮色模式时，改变色块的混合模式和不透明度，使其更柔和 */
+@keyframes float-3 {
+  0% {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+  }
+  33% {
+    transform: translate(25vw, -30vh) scale(1.35) rotate(90deg);
+  }
+  66% {
+    transform: translate(40vw, -15vh) scale(0.7) rotate(180deg);
+  }
+  100% {
+    transform: translate(0, 0) scale(1) rotate(270deg);
+  }
+}
+
+@keyframes float-4 {
+  0% {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+  }
+  33% {
+    transform: translate(-28vw, 25vh) scale(1.28) rotate(-110deg);
+  }
+  66% {
+    transform: translate(-15vw, 38vh) scale(0.78) rotate(-220deg);
+  }
+  100% {
+    transform: translate(0, 0) scale(1) rotate(-330deg);
+  }
+}
+
+@keyframes float-5 {
+  0% {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+  }
+  33% {
+    transform: translate(22vw, -20vh) scale(1.4) rotate(80deg);
+  }
+  66% {
+    transform: translate(35vw, 10vh) scale(0.65) rotate(160deg);
+  }
+  100% {
+    transform: translate(0, 0) scale(1) rotate(240deg);
+  }
+}
+
+@keyframes float-6 {
+  0% {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+  }
+  33% {
+    transform: translate(-25vw, 18vh) scale(1.32) rotate(-95deg);
+  }
+  66% {
+    transform: translate(-10vw, -22vh) scale(0.72) rotate(-190deg);
+  }
+  100% {
+    transform: translate(0, 0) scale(1) rotate(-285deg);
+  }
+}
+
+/* 亮色模式优化 */
 .light-mode .blob {
-  mix-blend-mode: multiply; /* 在亮色背景下，multiply 模式效果更像水彩，不刺眼 */
-  opacity: 0.5; /* 大幅降低不透明度 */
+  mix-blend-mode: multiply;
+  opacity: 0.4;
+  filter: blur(140px);
 }
 </style>

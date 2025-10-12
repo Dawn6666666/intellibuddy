@@ -7,7 +7,8 @@ import {
     apiGetUserProgress,
     apiGetChats,
     apiNewChat,
-    apiUpdateChat
+    apiUpdateChat,
+    apiGetRecommendedPath
 } from '@/services/apiService';
 import type {KnowledgePoint} from './knowledge';
 import {useKnowledgeStore} from './knowledge';
@@ -53,6 +54,9 @@ export const useUserStore = defineStore('user', {
         chatSessions: [] as ChatSession[],
         activeChatId: null as string | null,
         messages: [] as ChatMessage[],
+
+        // --- 推荐路径 ---
+        recommendedPath: [] as string[], // 推荐的知识点ID数组
     }),
 
     getters: {
@@ -106,6 +110,9 @@ export const useUserStore = defineStore('user', {
                 ];
                 this.studyActivityData = this.generateMockHeatmapData();
 
+                // 获取推荐路径
+                await this.fetchRecommendedPath();
+
             } catch (err) {
                 console.error("获取初始数据失败:", err);
                 this.logout();
@@ -130,6 +137,19 @@ export const useUserStore = defineStore('user', {
                 date.setDate(date.getDate() + 1);
             }
             return data;
+        },
+
+        async fetchRecommendedPath() {
+            if (!this.token) return;
+            try {
+                const response = await apiGetRecommendedPath(this.token);
+                // 从 recommendations 中提取 pointId
+                this.recommendedPath = (response.recommendations || []).map((rec: any) => rec.pointId);
+            } catch (err) {
+                console.error("获取推荐路径失败:", err);
+                // 如果获取失败，设置为空数组
+                this.recommendedPath = [];
+            }
         },
 
         async handleAuth(token: string, user: UserInfo) {

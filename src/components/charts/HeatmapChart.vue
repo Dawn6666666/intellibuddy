@@ -39,71 +39,158 @@ const props = defineProps({
 
 // ECharts 配置项
 const option = computed(() => {
-  const year = new Date().getFullYear(); // 获取当前年份
+  const year = new Date().getFullYear();
 
   return {
     backgroundColor: 'transparent',
     tooltip: {
       position: 'top',
-      formatter: '{c} points on {b}', // 示例: "5 points on 2025-09-28"
-      backgroundColor: 'rgba(30, 30, 30, 0.8)',
-      borderColor: 'rgba(255, 255, 255, 0.2)',
+      formatter: (params: any) => {
+        const date = params.data[0];
+        const value = params.data[1];
+        return `
+          <div style="padding: 10px 12px; background: linear-gradient(135deg, rgba(138, 127, 251, 0.15), rgba(245, 87, 108, 0.15)); backdrop-filter: blur(10px); border-radius: 8px;">
+            <div style="font-weight: 700; font-size: 14px; background: linear-gradient(135deg, #8a7ffb, #f5576c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 6px;">${date}</div>
+            <div style="display: flex; align-items: center; gap: 8px; color: #e0e0e0;">
+              <i class="fa-solid fa-fire" style="color: #f5576c; font-size: 16px;"></i>
+              <span style="font-weight: 600;">${value} 次学习</span>
+            </div>
+          </div>
+        `;
+      },
+      backgroundColor: 'rgba(20, 20, 30, 0.95)',
+      borderColor: 'transparent',
+      borderWidth: 0,
       textStyle: {
         color: '#f0f0f0',
+        fontSize: 13,
       },
+      extraCssText: 'box-shadow: 0 8px 32px rgba(138, 127, 251, 0.3); backdrop-filter: blur(10px);',
     },
     visualMap: {
       min: 0,
-      max: 10, // 假设一天最多的学习积分为10
+      max: 10,
       type: 'piecewise',
       orient: 'horizontal',
       left: 'center',
-      top: 0,
-      textStyle: {
-        color: '#a0a0a0',
-      },
+      top: 5,
       pieces: [
-        { min: 1, max: 3, color: '#2a4d69' },
-        { min: 4, max: 6, color: '#4b86b4' },
-        { min: 7, max: 9, color: '#adcbe3' },
-        { min: 10, color: '#e7eff6' },
+        { 
+          min: 0, max: 0, 
+          color: 'rgba(255, 255, 255, 0.06)', 
+          label: '无'
+        },
+        { 
+          min: 1, max: 2, 
+          color: 'rgba(138, 127, 251, 0.25)', 
+          label: '少'
+        },
+        { 
+          min: 3, max: 5, 
+          color: 'rgba(138, 127, 251, 0.5)', 
+          label: '中'
+        },
+        { 
+          min: 6, max: 8, 
+          color: 'rgba(245, 87, 108, 0.6)', 
+          label: '多'
+        },
+        { 
+          min: 9, 
+          color: 'rgba(245, 87, 108, 0.9)', 
+          label: '很多'
+        },
       ],
-      inRange: {
-        color: ['#1a2c42', '#8a7ffb'], // 从深色到主题色
+      textStyle: {
+        color: '#c0c0c0',
+        fontSize: 11,
+        fontWeight: 600,
       },
-      show: false, // 暂时隐藏图例
+      itemGap: 12,
+      itemWidth: 20,
+      itemHeight: 20,
+      show: true,
+      itemStyle: {
+        borderColor: 'rgba(255, 255, 255, 0.15)',
+        borderWidth: 1,
+        shadowBlur: 8,
+        shadowColor: 'rgba(138, 127, 251, 0.3)',
+      },
     },
     calendar: {
-      top: 40,
+      top: 70,
       left: 30,
       right: 30,
-      cellSize: ['auto', 13],
-      range: year.toString(), // 显示当前年份
+      bottom: 30,
+      cellSize: [18, 18],
+      range: year.toString(),
       itemStyle: {
-        borderWidth: 0.5,
-        borderColor: 'rgba(255, 255, 255, 0.1)',
+        borderWidth: 1.5,
+        borderColor: 'rgba(255, 255, 255, 0.08)',
+        borderRadius: 4,
+        shadowBlur: 0,
+        shadowColor: 'transparent',
       },
       dayLabel: {
         color: '#a0a0a0',
-        nameMap: 'cn'
+        nameMap: 'cn',
+        fontSize: 12,
+        fontWeight: 600,
+        margin: 10,
       },
       monthLabel: {
-        color: '#a0a0a0',
-        nameMap: 'cn'
+        color: '#d0d0d0',
+        nameMap: 'cn',
+        fontSize: 13,
+        fontWeight: 700,
+        margin: 10,
       },
-      yearLabel: { show: false },
+      yearLabel: {
+        show: false,
+      },
+      splitLine: {
+        show: true,
+        lineStyle: {
+          color: 'rgba(255, 255, 255, 0.05)',
+          width: 1,
+          type: 'solid'
+        }
+      },
     },
     series: {
       type: 'heatmap',
       coordinateSystem: 'calendar',
       data: props.chartData,
+      itemStyle: {
+        borderRadius: 4,
+        shadowBlur: 6,
+        shadowColor: 'rgba(138, 127, 251, 0.4)',
+      },
+      emphasis: {
+        itemStyle: {
+          borderColor: '#ffffff',
+          borderWidth: 2,
+          shadowBlur: 20,
+          shadowColor: 'rgba(245, 87, 108, 0.8)',
+          shadowOffsetX: 0,
+          shadowOffsetY: 0,
+        },
+        scale: true,
+        scaleSize: 5,
+      },
     },
+    animationDuration: 1000,
+    animationEasing: 'elasticOut',
+    animationDurationUpdate: 300,
+    animationEasingUpdate: 'cubicOut',
   };
 });
 </script>
 
 <style scoped>
 .chart {
-  height: 200px; /* 您可以根据需要调整图表高度 */
+  height: 320px;
+  width: 100%;
+  filter: drop-shadow(0 4px 16px rgba(138, 127, 251, 0.1));
 }
 </style>

@@ -15,7 +15,10 @@ import KnowledgePoint from './models/KnowledgePoint';
 import authRoutes from './routes/auth';
 import progressRoutes from './routes/progress';
 import chatRoutes from './routes/chat';
-import aiRoutes from './routes/ai'; // 1. 导入新的 AI 路由
+import aiRoutes from './routes/ai';
+import quizRoutes from './routes/quiz';
+import assessmentRoutes from './routes/assessment';
+import learningPathRoutes from './routes/learning-path';
 import User, {IUser} from './models/User';
 
 const app = express();
@@ -38,7 +41,10 @@ app.use(passport.initialize());
 app.use('/api/auth', authRoutes);
 app.use('/api/progress', progressRoutes);
 app.use('/api/chats', chatRoutes);
-app.use('/api/ai', aiRoutes); // 2. 使用新的 AI 路由
+app.use('/api/ai', aiRoutes);
+app.use('/api/quiz', quizRoutes);
+app.use('/api/assessment', assessmentRoutes);
+app.use('/api/learning-path', learningPathRoutes);
 
 // --- GitHub 认证路由 ---
 app.get('/api/auth/github',

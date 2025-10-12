@@ -56,6 +56,16 @@
             </li>
           </ul>
         </div>
+
+        <!-- 测验按钮 -->
+        <div class="card quiz-card" v-if="knowledgePoint.status !== 'completed'">
+          <h3><i class="fa-solid fa-clipboard-question"></i> 知识测验</h3>
+          <button class="btn-quiz" @click="showQuiz = true">
+            <i class="fa-solid fa-play"></i>
+            开始测验
+          </button>
+          <p class="quiz-hint">完成测验后即可解锁新知识点</p>
+        </div>
       </div>
     </div>
 
@@ -64,6 +74,16 @@
         <div class="markdown-body" v-html="contentHtml"></div>
       </div>
     </div>
+
+    <!-- 测验面板 -->
+    <QuizPanel
+      v-if="showQuiz"
+      :point-id="pointId!"
+      :title="knowledgePoint.title"
+      @close="showQuiz = false"
+      @completed="handleQuizCompleted"
+      @failed="handleQuizFailed"
+    />
 
   </div>
   <div v-else class="loading">
@@ -78,6 +98,9 @@ import {useKnowledgeStore} from '@/stores/knowledge';
 import {useUserStore} from '@/stores/user';
 import {marked} from 'marked';
 import hljs from 'highlight.js';
+import QuizPanel from '@/components/QuizPanel.vue';
+import {apiUpdateProgress} from '@/services/apiService';
+import {useAIIntervention} from '@/composables/useAIIntervention';
 
 // 配置 marked 以支持代码高亮
 const renderer = new marked.Renderer();
@@ -166,8 +189,15 @@ renderer.code = function({ text, lang }: { text: string; lang?: string }) {
   
   const displayLanguage = languageNameMap[detectedLanguage] || detectedLanguage.toUpperCase();
   
-  // 转义代码用于复制（保留原始代码）
-  const escapedCode = codeString.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  // 转义代码用于安全地嵌入到 HTML 属性中
+  const escapedCode = codeString
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+    .replace(/\n/g, '&#10;')
+    .replace(/\r/g, '');
   
   return `
     <div class="code-container ${densityClass}">
@@ -205,6 +235,14 @@ const knowledgePoint = computed(() => {
   return knowledgeStore.pointsAsArrayWithProgress.find(p => p.id === pointId.value);
 });
 
+// 启用AI主动干预机制
+const {recordFailure, resetFailureCount} = useAIIntervention(knowledgePoint.value || null, {
+  enableIdleDetection: true,
+  enableFailureDetection: true,
+  idleTimeThreshold: 300, // 5分钟无操作触发
+  failureThreshold: 2, // 连续失败2次触发
+});
+
 const askWithContext = () => {
   if (knowledgePoint.value) {
     userStore.setChatContext(knowledgePoint.value);
@@ -214,6 +252,7 @@ const askWithContext = () => {
 
 const contentHtml = ref('<p>正在加载内容...</p>');
 const contentRef = ref<HTMLElement | null>(null);
+const showQuiz = ref(false);
 const headings = ref<{ id: string; text: string; level: number }[]>([]);
 
 const notesForSoftwareEngineering = [
@@ -236,6 +275,28 @@ const activeNotePath = ref('');
 
 const selectNote = (path: string) => {
   activeNotePath.value = path;
+};
+
+const handleQuizCompleted = async () => {
+  showQuiz.value = false;
+  // 重置失败计数
+  resetFailureCount();
+  if (userStore.token && pointId.value) {
+    try {
+      // 更新后端进度
+      await apiUpdateProgress(userStore.token, pointId.value, 'completed');
+      // 同步更新前端进度
+      await userStore.fetchInitialData();
+      alert('恭喜！知识点已完成，继续加油！');
+    } catch (error) {
+      console.error('更新进度失败:', error);
+    }
+  }
+};
+
+const handleQuizFailed = () => {
+  // 记录失败，触发AI干预机制
+  recordFailure();
 };
 
 const scrollToHeading = (id: string) => {
@@ -301,23 +362,46 @@ watch(activeNotePath, async (newPath) => {
   }
 }, {immediate: true});
 
+// HTML 解码函数
+const decodeHtmlEntities = (text: string): string => {
+  const textarea = document.createElement('textarea');
+  textarea.innerHTML = text;
+  return textarea.value;
+};
+
 // 复制代码功能
 const copyCodeToClipboard = async (button: HTMLButtonElement) => {
-  const code = button.getAttribute('data-code');
-  if (!code) return;
+  const encodedCode = button.getAttribute('data-code');
+  if (!encodedCode) return;
   
-  // HTML 解码
-  const textarea = document.createElement('textarea');
-  textarea.innerHTML = code;
-  const decodedCode = textarea.value;
+  // 完整的 HTML 解码
+  const decodedCode = decodeHtmlEntities(encodedCode);
+  
+  const copyText = button.querySelector('.copy-text');
+  const icon = button.querySelector('i');
   
   try {
-    await navigator.clipboard.writeText(decodedCode);
+    // 尝试使用现代 API
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(decodedCode);
+    } else {
+      // 降级方案：使用 execCommand
+      const textarea = document.createElement('textarea');
+      textarea.value = decodedCode;
+      textarea.style.position = 'fixed';
+      textarea.style.left = '-9999px';
+      textarea.style.top = '-9999px';
+      document.body.appendChild(textarea);
+      textarea.select();
+      const success = document.execCommand('copy');
+      document.body.removeChild(textarea);
+      
+      if (!success) {
+        throw new Error('execCommand 复制失败');
+      }
+    }
     
     // 更新按钮状态
-    const copyText = button.querySelector('.copy-text');
-    const icon = button.querySelector('i');
-    
     if (copyText) copyText.textContent = '已复制';
     if (icon) {
       icon.className = 'fa-solid fa-check';
@@ -334,7 +418,6 @@ const copyCodeToClipboard = async (button: HTMLButtonElement) => {
     }, 2000);
   } catch (err) {
     console.error('复制失败:', err);
-    const copyText = button.querySelector('.copy-text');
     if (copyText) {
       copyText.textContent = '复制失败';
       setTimeout(() => {
@@ -871,5 +954,56 @@ html.light-theme .markdown-body :deep(.code-header) {
     padding: 0.8em;
     font-size: 12px;
   }
+}
+
+/* 测验卡片样式 */
+.quiz-card {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.quiz-card h3 {
+  margin-bottom: 16px !important;
+  color: var(--primary-color);
+}
+
+.btn-quiz {
+  width: 100%;
+  background: linear-gradient(135deg, var(--primary-color), #a78bfa);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 14px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(138, 127, 251, 0.3);
+  margin-bottom: 12px;
+}
+
+.btn-quiz:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(138, 127, 251, 0.5);
+  background: linear-gradient(135deg, #6366f1, #a78bfa);
+}
+
+.btn-quiz:active {
+  transform: translateY(0);
+}
+
+.btn-quiz i {
+  font-size: 1.125rem;
+}
+
+.quiz-hint {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+  line-height: 1.4;
 }
 </style>

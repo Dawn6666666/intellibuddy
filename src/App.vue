@@ -48,12 +48,14 @@ watch(() => themeStore.theme, (newTheme) => {
   updateHighlightTheme(newTheme);
 });
 
-// 动态背景色逻辑保持不变
+// 优化的渐变配色方案 - 更加梦幻和柔和
 const backgroundColors = computed(() => {
   if (route.name === 'login') {
-    return ['#10b981', '#14b8a6', '#0ea5e9', '#22c55e'];
+    // 登录页：清新的蓝绿渐变系
+    return ['#06b6d4', '#3b82f6', '#8b5cf6', '#10b981'];
   } else {
-    return ['#f43f5e', '#3b82f6', '#f97316', '#8b5cf6'];
+    // 主页：温暖的紫粉蓝橙渐变系
+    return ['#ec4899', '#8b5cf6', '#3b82f6', '#f97316'];
   }
 });
 </script>

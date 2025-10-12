@@ -5,6 +5,10 @@ export interface IUserProgress extends Document {
     userId: Types.ObjectId;
     pointId: string;
     status: 'not_started' | 'in_progress' | 'completed';
+    quizAttempts: number;
+    bestScore: number;
+    timeSpent: number; // 学习时长（分钟）
+    lastAttemptAt?: Date;
 }
 
 const UserProgressSchema = new Schema<IUserProgress>({
@@ -16,14 +20,16 @@ const UserProgressSchema = new Schema<IUserProgress>({
         enum: ['not_started', 'in_progress', 'completed'],
         default: 'not_started',
     },
+    quizAttempts: {type: Number, default: 0},
+    bestScore: {type: Number, default: 0, min: 0, max: 100},
+    timeSpent: {type: Number, default: 0},
+    lastAttemptAt: {type: Date},
 }, {
     timestamps: true,
-    // 1. 移除了这里错误的 unique 和 index 选项
 });
 
-// 2. 新增：在这里使用 index() 方法来创建复合唯一索引
+// 创建复合唯一索引
 UserProgressSchema.index({userId: 1, pointId: 1}, {unique: true});
-
 
 const UserProgress = model<IUserProgress>('UserProgress', UserProgressSchema);
 

@@ -3,15 +3,25 @@ import {defineStore} from 'pinia';
 import {apiGetKnowledgePoints} from '@/services/apiService';
 import {useUserStore} from './user';
 
+export interface QuizQuestion {
+    question: string;
+    type: 'single' | 'multiple' | 'boolean';
+    options: string[];
+}
+
 export interface KnowledgePoint {
-    _id?: string; // 修改这里
+    _id?: string;
     id: string;
     title: string;
     subject: string;
     contentSnippet: string;
     status: 'completed' | 'in_progress' | 'not_started';
     prerequisites: string[];
-    __v?: number; // 修改这里
+    quiz?: QuizQuestion[];
+    difficulty?: number;
+    estimatedTime?: number;
+    graphPosition?: {x: number; y: number};
+    __v?: number;
 }
 
 export const useKnowledgeStore = defineStore('knowledge', {
@@ -36,6 +46,39 @@ export const useKnowledgeStore = defineStore('knowledge', {
                     status, // 用用户的真实状态覆盖默认状态
                 };
             });
+        },
+
+        // 检查知识点是否可以解锁
+        canUnlock: (state) => (pointId: string): boolean => {
+            const userStore = useUserStore();
+            const point = state.knowledgePoints.get(pointId);
+            if (!point) return false;
+
+            // 如果没有前置依赖，可以直接学习
+            if (!point.prerequisites || point.prerequisites.length === 0) {
+                return true;
+            }
+
+            // 检查所有前置依赖是否都已完成
+            return point.prerequisites.every(preId => {
+                const status = userStore.progress.get(preId);
+                return status === 'completed';
+            });
+        },
+
+        // 获取未完成的前置依赖列表
+        getMissingPrerequisites: (state) => (pointId: string): KnowledgePoint[] => {
+            const userStore = useUserStore();
+            const point = state.knowledgePoints.get(pointId);
+            if (!point || !point.prerequisites) return [];
+
+            return point.prerequisites
+                .filter(preId => {
+                    const status = userStore.progress.get(preId);
+                    return status !== 'completed';
+                })
+                .map(preId => state.knowledgePoints.get(preId))
+                .filter(p => p !== undefined) as KnowledgePoint[];
         },
     },
 

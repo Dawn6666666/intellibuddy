@@ -81,3 +81,55 @@ export const apiUpdateChat = async (token: string, chatId: string, messages: Cha
     });
     return response.data;
 };
+
+// --- 测验 API ---
+export const apiGetQuiz = async (token: string, pointId: string) => {
+    const response = await apiClient.get(`/quiz/${pointId}`, {
+        headers: {'Authorization': `Bearer ${token}`}
+    });
+    return response.data;
+};
+
+export const apiSubmitQuiz = async (token: string, pointId: string, answers: any[]) => {
+    const response = await apiClient.post('/quiz/submit', {pointId, answers}, {
+        headers: {'Authorization': `Bearer ${token}`}
+    });
+    return response.data;
+};
+
+// --- 评估 API ---
+export const apiStartAssessment = async (token: string) => {
+    const response = await apiClient.post('/assessment/start', {}, {
+        headers: {'Authorization': `Bearer ${token}`}
+    });
+    return response.data;
+};
+
+export const apiSubmitAssessment = async (token: string, answers: any[]) => {
+    const response = await apiClient.post('/assessment/submit', {answers}, {
+        headers: {'Authorization': `Bearer ${token}`}
+    });
+    return response.data;
+};
+
+export const apiGetAssessmentResult = async (token: string) => {
+    const response = await apiClient.get('/assessment/result', {
+        headers: {'Authorization': `Bearer ${token}`}
+    });
+    return response.data;
+};
+
+// --- 学习路径 API ---
+export const apiGetRecommendedPath = async (token: string) => {
+    const response = await apiClient.get('/learning-path/recommend', {
+        headers: {'Authorization': `Bearer ${token}`}
+    });
+    return response.data;
+};
+
+export const apiCheckUnlock = async (token: string, pointId: string) => {
+    const response = await apiClient.post('/learning-path/unlock-check', {pointId}, {
+        headers: {'Authorization': `Bearer ${token}`}
+    });
+    return response.data;
+};

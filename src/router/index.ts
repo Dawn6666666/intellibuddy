@@ -46,6 +46,11 @@ const router = createRouter({
                     path: 'learn/:pointId',
                     name: 'learning',
                     component: () => import('../views/LearningView.vue')
+                },
+                {
+                    path: 'assessment',
+                    name: 'assessment',
+                    component: () => import('../views/AssessmentView.vue')
                 }
             ]
         }

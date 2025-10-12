@@ -27,8 +27,11 @@
         <h4><i class="fa-solid fa-sitemap"></i> 计算机科学知识图谱</h4>
         <span>你的推荐路径已高亮显示</span>
       </div>
-      <div class="graph-placeholder">
-        <p>这里是未来放置 AntV X6 / D3.js 知识图谱的区域</p>
+      <div class="graph-container">
+        <KnowledgeGraph
+          :knowledge-points="knowledgeStore.pointsAsArrayWithProgress"
+          :recommended-path="userStore.recommendedPath"
+        />
       </div>
     </div>
   </div>
@@ -36,8 +39,11 @@
 
 <script setup lang="ts">
 import {useUserStore} from '@/stores/user';
+import {useKnowledgeStore} from '@/stores/knowledge';
+import KnowledgeGraph from '@/components/KnowledgeGraph.vue';
 
 const userStore = useUserStore();
+const knowledgeStore = useKnowledgeStore();
 </script>
 
 <style scoped>
@@ -161,15 +167,11 @@ const userStore = useUserStore();
   color: var(--text-secondary);
 }
 
-.graph-placeholder {
+.graph-container {
   flex-grow: 1;
-  background-color: rgba(0, 0, 0, 0.2);
   border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text-secondary);
-  border: 1px dashed var(--card-border);
+  overflow: hidden;
+  min-height: 500px;
 }
 
 /* 【新增】媒体查询，用于响应式布局 */
