@@ -16,23 +16,30 @@
       <p>{{ knowledgePoint.contentSnippet }}</p>
     </header>
 
-    <div v-if="pointId === 'cs-y3-s6-c1'" class="main-content-grid">
+    <div class="main-content-grid">
+      <!-- 左侧文件列表 -->
       <div class="side-panel-left">
-        <div class="card file-list-card">
-          <h3><i class="fa-solid fa-folder-open"></i> Java 学习笔记</h3>
-          <ul class="file-list">
+        <div class="card chapter-list-card">
+          <h3><i class="fa-solid fa-file-lines"></i> 文件列表</h3>
+          <ul class="chapter-list">
             <li
-                v-for="note in notesForSoftwareEngineering"
-                :key="note.path"
-                :class="{ 'active': note.path === activeNotePath }"
-                @click="selectNote(note.path)"
+                v-for="(chapter, index) in chapters"
+                :key="index"
+                :class="{ 'active': index === activeChapterIndex }"
+                @click="selectChapter(index)"
+                :title="chapter.title"
+                class="chapter-item"
             >
-              {{ note.title }}
+              {{ chapter.title }}
+            </li>
+            <li v-if="chapters.length === 0" class="no-chapter-placeholder">
+              暂无内容
             </li>
           </ul>
         </div>
       </div>
 
+      <!-- 中间内容区 -->
       <div class="card content-card" ref="contentRef">
         <div class="card-header">
           <h3><i class="fa-solid fa-book-open"></i> 学习内容</h3>
@@ -44,21 +51,24 @@
         <div class="markdown-body" v-html="contentHtml"></div>
       </div>
 
+      <!-- 右侧导航目录 -->
       <div class="side-panel-right">
         <div class="card toc-card">
-          <h3><i class="fa-solid fa-list-ul"></i> 章节目录</h3>
+          <h3><i class="fa-solid fa-list-ul"></i> 导航目录</h3>
           <ul class="toc-list">
             <li v-for="heading in headings" :key="heading.id">
               <a
                   :href="`#${heading.id}`"
                   @click.prevent="scrollToHeading(heading.id)"
                   :style="{ marginLeft: (heading.level - 1) * 15 + 'px' }"
+                  :title="heading.text"
+                  class="toc-item"
               >
                 {{ heading.text }}
               </a>
             </li>
             <li v-if="headings.length === 0" class="no-toc-placeholder">
-              未找到章节目录。
+              未找到导航目录
             </li>
           </ul>
         </div>
@@ -75,11 +85,10 @@
       </div>
     </div>
 
-    <div v-else class="main-content-single">
-      <div class="card content-card">
-        <div class="markdown-body" v-html="contentHtml"></div>
-      </div>
-    </div>
+    <!-- 回到顶部按钮 -->
+    <button v-if="showBackToTop" @click="scrollToTop" class="back-to-top-btn" title="回到顶部">
+      <i class="fa-solid fa-arrow-up"></i>
+    </button>
 
     <!-- 测验面板 -->
     <QuizPanel
@@ -264,27 +273,83 @@ const contentHtml = ref('<p>正在加载内容...</p>');
 const contentRef = ref<HTMLElement | null>(null);
 const showQuiz = ref(false);
 const headings = ref<{ id: string; text: string; level: number }[]>([]);
+const chapters = ref<{ title: string; content: string }[]>([]);
+const activeChapterIndex = ref(0);
+const showBackToTop = ref(false);
 
-const notesForSoftwareEngineering = [
-  {title: 'JavaSE 笔记 (一)', path: '/笔记/JavaSE 核心内容/JavaSE 核心内容 - JavaSE 笔记（一）走进Java语言.md'},
-  {title: 'JavaSE 笔记 (二)', path: '/笔记/JavaSE 核心内容/JavaSE 核心内容 - JavaSE 笔记（二）面向过程编程.md'},
-  {title: 'JavaSE 笔记 (三)', path: '/笔记/JavaSE 核心内容/JavaSE 核心内容 - JavaSE 笔记（三）面向对象基础.md'},
-  {title: 'JavaSE 笔记 (四)', path: '/笔记/JavaSE 核心内容/JavaSE 核心内容 - JavaSE 笔记（四）面向对象高级篇.md'},
-  {title: 'JavaSE 笔记 (五)', path: '/笔记/JavaSE 核心内容/JavaSE 核心内容 - JavaSE 笔记（五）泛型程序设计.md'},
-  {title: 'JavaSE 笔记 (六)', path: '/笔记/JavaSE 核心内容/JavaSE 核心内容 - JavaSE 笔记（六）集合类与IO.md'},
-  {title: 'JavaSE 笔记 (七)', path: '/笔记/JavaSE 核心内容/JavaSE 核心内容 - JavaSE 笔记（七）多线程与反射.md'},
-  {title: 'JavaSE 笔记 (八)', path: '/笔记/JavaSE 核心内容/JavaSE 核心内容 - JavaSE 笔记（八）GUI程序开发.md'},
-  {title: 'JavaWeb 笔记 (一)', path: '/笔记/JavaWeb/JavaWeb 旧版 - JavaWeb 笔记（一）Java网络编程.md'},
-  {title: 'JavaWeb 笔记 (二)', path: '/笔记/JavaWeb/JavaWeb 旧版 - JavaWeb 笔记（二）数据库基础.md'},
-  {title: 'JavaWeb 笔记 (三)', path: '/笔记/JavaWeb/JavaWeb 旧版 - JavaWeb 笔记（三）Java与数据库.md'},
-  {title: 'JavaWeb 笔记 (四)', path: '/笔记/JavaWeb/JavaWeb 旧版 - JavaWeb 笔记（四）前端基础.md'},
-  {title: 'JavaWeb 笔记 (五)', path: '/笔记/JavaWeb/JavaWeb 旧版 - JavaWeb 笔记（五）后端开发.md'},
-];
+// 从知识点数据构建章节列表
+const buildChapters = (): { title: string; content: string }[] => {
+  if (!knowledgePoint.value) return [];
+  
+  // 优先使用 contentFiles（多文件模式）
+  if (knowledgePoint.value.contentFiles && knowledgePoint.value.contentFiles.length > 0) {
+    return knowledgePoint.value.contentFiles.map(file => ({
+      title: file.title,
+      content: file.content
+    }));
+  }
+  
+  // 向后兼容：使用单一 content 字段
+  if (knowledgePoint.value.content) {
+    return [{ title: '学习内容', content: knowledgePoint.value.content }];
+  }
+  
+  return [];
+};
 
-const activeNotePath = ref('');
+const selectChapter = (index: number) => {
+  activeChapterIndex.value = index;
+  renderChapter();
+};
 
-const selectNote = (path: string) => {
-  activeNotePath.value = path;
+// 渲染选中的章节
+const renderChapter = async () => {
+  const chapter = chapters.value[activeChapterIndex.value];
+  if (!chapter) return;
+
+  // 重置代码块计数器
+  codeBlockCount = 0;
+  totalContentLength = 0;
+
+  try {
+    const parsedHtml = marked.parse(chapter.content);
+    contentHtml.value = typeof parsedHtml === 'string' ? parsedHtml : parsedHtml.toString();
+
+    await nextTick();
+    const contentEl = contentRef.value;
+    if (contentEl) {
+      // 提取当前章节的所有标题（H1-H4）
+      const headingElements = contentEl.querySelectorAll('h1, h2, h3, h4');
+      const newHeadings: { id: string; text: string; level: number }[] = [];
+      headingElements.forEach((el, index) => {
+        const id = `heading-${index}`;
+        el.id = id;
+        newHeadings.push({
+          id,
+          text: el.textContent || '',
+          level: parseInt(el.tagName.substring(1), 10),
+        });
+      });
+      headings.value = newHeadings;
+    }
+  } catch (error) {
+    console.error('渲染章节失败:', error);
+    contentHtml.value = '<p style="color: #ff8a8a;">抱歉，章节内容渲染失败。</p>';
+    headings.value = [];
+  }
+};
+
+// 滚动到顶部
+const scrollToTop = () => {
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  });
+};
+
+// 监听滚动事件，控制回到顶部按钮显示
+const handleScroll = () => {
+  showBackToTop.value = window.scrollY > 300;
 };
 
 const handleQuizCompleted = async () => {
@@ -318,59 +383,34 @@ const scrollToHeading = (id: string) => {
   }
 };
 
-watch(pointId, (newId) => {
-  if (newId === 'cs-y3-s6-c1') {
-    if (notesForSoftwareEngineering.length > 1 && !activeNotePath.value) {
-      const secondNote = notesForSoftwareEngineering[1];
-      if (secondNote) {
-        selectNote(secondNote.path);
-      }
-    }
-  } else {
-    activeNotePath.value = '';
-    contentHtml.value = '<p>该知识点的详细内容即将上线，敬请期待！</p>';
-    headings.value = [];
-  }
-}, {immediate: true});
-
-watch(activeNotePath, async (newPath) => {
-  if (newPath) {
-    headings.value = [];
-    contentHtml.value = '<p>正在加载学习内容...</p>';
-    
-    // 重置代码块计数器
-    codeBlockCount = 0;
-    totalContentLength = 0;
-    
+watch(pointId, async () => {
+  // 构建章节列表（支持多文件或单文件模式）
+  if (knowledgePoint.value) {
     try {
-      const response = await fetch(newPath);
-      if (!response.ok) throw new Error(`File not found: ${newPath}`);
-      const markdownText = await response.text();
-
-      // 解析 markdown 内容
-      const parsedHtml = marked.parse(markdownText);
-      contentHtml.value = typeof parsedHtml === 'string' ? parsedHtml : parsedHtml.toString();
-
-      await nextTick();
-      const contentEl = contentRef.value;
-      if (contentEl) {
-        const headingElements = contentEl.querySelectorAll('h1, h2, h3, h4');
-        const newHeadings: { id: string; text: string; level: number }[] = [];
-        headingElements.forEach((el, index) => {
-          const id = `heading-${index}`;
-          el.id = id;
-          newHeadings.push({
-            id,
-            text: el.textContent || '',
-            level: parseInt(el.tagName.substring(1), 10),
-          });
-        });
-        headings.value = newHeadings;
+      // 使用新的构建函数
+      chapters.value = buildChapters();
+      
+      if (chapters.value.length > 0) {
+        activeChapterIndex.value = 0;
+        // 等待 DOM 更新后再渲染章节，确保导航目录能正确提取
+        await nextTick();
+        await renderChapter();
+      } else {
+        // 没有内容
+        chapters.value = [{ title: '即将上线', content: '该知识点的详细内容即将上线，敬请期待！' }];
+        contentHtml.value = '<p>该知识点的详细内容即将上线，敬请期待！</p>';
+        headings.value = [];
       }
     } catch (error) {
-      console.error("加载笔记内容失败:", error);
-      contentHtml.value = '<p style="color: #ff8a8a;">抱歉，该笔记的详细内容暂时无法加载。</p>';
+      console.error('解析知识点内容失败:', error);
+      chapters.value = [{ title: '错误', content: '该知识点的详细内容解析失败' }];
+      contentHtml.value = '<p>该知识点的详细内容即将上线，敬请期待！</p>';
+      headings.value = [];
     }
+  } else {
+    chapters.value = [{ title: '即将上线', content: '该知识点的详细内容即将上线，敬请期待！' }];
+    contentHtml.value = '<p>该知识点的详细内容即将上线，敬请期待！</p>';
+    headings.value = [];
   }
 }, {immediate: true});
 
@@ -444,6 +484,8 @@ onMounted(() => {
   (window as any).copyCode = copyCodeToClipboard;
   // 开始学习计时器
   studyTimer.start();
+  // 监听滚动事件
+  window.addEventListener('scroll', handleScroll);
 });
 
 // 清理全局函数
@@ -451,6 +493,8 @@ onUnmounted(() => {
   delete (window as any).copyCode;
   // 停止学习计时器
   studyTimer.stop();
+  // 移除滚动监听
+  window.removeEventListener('scroll', handleScroll);
 });
 </script>
 
@@ -561,25 +605,24 @@ onUnmounted(() => {
   position: sticky; /* 侧边栏随页面滚动保持在视口 */
   top: 104px; /* header的top(20px) + header高度(64px) + 间距(20px) = 104px */
   align-self: start;
-  max-height: calc(100vh - 124px); /* 视口高度 - top(104px) - 底部间距(20px) = 124px */
+  max-height: calc(50vh - 60px); /* 动态50%视口高度，减去一些边距 */
   overflow: hidden;
 }
 
 /* 侧边栏内卡片独立滚动，标题固定在顶部区域 */
-.file-list-card, .toc-card {
+.chapter-list-card, .toc-card {
   display: flex;
   flex-direction: column;
-  max-height: 100%; /* 限制最大高度为父容器高度 */
-  height: auto; /* 允许根据内容自适应高度 */
+  height: calc(50vh - 60px); /* 与父容器高度一致，动态50%视口高度 */
   overflow: hidden;
 }
 
-.file-list-card h3, .toc-card h3 { 
+.chapter-list-card h3, .toc-card h3 { 
   flex-shrink: 0; /* 标题不参与滚动 */
   margin-bottom: 12px !important; /* 覆盖 .card h3 的样式 */
 }
 
-.file-list, .toc-list { 
+.chapter-list, .toc-list { 
   flex: 1;
   overflow-y: auto !important; /* 列表独立滚动 - 强制生效 */
   overflow-x: hidden;
@@ -587,30 +630,31 @@ onUnmounted(() => {
   padding-right: 4px; /* 为滚动条留出空间 */
   scroll-behavior: smooth; /* 平滑滚动 */
   -webkit-overflow-scrolling: touch; /* iOS 平滑滚动 */
-  max-height: 600px; /* 临时添加：限制最大高度，便于测试滚动效果 */
 }
 
-/* 美化滚动条 */
-.file-list::-webkit-scrollbar,
+/* 美化滚动条 - 支持主题切换 */
+.chapter-list::-webkit-scrollbar,
 .toc-list::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
 }
 
-.file-list::-webkit-scrollbar-track,
+.chapter-list::-webkit-scrollbar-track,
 .toc-list::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 3px;
+  background: var(--scrollbar-track);
+  border-radius: 4px;
+  margin: 4px 0;
 }
 
-.file-list::-webkit-scrollbar-thumb,
+.chapter-list::-webkit-scrollbar-thumb,
 .toc-list::-webkit-scrollbar-thumb {
-  background: var(--primary-color);
-  border-radius: 3px;
+  background: var(--scrollbar-thumb);
+  border-radius: 4px;
+  transition: background 0.2s ease;
 }
 
-.file-list::-webkit-scrollbar-thumb:hover,
+.chapter-list::-webkit-scrollbar-thumb:hover,
 .toc-list::-webkit-scrollbar-thumb:hover {
-  background: var(--primary-color-dark, #6366f1);
+  background: var(--scrollbar-thumb-hover);
 }
 
 .card {
@@ -672,13 +716,13 @@ onUnmounted(() => {
 
 /* 桌面端保持由父级限制高度与内部滚动；移动端的放开在 media 查询中处理 */
 
-.file-list {
+.chapter-list {
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
-.file-list li {
+.chapter-list li {
   padding: 10px 15px;
   margin-bottom: 5px;
   border-radius: 8px;
@@ -691,15 +735,113 @@ onUnmounted(() => {
   text-overflow: ellipsis;
 }
 
-.file-list li:hover {
+.chapter-list li:hover {
   background-color: rgba(255, 255, 255, 0.1);
   color: var(--text-primary);
 }
 
-.file-list li.active {
+.chapter-list li.active {
   background-color: var(--primary-color);
   color: white;
   font-weight: 500;
+}
+
+/* 自定义 tooltip 样式 */
+.chapter-item {
+  position: relative;
+}
+
+.chapter-item:hover::after {
+  content: attr(title);
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  white-space: nowrap;
+  z-index: 1000;
+  margin-left: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+  opacity: 0;
+  animation: tooltipFadeIn 0.2s ease-out forwards;
+}
+
+.chapter-item:hover::before {
+  content: '';
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 5px solid transparent;
+  border-right-color: rgba(0, 0, 0, 0.9);
+  margin-left: 3px;
+  z-index: 1001;
+  pointer-events: none;
+  opacity: 0;
+  animation: tooltipFadeIn 0.2s ease-out forwards;
+}
+
+@keyframes tooltipFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-50%) translateX(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+  }
+}
+
+/* TOC 项目 tooltip 样式 */
+.toc-item {
+  position: relative;
+}
+
+.toc-item:hover::after {
+  content: attr(title);
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  white-space: nowrap;
+  z-index: 1000;
+  margin-left: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+  opacity: 0;
+  animation: tooltipFadeIn 0.2s ease-out forwards;
+}
+
+.toc-item:hover::before {
+  content: '';
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 5px solid transparent;
+  border-right-color: rgba(0, 0, 0, 0.9);
+  margin-left: 3px;
+  z-index: 1001;
+  pointer-events: none;
+  opacity: 0;
+  animation: tooltipFadeIn 0.2s ease-out forwards;
+}
+
+.no-chapter-placeholder {
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-style: italic;
+  padding: 10px 15px;
 }
 
 .toc-list {
@@ -944,13 +1086,13 @@ html.light-theme .markdown-body :deep(.code-header) {
     overflow: visible;
   }
   
-  .file-list-card, .toc-card {
-    max-height: 500px; /* 给一个合理的最大高度 */
+  .chapter-list-card, .toc-card {
+    max-height: calc(50vh - 40px); /* 平板端也使用50%视口高度 */
     height: auto;
   }
   
-  .file-list, .toc-list {
-    max-height: 400px; /* 确保列表不会太长 */
+  .chapter-list, .toc-list {
+    max-height: calc(50vh - 80px); /* 确保列表不会太长 */
   }
 }
 
@@ -970,12 +1112,46 @@ html.light-theme .markdown-body :deep(.code-header) {
     order: 0;
   }
   
-  .file-list-card, .toc-card {
-    max-height: 400px; /* 移动端更小的高度 */
+  .chapter-list-card, .toc-card {
+    max-height: calc(50vh - 30px); /* 移动端也使用50%视口高度 */
   }
   
-  .file-list, .toc-list {
-    max-height: 300px;
+  .chapter-list, .toc-list {
+    max-height: calc(50vh - 60px);
+  }
+  
+  /* 移动端 tooltip 调整 */
+  .chapter-item:hover::after {
+    left: auto;
+    right: 0;
+    margin-left: 0;
+    margin-right: 8px;
+  }
+  
+  .chapter-item:hover::before {
+    left: auto;
+    right: 0;
+    margin-left: 0;
+    margin-right: 3px;
+    border-right-color: transparent;
+    border-left-color: rgba(0, 0, 0, 0.9);
+  }
+  
+  /* 移动端 TOC tooltip 调整 */
+  .toc-item:hover::after {
+    left: auto;
+    right: 0;
+    margin-left: 0;
+    margin-right: 8px;
+  }
+  
+  .toc-item:hover::before {
+    left: auto;
+    right: 0;
+    margin-left: 0;
+    margin-right: 3px;
+    border-right-color: transparent;
+    border-left-color: rgba(0, 0, 0, 0.9);
   }
   
   .markdown-body :deep(pre) {
@@ -1053,5 +1229,48 @@ html.light-theme .markdown-body :deep(.code-header) {
   color: var(--text-secondary);
   font-size: 0.8125rem;
   line-height: 1.4;
+}
+
+/* 回到顶部按钮 */
+.back-to-top-btn {
+  position: fixed;
+  left: 30px;
+  bottom: 30px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  box-shadow: 0 4px 12px rgba(138, 127, 251, 0.4);
+  transition: all 0.3s ease;
+  z-index: 999;
+}
+
+.back-to-top-btn:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 20px rgba(138, 127, 251, 0.6);
+  background: var(--primary-color-dark, #6366f1);
+}
+
+.back-to-top-btn:active {
+  transform: translateY(-2px);
+}
+
+/* 响应式：移动端调整回到顶部按钮位置 */
+@media (max-width: 768px) {
+  .back-to-top-btn {
+    left: auto;
+    right: 20px;
+    bottom: 80px; /* 避开 AI 助手 */
+    width: 45px;
+    height: 45px;
+    font-size: 18px;
+  }
 }
 </style>

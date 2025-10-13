@@ -5,7 +5,7 @@
         <i :class="statusIcon"></i>
         <span>{{ statusText }}</span>
       </div>
-      <h3 class="card-title">{{ point.title }}</h3>
+      <h3 class="card-title">{{ displayTitle }}</h3>
       <p class="card-snippet">{{ point.contentSnippet }}</p>
       <div class="card-footer">
         <span class="subject-tag">{{ point.subject }}</span>
@@ -51,6 +51,13 @@ const statusIcon = computed(() => {
     default:
       return 'fa-solid fa-circle'
   }
+})
+
+// 移除标题中的课程代号（如 "CS101: " 或 "MATH101: "）
+const displayTitle = computed(() => {
+  // 匹配模式：大写字母 + 数字 + 冒号 + 空格（如 CS101: 或 MATH101: ）
+  const regex = /^[A-Z]+\d+:\s*/
+  return props.point.title.replace(regex, '')
 })
 </script>
 

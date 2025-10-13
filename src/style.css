@@ -16,6 +16,11 @@ html {
     --bg-color: #0f1014;
     --border-radius: 16px;
     --backdrop-blur: 12px;
+    
+    /* 滚动条颜色 - 暗色主题 */
+    --scrollbar-track: rgba(255, 255, 255, 0.05);
+    --scrollbar-thumb: rgba(138, 127, 251, 0.5);
+    --scrollbar-thumb-hover: rgba(138, 127, 251, 0.8);
 }
 
 html.light-theme {
@@ -25,6 +30,11 @@ html.light-theme {
     --text-primary: #111827;
     --text-secondary: #4b5563;
     --bg-color: #f9fafb;
+    
+    /* 滚动条颜色 - 亮色主题 */
+    --scrollbar-track: rgba(0, 0, 0, 0.05);
+    --scrollbar-thumb: rgba(124, 58, 237, 0.3);
+    --scrollbar-thumb-hover: rgba(124, 58, 237, 0.5);
 }
 
 

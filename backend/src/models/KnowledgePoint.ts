@@ -16,12 +16,20 @@ export interface IGraphPosition {
     y: number;
 }
 
+// 内容文件接口
+export interface IContentFile {
+    title: string;    // 文件标题
+    content: string;  // Markdown内容
+}
+
 // 直接定义最终的文档接口，包含了所有需要的字段
 export interface IKnowledgePoint extends Document {
     id: string;
     title: string;
     subject: string;
     contentSnippet: string;
+    content?: string; // 完整的Markdown内容（向后兼容）
+    contentFiles?: IContentFile[]; // 多个Markdown文件
     status: 'completed' | 'in_progress' | 'not_started';
     prerequisites: string[];
     quiz: IQuizQuestion[];
@@ -44,11 +52,18 @@ const GraphPositionSchema = new Schema<IGraphPosition>({
     y: {type: Number, required: true},
 }, {_id: false});
 
+const ContentFileSchema = new Schema<IContentFile>({
+    title: {type: String, required: true},
+    content: {type: String, required: true},
+}, {_id: false});
+
 const KnowledgePointSchema = new Schema<IKnowledgePoint>({
     id: {type: String, required: true, unique: true},
     title: {type: String, required: true},
     subject: {type: String, required: true},
     contentSnippet: {type: String, required: true},
+    content: {type: String, required: false}, // 完整的Markdown内容（向后兼容）
+    contentFiles: {type: [ContentFileSchema], required: false}, // 多个Markdown文件
     status: {type: String, required: true, enum: ['completed', 'in_progress', 'not_started']},
     prerequisites: [{type: String}],
     quiz: {type: [QuizQuestionSchema], default: []},

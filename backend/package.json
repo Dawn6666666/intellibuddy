@@ -7,7 +7,15 @@
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "seed": "ts-node src/seed.ts",
     "seed:java": "ts-node src/java-module.ts",
-    "seed:cs": "ts-node src/seed-cs-curriculum.ts"
+    "seed:cs": "ts-node src/seed-cs-curriculum.ts",
+    "seed:year1": "ts-node src/seed-year1.ts",
+    "seed:year2": "ts-node src/seed-year2.ts",
+    "seed:year3": "ts-node src/seed-year3.ts",
+    "seed:year4": "ts-node src/seed-year4.ts",
+    "seed:all": "ts-node src/seed-all.ts",
+    "import": "node import-data.cjs",
+    "fill:content": "ts-node src/fill-content.ts",
+    "fill:content:clear": "ts-node src/fill-content.ts --clear"
   },
   "keywords": [],
   "author": "",

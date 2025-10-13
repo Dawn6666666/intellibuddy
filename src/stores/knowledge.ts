@@ -9,12 +9,19 @@ export interface QuizQuestion {
     options: string[];
 }
 
+export interface ContentFile {
+    title: string;    // 文件标题
+    content: string;  // Markdown内容
+}
+
 export interface KnowledgePoint {
     _id?: string;
     id: string;
     title: string;
     subject: string;
     contentSnippet: string;
+    content?: string; // 完整的Markdown内容（向后兼容）
+    contentFiles?: ContentFile[]; // 多个Markdown文件
     status: 'completed' | 'in_progress' | 'not_started';
     prerequisites: string[];
     quiz?: QuizQuestion[];
