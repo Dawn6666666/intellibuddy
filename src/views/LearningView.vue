@@ -21,21 +21,50 @@
       <div class="side-panel-left">
         <div class="card chapter-list-card">
           <h3><i class="fa-solid fa-file-lines"></i> 文件列表</h3>
-          <ul class="chapter-list">
-            <li
-                v-for="(chapter, index) in chapters"
-                :key="index"
-                :class="{ 'active': index === activeChapterIndex }"
-                @click="selectChapter(index)"
-                :title="chapter.title"
-                class="chapter-item"
+          <div class="chapter-groups">
+            <!-- 分组显示 -->
+            <div 
+              v-for="(group, groupIndex) in chapterGroups" 
+              :key="groupIndex" 
+              class="chapter-group"
             >
-              {{ chapter.title }}
-            </li>
-            <li v-if="chapters.length === 0" class="no-chapter-placeholder">
+              <!-- 分组标题 -->
+              <div 
+                class="group-header"
+                @click="toggleGroup(groupIndex)"
+                :class="{ 'expanded': group.isExpanded }"
+              >
+                <i 
+                  class="fa-solid group-icon" 
+                  :class="group.isExpanded ? 'fa-chevron-down' : 'fa-chevron-right'"
+                ></i>
+                <span class="group-title">{{ group.groupName }}</span>
+                <span class="group-count">({{ group.chapters.length }})</span>
+              </div>
+              
+              <!-- 章节列表 -->
+              <ul 
+                class="chapter-list" 
+                v-show="group.isExpanded"
+              >
+                <li
+                  v-for="chapter in group.chapters"
+                  :key="chapter.originalIndex"
+                  :class="{ 'active': chapter.originalIndex === activeChapterIndex }"
+                  @click="selectChapter(chapter.originalIndex)"
+                  :title="chapter.title"
+                  class="chapter-item"
+                >
+                  {{ chapter.title }}
+                </li>
+              </ul>
+            </div>
+            
+            <!-- 无内容占位符 -->
+            <div v-if="chapterGroups.length === 0" class="no-chapter-placeholder">
               暂无内容
-            </li>
-          </ul>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -113,6 +142,8 @@ import {useKnowledgeStore} from '@/stores/knowledge';
 import {useUserStore} from '@/stores/user';
 import {marked} from 'marked';
 import hljs from 'highlight.js';
+import markedKatex from 'marked-katex-extension';
+import 'katex/dist/katex.min.css';
 import QuizPanel from '@/components/QuizPanel.vue';
 import {apiUpdateProgress} from '@/services/apiService';
 import {useAIIntervention} from '@/composables/useAIIntervention';
@@ -229,6 +260,15 @@ renderer.code = function({ text, lang }: { text: string; lang?: string }) {
   `;
 };
 
+// 配置 KaTeX 支持数学公式 - 必须在 setOptions 之前注册
+marked.use(markedKatex({
+  throwOnError: false,  // 公式错误时不抛异常，显示错误信息
+  output: 'html',
+  nonStandard: true,    // 启用 \color 等扩展命令
+  strict: false,        // 不使用严格模式，允许更多语法
+  trust: true          // 信任输入，支持 \href、\includegraphics 等命令
+}));
+
 marked.setOptions({
   renderer,
   gfm: true,
@@ -274,8 +314,168 @@ const contentRef = ref<HTMLElement | null>(null);
 const showQuiz = ref(false);
 const headings = ref<{ id: string; text: string; level: number }[]>([]);
 const chapters = ref<{ title: string; content: string }[]>([]);
+const chapterGroups = ref<ChapterGroup[]>([]);
 const activeChapterIndex = ref(0);
 const showBackToTop = ref(false);
+
+// 章节分组接口
+interface ChapterGroup {
+  groupName: string;
+  chapters: { title: string; content: string; originalIndex: number }[];
+  isExpanded: boolean;
+}
+
+// 智能分组函数：根据前缀自动分组
+const groupChaptersByPrefix = (chapters: { title: string; content: string }[]): ChapterGroup[] => {
+  if (chapters.length === 0) return [];
+  
+  // 如果只有一个章节，不需要分组
+  if (chapters.length === 1) {
+    return [{
+      groupName: '学习内容',
+      chapters: chapters.map((chapter, index) => ({ ...chapter, originalIndex: index })),
+      isExpanded: true
+    }];
+  }
+  
+  const groups: Map<string, { title: string; content: string; originalIndex: number }[]> = new Map();
+  
+  chapters.forEach((chapter, index) => {
+    let groupKey = '其他内容';
+    let cleanTitle = chapter.title;
+    
+    // 检测常见的前缀模式
+    const patterns = [
+      // JavaSE 核心内容 - JavaSE 笔记（一）走进Java语言 -> JavaSE 核心内容
+      /^(JavaSE\s*核心内容)\s*-\s*JavaSE\s*笔记（[^）]+）(.*)$/,
+      // JavaWeb 旧版 - JavaWeb 笔记（一）Java网络编程 -> JavaWeb
+      /^(JavaWeb)\s*旧版\s*-\s*JavaWeb\s*笔记（[^）]+）(.*)$/,
+      // 通用模式：前缀 - 笔记（序号）标题 -> 前缀
+      /^([^-]+)\s*-\s*[^（]*笔记（[^）]+）(.*)$/,
+      // 通用模式：前缀 笔记（序号）标题 -> 前缀
+      /^([^（]+)\s*笔记（[^）]+）(.*)$/,
+      // 通用模式：前缀（序号）标题 -> 前缀
+      /^([^（]+)（[^）]+）(.*)$/
+    ];
+    
+    for (const pattern of patterns) {
+      const match = chapter.title.match(pattern);
+      if (match) {
+        groupKey = match[1]?.trim() || '其他内容';
+        // 提取序号和后缀作为清理后的标题
+        const numberMatch = chapter.title.match(/（([^）]+)）/);
+        const suffix = match[3] ? match[3].trim() : '';
+        if (numberMatch && numberMatch[1]) {
+          // 构建显示标题：序号 + 后缀（如果有）
+          if (suffix) {
+            cleanTitle = `${numberMatch[1]} ${suffix}`;
+          } else {
+            // 如果没有后缀，尝试从原标题中提取更多信息
+            const afterNumber = chapter.title.replace(/^.*（[^）]+）/, '').trim();
+            if (afterNumber) {
+              cleanTitle = `${numberMatch[1]} ${afterNumber}`;
+            } else {
+              cleanTitle = numberMatch[1];
+            }
+          }
+        }
+        break;
+      }
+    }
+    
+    // 如果没有匹配到模式，尝试简单的分隔符分组
+    if (groupKey === '其他内容') {
+      const separators = [' - ', '：', ': ', '_', ' '];
+      for (const sep of separators) {
+        if (chapter.title.includes(sep)) {
+          const parts = chapter.title.split(sep);
+          if (parts.length >= 2 && parts[0]) {
+            groupKey = parts[0].trim();
+            cleanTitle = parts.slice(1).join(sep).trim();
+            break;
+          }
+        }
+      }
+    }
+    
+    if (!groups.has(groupKey)) {
+      groups.set(groupKey, []);
+    }
+    
+    const groupChapters = groups.get(groupKey);
+    if (groupChapters) {
+      groupChapters.push({
+        title: cleanTitle,
+        content: chapter.content,
+        originalIndex: index
+      });
+    }
+  });
+  
+  // 转换为数组并排序
+  const result = Array.from(groups.entries()).map(([groupName, chapters]) => ({
+    groupName,
+    chapters: chapters.sort((a, b) => {
+      // 尝试按序号排序
+      const aNum = extractNumber(a.title);
+      const bNum = extractNumber(b.title);
+      if (aNum !== null && bNum !== null) {
+        return aNum - bNum;
+      }
+      // 否则按原始索引排序
+      return a.originalIndex - b.originalIndex;
+    }),
+    isExpanded: true // 默认展开
+  }));
+  
+  // 如果只有一个分组，直接返回该分组
+  if (result.length === 1) {
+    return result;
+  }
+  
+  // 多个分组时，按分组名排序
+  return result.sort((a, b) => {
+    // JavaSE 相关的放前面
+    if (a.groupName.includes('JavaSE') && !b.groupName.includes('JavaSE')) return -1;
+    if (!a.groupName.includes('JavaSE') && b.groupName.includes('JavaSE')) return 1;
+    // JavaWeb 相关的放中间
+    if (a.groupName.includes('JavaWeb') && !b.groupName.includes('JavaWeb')) return -1;
+    if (!a.groupName.includes('JavaWeb') && b.groupName.includes('JavaWeb')) return 1;
+    // 其他按字母顺序
+    return a.groupName.localeCompare(b.groupName);
+  });
+};
+
+// 提取标题中的数字序号
+const extractNumber = (title: string): number | null => {
+  const matches = [
+    title.match(/（([一二三四五六七八九十]+)）/),
+    title.match(/（(\d+)）/),
+    title.match(/^([一二三四五六七八九十]+)/),
+    title.match(/^(\d+)/),
+  ];
+  
+  for (const match of matches) {
+    if (match && match[1]) {
+      const numStr = match[1];
+      // 转换中文数字
+      const chineseNums: Record<string, number> = {
+        '一': 1, '二': 2, '三': 3, '四': 4, '五': 5,
+        '六': 6, '七': 7, '八': 8, '九': 9, '十': 10
+      };
+      const chineseNum = chineseNums[numStr];
+      if (chineseNum !== undefined) {
+        return chineseNum;
+      }
+      // 转换阿拉伯数字
+      const arabicNum = parseInt(numStr, 10);
+      if (!isNaN(arabicNum)) {
+        return arabicNum;
+      }
+    }
+  }
+  return null;
+};
 
 // 从知识点数据构建章节列表
 const buildChapters = (): { title: string; content: string }[] => {
@@ -297,10 +497,37 @@ const buildChapters = (): { title: string; content: string }[] => {
   return [];
 };
 
-const selectChapter = (index: number) => {
-  activeChapterIndex.value = index;
+// 切换分组展开/折叠状态
+const toggleGroup = (groupIndex: number) => {
+  if (chapterGroups.value[groupIndex]) {
+    chapterGroups.value[groupIndex].isExpanded = !chapterGroups.value[groupIndex].isExpanded;
+  }
+};
+
+// 选择章节（通过原始索引）
+const selectChapter = (originalIndex: number) => {
+  activeChapterIndex.value = originalIndex;
   renderChapter();
 };
+
+// 获取当前激活章节的分组和章节信息（备用函数，可用于未来扩展）
+// const getActiveChapterInfo = () => {
+//   for (let groupIndex = 0; groupIndex < chapterGroups.value.length; groupIndex++) {
+//     const group = chapterGroups.value[groupIndex];
+//     if (group && group.chapters) {
+//       const chapterIndex = group.chapters.findIndex(ch => ch.originalIndex === activeChapterIndex.value);
+//       if (chapterIndex !== -1) {
+//         return {
+//           groupIndex,
+//           chapterIndex,
+//           group,
+//           chapter: group.chapters[chapterIndex]
+//         };
+//       }
+//     }
+//   }
+//   return null;
+// };
 
 // 渲染选中的章节
 const renderChapter = async () => {
@@ -391,6 +618,9 @@ watch(pointId, async () => {
       chapters.value = buildChapters();
       
       if (chapters.value.length > 0) {
+        // 构建智能分组
+        chapterGroups.value = groupChaptersByPrefix(chapters.value);
+        
         activeChapterIndex.value = 0;
         // 等待 DOM 更新后再渲染章节，确保导航目录能正确提取
         await nextTick();
@@ -398,17 +628,32 @@ watch(pointId, async () => {
       } else {
         // 没有内容
         chapters.value = [{ title: '即将上线', content: '该知识点的详细内容即将上线，敬请期待！' }];
+        chapterGroups.value = [{
+          groupName: '提示',
+          chapters: [{ title: '即将上线', content: '该知识点的详细内容即将上线，敬请期待！', originalIndex: 0 }],
+          isExpanded: true
+        }];
         contentHtml.value = '<p>该知识点的详细内容即将上线，敬请期待！</p>';
         headings.value = [];
       }
     } catch (error) {
       console.error('解析知识点内容失败:', error);
       chapters.value = [{ title: '错误', content: '该知识点的详细内容解析失败' }];
+      chapterGroups.value = [{
+        groupName: '错误',
+        chapters: [{ title: '内容解析失败', content: '该知识点的详细内容解析失败', originalIndex: 0 }],
+        isExpanded: true
+      }];
       contentHtml.value = '<p>该知识点的详细内容即将上线，敬请期待！</p>';
       headings.value = [];
     }
   } else {
     chapters.value = [{ title: '即将上线', content: '该知识点的详细内容即将上线，敬请期待！' }];
+    chapterGroups.value = [{
+      groupName: '提示',
+      chapters: [{ title: '即将上线', content: '该知识点的详细内容即将上线，敬请期待！', originalIndex: 0 }],
+      isExpanded: true
+    }];
     contentHtml.value = '<p>该知识点的详细内容即将上线，敬请期待！</p>';
     headings.value = [];
   }
@@ -605,8 +850,8 @@ onUnmounted(() => {
   position: sticky; /* 侧边栏随页面滚动保持在视口 */
   top: 104px; /* header的top(20px) + header高度(64px) + 间距(20px) = 104px */
   align-self: start;
-  max-height: calc(50vh - 60px); /* 动态50%视口高度，减去一些边距 */
-  overflow: hidden;
+  max-height: calc(100vh - 140px); /* 增加高度以容纳测验卡片 */
+  overflow-y: auto; /* 允许滚动 */
 }
 
 /* 侧边栏内卡片独立滚动，标题固定在顶部区域 */
@@ -622,7 +867,7 @@ onUnmounted(() => {
   margin-bottom: 12px !important; /* 覆盖 .card h3 的样式 */
 }
 
-.chapter-list, .toc-list { 
+.toc-list { 
   flex: 1;
   overflow-y: auto !important; /* 列表独立滚动 - 强制生效 */
   overflow-x: hidden;
@@ -633,26 +878,22 @@ onUnmounted(() => {
 }
 
 /* 美化滚动条 - 支持主题切换 */
-.chapter-list::-webkit-scrollbar,
 .toc-list::-webkit-scrollbar {
   width: 8px;
 }
 
-.chapter-list::-webkit-scrollbar-track,
 .toc-list::-webkit-scrollbar-track {
   background: var(--scrollbar-track);
   border-radius: 4px;
   margin: 4px 0;
 }
 
-.chapter-list::-webkit-scrollbar-thumb,
 .toc-list::-webkit-scrollbar-thumb {
   background: var(--scrollbar-thumb);
   border-radius: 4px;
   transition: background 0.2s ease;
 }
 
-.chapter-list::-webkit-scrollbar-thumb:hover,
 .toc-list::-webkit-scrollbar-thumb:hover {
   background: var(--scrollbar-thumb-hover);
 }
@@ -716,10 +957,101 @@ onUnmounted(() => {
 
 /* 桌面端保持由父级限制高度与内部滚动；移动端的放开在 media 查询中处理 */
 
+/* 章节分组容器 */
+.chapter-groups {
+  flex: 1;
+  overflow-y: auto !important;
+  overflow-x: hidden;
+  min-height: 0;
+  padding-right: 4px;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 美化分组容器滚动条 */
+.chapter-groups::-webkit-scrollbar {
+  width: 8px;
+}
+
+.chapter-groups::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+  border-radius: 4px;
+  margin: 4px 0;
+}
+
+.chapter-groups::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.chapter-groups::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
+/* 章节分组样式 */
+.chapter-group {
+  margin-bottom: 8px;
+}
+
+.chapter-group:last-child {
+  margin-bottom: 0;
+}
+
+/* 分组标题样式 */
+.group-header {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  background: rgba(138, 127, 251, 0.08);
+  border: 1px solid rgba(138, 127, 251, 0.2);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 4px;
+  user-select: none;
+}
+
+.group-header:hover {
+  background: rgba(138, 127, 251, 0.15);
+  border-color: rgba(138, 127, 251, 0.3);
+}
+
+.group-header.expanded {
+  background: rgba(138, 127, 251, 0.12);
+  border-color: rgba(138, 127, 251, 0.25);
+}
+
+.group-icon {
+  font-size: 12px;
+  color: var(--primary-color);
+  margin-right: 8px;
+  transition: transform 0.2s ease;
+  width: 12px;
+  text-align: center;
+}
+
+.group-title {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.group-count {
+  font-size: 11px;
+  color: var(--text-secondary);
+  background: rgba(138, 127, 251, 0.1);
+  padding: 2px 6px;
+  border-radius: 10px;
+  margin-left: 8px;
+}
+
 .chapter-list {
   list-style: none;
   padding: 0;
   margin: 0;
+  padding-left: 16px; /* 为子项添加缩进 */
 }
 
 .chapter-list li {
@@ -918,6 +1250,51 @@ onUnmounted(() => {
 .markdown-body :deep(table) {
   max-width: 100%;
   overflow-x: auto;
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.5em 0;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.markdown-body :deep(th),
+.markdown-body :deep(td) {
+  border: 1px solid var(--card-border);
+  padding: 12px 16px;
+  text-align: left;
+}
+
+.markdown-body :deep(th) {
+  background: rgba(138, 127, 251, 0.1);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.markdown-body :deep(tr:nth-child(even)) {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+html.dark-theme .markdown-body :deep(tr:nth-child(even)) {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.markdown-body :deep(tr:hover) {
+  background: rgba(138, 127, 251, 0.05);
+}
+
+/* 表格中的公式样式优化 */
+.markdown-body :deep(td .katex),
+.markdown-body :deep(th .katex) {
+  font-size: 1em;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.markdown-body :deep(td .katex-display),
+.markdown-body :deep(th .katex-display) {
+  margin: 0.5em 0;
 }
 
 /* 代码块样式优化 - 彻底修复布局溢出问题 */
@@ -1091,7 +1468,7 @@ html.light-theme .markdown-body :deep(.code-header) {
     height: auto;
   }
   
-  .chapter-list, .toc-list {
+  .chapter-groups, .toc-list {
     max-height: calc(50vh - 80px); /* 确保列表不会太长 */
   }
 }
@@ -1116,7 +1493,7 @@ html.light-theme .markdown-body :deep(.code-header) {
     max-height: calc(50vh - 30px); /* 移动端也使用50%视口高度 */
   }
   
-  .chapter-list, .toc-list {
+  .chapter-groups, .toc-list {
     max-height: calc(50vh - 60px);
   }
   
@@ -1272,5 +1649,21 @@ html.light-theme .markdown-body :deep(.code-header) {
     height: 45px;
     font-size: 18px;
   }
+}
+
+/* KaTeX 数学公式样式 */
+.markdown-body :deep(.katex) {
+  font-size: 1.1em;
+}
+
+.markdown-body :deep(.katex-display) {
+  margin: 1.5em 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/* 深色模式下的公式 */
+html.dark-theme .markdown-body :deep(.katex) {
+  color: #e0e0e0;
 }
 </style>

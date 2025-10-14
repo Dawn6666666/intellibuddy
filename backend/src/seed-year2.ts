@@ -6,8 +6,221 @@ dotenv.config();
 
 const year2KnowledgePoints = [
   {
-    "id": "cs201",
+    "id": "math201",
+    "order": 6,
+    "title": "线性代数",
+    "description": "学习线性代数的核心概念，包括向量、矩阵、线性变换等，为机器学习和图形学打基础。",
+    "subject": "数学",
+    "category": "数学基础",
+    "difficulty": 1,
+    "prerequisites": [],
+    "learningPath": "第二学年 > 第三学期",
+    "estimatedHours": 120,
+    "contentSnippet": "向量、矩阵、行列式",
+    "resources": [
+      {
+        "type": "book",
+        "title": "Introduction to Linear Algebra (Gilbert Strang)",
+        "url": ""
+      },
+      {
+        "type": "book",
+        "title": "《线性代数》(清华大学)",
+        "url": ""
+      },
+      {
+        "type": "video",
+        "title": "3Blue1Brown - Essence of Linear Algebra",
+        "url": "https://www.youtube.com/playlist?list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab"
+      },
+      {
+        "type": "video",
+        "title": "MIT 18.06 Linear Algebra",
+        "url": "https://ocw.mit.edu/"
+      }
+    ],
+    "tags": [
+      "线性代数",
+      "矩阵",
+      "向量",
+      "特征值"
+    ],
+    "subtopics": [
+      {
+        "title": "向量",
+        "content": "向量概念、向量运算、线性组合、线性相关性",
+        "order": 1
+      },
+      {
+        "title": "矩阵",
+        "content": "矩阵运算、矩阵乘法、转置、逆矩阵",
+        "order": 2
+      },
+      {
+        "title": "行列式",
+        "content": "行列式定义、性质、计算方法",
+        "order": 3
+      },
+      {
+        "title": "线性方程组",
+        "content": "高斯消元法、矩阵的秩、解的结构",
+        "order": 4
+      },
+      {
+        "title": "向量空间",
+        "content": "向量空间、子空间、基与维数",
+        "order": 5
+      },
+      {
+        "title": "特征值与特征向量",
+        "content": "特征值定义、特征向量、对角化",
+        "order": 6
+      },
+      {
+        "title": "正交性",
+        "content": "内积、正交向量、正交矩阵、最小二乘法",
+        "order": 7
+      }
+    ],
+    "status": "not_started",
+    "graphPosition": {
+      "x": 0,
+      "y": 300
+    }
+  },
+  {
+    "id": "cs104",
+    "order": 7,
+    "title": "高级编程与代码规范",
+    "description": "学习面向对象编程思想、异常处理、模块化设计和代码整洁原则。",
+    "subject": "计算机科学",
+    "category": "编程基础",
+    "difficulty": 1,
+    "prerequisites": [
+      "cs101"
+    ],
+    "learningPath": "第二学年 > 第三学期",
+    "estimatedHours": 90,
+    "contentSnippet": "面向对象基础、异常处理、模块化",
+    "resources": [
+      {
+        "type": "book",
+        "title": "Clean Code (Robert C. Martin)",
+        "url": ""
+      },
+      {
+        "type": "book",
+        "title": "《代码整洁之道》",
+        "url": ""
+      },
+      {
+        "type": "video",
+        "title": "MIT 6.0001 Introduction to CS",
+        "url": "https://ocw.mit.edu/"
+      }
+    ],
+    "tags": [
+      "OOP",
+      "代码规范",
+      "异常处理",
+      "模块化"
+    ],
+    "subtopics": [
+      {
+        "title": "面向对象基础",
+        "content": "类与对象、封装、继承、多态",
+        "order": 1
+      },
+      {
+        "title": "异常处理",
+        "content": "try-catch-finally、自定义异常、异常传播",
+        "order": 2
+      },
+      {
+        "title": "模块化",
+        "content": "包管理、模块导入、命名空间",
+        "order": 3
+      },
+      {
+        "title": "代码整洁原则",
+        "content": "命名规范、函数设计、注释规范、DRY原则",
+        "order": 4
+      },
+      {
+        "title": "版本控制",
+        "content": "Git基础、分支管理、协作流程",
+        "order": 5
+      }
+    ],
+    "status": "not_started",
+    "graphPosition": {
+      "x": 250,
+      "y": 300
+    }
+  },
+  {
+    "id": "math102",
     "order": 8,
+    "title": "微积分 II",
+    "description": "深入学习微积分，包括多元函数微积分、级数等高级主题。",
+    "subject": "数学",
+    "category": "数学基础",
+    "difficulty": 2,
+    "prerequisites": [
+      "math101"
+    ],
+    "learningPath": "第二学年 > 第三学期",
+    "estimatedHours": 150,
+    "contentSnippet": "多元函数、偏导数、重积分",
+    "resources": [
+      {
+        "type": "book",
+        "title": "Calculus Volume 2 (OpenStax)",
+        "url": "https://openstax.org/details/books/calculus-volume-2"
+      },
+      {
+        "type": "book",
+        "title": "《高等数学》(同济大学)",
+        "url": ""
+      }
+    ],
+    "tags": [
+      "微积分",
+      "多元函数",
+      "级数",
+      "重积分"
+    ],
+    "subtopics": [
+      {
+        "title": "多元函数",
+        "content": "二元函数、极限与连续、偏导数",
+        "order": 1
+      },
+      {
+        "title": "重积分",
+        "content": "二重积分、三重积分、坐标变换",
+        "order": 2
+      },
+      {
+        "title": "级数",
+        "content": "数列极限、级数收敛、泰勒级数",
+        "order": 3
+      },
+      {
+        "title": "微分方程",
+        "content": "一阶微分方程、二阶微分方程、应用",
+        "order": 4
+      }
+    ],
+    "status": "not_started",
+    "graphPosition": {
+      "x": 500,
+      "y": 300
+    }
+  },
+  {
+    "id": "cs201",
+    "order": 9,
     "title": "计算机组成与体系结构",
     "description": "深入理解计算机硬件的工作原理，从逻辑门到处理器设计，理解软硬件接口。",
     "subject": "计算机科学",
@@ -413,140 +626,6 @@ const year2KnowledgePoints = [
     "graphPosition": {
       "x": 1000,
       "y": 400
-    }
-  },
-  {
-    "id": "cs206-db",
-    "order": 13,
-    "title": "数据库系统",
-    "description": "学习关系数据库的原理与应用，掌握SQL和数据库设计方法。",
-    "subject": "计算机科学",
-    "category": "数据库",
-    "difficulty": 3,
-    "prerequisites": [
-      "cs103"
-    ],
-    "learningPath": "第二学年 > 第四学期",
-    "estimatedHours": 120,
-    "contentSnippet": "关系模型、SQL基础、SQL进阶",
-    "resources": [
-      {
-        "type": "book",
-        "title": "Database System Concepts (Silberschatz)",
-        "url": ""
-      },
-      {
-        "type": "book",
-        "title": "《数据库系统概念》",
-        "url": ""
-      },
-      {
-        "type": "video",
-        "title": "Stanford CS145",
-        "url": ""
-      }
-    ],
-    "tags": [
-      "数据库",
-      "SQL",
-      "关系模型",
-      "范式"
-    ],
-    "subtopics": [
-      {
-        "title": "关系模型",
-        "content": "关系、元组、属性、键(主键/外键)、完整性约束",
-        "order": 1
-      },
-      {
-        "title": "SQL基础",
-        "content": "SELECT查询、WHERE条件、ORDER BY排序、聚合函数",
-        "order": 2
-      },
-      {
-        "title": "SQL进阶",
-        "content": "JOIN连接、子查询、视图、索引",
-        "order": 3
-      },
-      {
-        "title": "数据库设计",
-        "content": "ER图、实体、关系、属性、ER图转关系模式",
-        "order": 4
-      },
-      {
-        "title": "范式理论",
-        "content": "函数依赖、1NF/2NF/3NF/BCNF、规范化",
-        "order": 5
-      },
-      {
-        "title": "事务管理",
-        "content": "ACID属性、并发控制、锁机制、死锁",
-        "order": 6
-      }
-    ],
-    "status": "not_started",
-    "graphPosition": {
-      "x": 0,
-      "y": 550
-    }
-  },
-  {
-    "id": "cs206-pl",
-    "order": 14,
-    "title": "编程语言原理",
-    "description": "学习编程语言的设计原理，比较不同的编程范式。",
-    "subject": "计算机科学",
-    "category": "编程基础",
-    "difficulty": 3,
-    "prerequisites": [
-      "cs202"
-    ],
-    "learningPath": "第二学年 > 第四学期",
-    "estimatedHours": 90,
-    "contentSnippet": "编程范式、函数式编程、类型系统",
-    "resources": [
-      {
-        "type": "book",
-        "title": "Concepts of Programming Languages (Sebesta)",
-        "url": ""
-      },
-      {
-        "type": "video",
-        "title": "Stanford CS242",
-        "url": ""
-      }
-    ],
-    "tags": [
-      "编程语言",
-      "函数式",
-      "类型系统"
-    ],
-    "subtopics": [
-      {
-        "title": "编程范式",
-        "content": "命令式、函数式、逻辑式、面向对象",
-        "order": 1
-      },
-      {
-        "title": "函数式编程",
-        "content": "Lambda表达式、高阶函数、闭包、纯函数、不可变性",
-        "order": 2
-      },
-      {
-        "title": "类型系统",
-        "content": "静态类型vs动态类型、强类型vs弱类型、类型推导",
-        "order": 3
-      },
-      {
-        "title": "内存管理",
-        "content": "手动管理、引用计数、垃圾回收(标记-清除、分代GC)",
-        "order": 4
-      }
-    ],
-    "status": "not_started",
-    "graphPosition": {
-      "x": 250,
-      "y": 550
     }
   }
 ];

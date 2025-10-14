@@ -6,8 +6,142 @@ dotenv.config();
 
 const year3KnowledgePoints = [
   {
-    "id": "cs301",
+    "id": "cs206-pl",
     "order": 15,
+    "title": "编程语言原理",
+    "description": "学习编程语言的设计原理，比较不同的编程范式。",
+    "subject": "计算机科学",
+    "category": "编程基础",
+    "difficulty": 3,
+    "prerequisites": [
+      "cs202"
+    ],
+    "learningPath": "第三学年 > 第五学期",
+    "estimatedHours": 90,
+    "contentSnippet": "编程范式、函数式编程、类型系统",
+    "resources": [
+      {
+        "type": "book",
+        "title": "Concepts of Programming Languages (Sebesta)",
+        "url": ""
+      },
+      {
+        "type": "video",
+        "title": "Stanford CS242",
+        "url": ""
+      }
+    ],
+    "tags": [
+      "编程语言",
+      "函数式",
+      "类型系统"
+    ],
+    "subtopics": [
+      {
+        "title": "编程范式",
+        "content": "命令式、函数式、逻辑式、面向对象",
+        "order": 1
+      },
+      {
+        "title": "函数式编程",
+        "content": "Lambda表达式、高阶函数、闭包、纯函数、不可变性",
+        "order": 2
+      },
+      {
+        "title": "类型系统",
+        "content": "静态类型vs动态类型、强类型vs弱类型、类型推导",
+        "order": 3
+      },
+      {
+        "title": "内存管理",
+        "content": "手动管理、引用计数、垃圾回收(标记-清除、分代GC)",
+        "order": 4
+      }
+    ],
+    "status": "not_started",
+    "graphPosition": {
+      "x": 0,
+      "y": 500
+    }
+  },
+  {
+    "id": "cs206-db",
+    "order": 16,
+    "title": "数据库系统",
+    "description": "学习关系数据库的原理与应用，掌握SQL和数据库设计方法。",
+    "subject": "计算机科学",
+    "category": "数据库",
+    "difficulty": 3,
+    "prerequisites": [
+      "cs103"
+    ],
+    "learningPath": "第三学年 > 第五学期",
+    "estimatedHours": 120,
+    "contentSnippet": "关系模型、SQL基础、SQL进阶",
+    "resources": [
+      {
+        "type": "book",
+        "title": "Database System Concepts (Silberschatz)",
+        "url": ""
+      },
+      {
+        "type": "book",
+        "title": "《数据库系统概念》",
+        "url": ""
+      },
+      {
+        "type": "video",
+        "title": "Stanford CS145",
+        "url": ""
+      }
+    ],
+    "tags": [
+      "数据库",
+      "SQL",
+      "关系模型",
+      "范式"
+    ],
+    "subtopics": [
+      {
+        "title": "关系模型",
+        "content": "关系、元组、属性、键(主键/外键)、完整性约束",
+        "order": 1
+      },
+      {
+        "title": "SQL基础",
+        "content": "SELECT查询、WHERE条件、ORDER BY排序、聚合函数",
+        "order": 2
+      },
+      {
+        "title": "SQL进阶",
+        "content": "JOIN连接、子查询、视图、索引",
+        "order": 3
+      },
+      {
+        "title": "数据库设计",
+        "content": "ER图、实体、关系、属性、ER图转关系模式",
+        "order": 4
+      },
+      {
+        "title": "范式理论",
+        "content": "函数依赖、1NF/2NF/3NF/BCNF、规范化",
+        "order": 5
+      },
+      {
+        "title": "事务管理",
+        "content": "ACID属性、并发控制、锁机制、死锁",
+        "order": 6
+      }
+    ],
+    "status": "not_started",
+    "graphPosition": {
+      "x": 250,
+      "y": 500
+    }
+  },
+  {
+    "id": "cs301",
+    "order": 17,
     "title": "计算机网络",
     "description": "学习计算机网络的原理与协议，理解互联网的工作机制。",
     "subject": "计算机科学",
@@ -87,216 +221,6 @@ const year3KnowledgePoints = [
     "status": "not_started",
     "graphPosition": {
       "x": 0,
-      "y": 600
-    }
-  },
-  {
-    "id": "cs302",
-    "order": 16,
-    "title": "数据库系统导论",
-    "description": "深入学习数据库系统的内部实现，包括查询优化、事务处理等。",
-    "subject": "计算机科学",
-    "category": "数据库",
-    "difficulty": 3,
-    "prerequisites": [
-      "cs206-db"
-    ],
-    "learningPath": "第三学年 > 第五学期",
-    "estimatedHours": 150,
-    "contentSnippet": "存储与索引、查询处理、事务处理",
-    "resources": [
-      {
-        "type": "book",
-        "title": "Database System Concepts",
-        "url": ""
-      },
-      {
-        "type": "video",
-        "title": "CMU 15-445 Database Systems",
-        "url": ""
-      }
-    ],
-    "tags": [
-      "数据库",
-      "查询优化",
-      "索引",
-      "NoSQL"
-    ],
-    "subtopics": [
-      {
-        "title": "存储与索引",
-        "content": "文件组织、B树、B+树、哈希索引",
-        "order": 1
-      },
-      {
-        "title": "查询处理",
-        "content": "查询解析、查询优化、执行计划",
-        "order": 2
-      },
-      {
-        "title": "事务处理",
-        "content": "并发控制、两阶段锁、时间戳、MVCC",
-        "order": 3
-      },
-      {
-        "title": "恢复系统",
-        "content": "日志、检查点、恢复算法",
-        "order": 4
-      },
-      {
-        "title": "NoSQL数据库",
-        "content": "MongoDB、Redis、键值存储、文档数据库",
-        "order": 5
-      }
-    ],
-    "status": "not_started",
-    "graphPosition": {
-      "x": 250,
-      "y": 600
-    }
-  },
-  {
-    "id": "cs303",
-    "order": 17,
-    "title": "软件工程",
-    "description": "学习大型软件系统的开发方法，包括需求分析、设计模式、测试等。",
-    "subject": "计算机科学",
-    "category": "软件工程",
-    "difficulty": 3,
-    "prerequisites": [
-      "cs203"
-    ],
-    "learningPath": "第三学年 > 第五学期",
-    "estimatedHours": 120,
-    "contentSnippet": "需求工程、软件设计、设计模式",
-    "resources": [
-      {
-        "type": "book",
-        "title": "Software Engineering: A Practitioner's Approach (Pressman)",
-        "url": ""
-      },
-      {
-        "type": "book",
-        "title": "《软件工程》",
-        "url": ""
-      }
-    ],
-    "tags": [
-      "软件工程",
-      "敏捷",
-      "测试",
-      "UML"
-    ],
-    "subtopics": [
-      {
-        "title": "需求工程",
-        "content": "需求获取、用户故事、用例图、需求规格说明",
-        "order": 1
-      },
-      {
-        "title": "软件设计",
-        "content": "UML类图、序列图、架构设计、模块化",
-        "order": 2
-      },
-      {
-        "title": "设计模式",
-        "content": "创建型模式(单例/工厂)、结构型模式(适配器/装饰器)、行为型模式(观察者/策略)",
-        "order": 3
-      },
-      {
-        "title": "软件测试",
-        "content": "单元测试、集成测试、系统测试、回归测试",
-        "order": 4
-      },
-      {
-        "title": "敏捷开发",
-        "content": "Scrum框架、Sprint、每日站会、回顾会议",
-        "order": 5
-      },
-      {
-        "title": "项目管理",
-        "content": "项目计划、风险管理、团队协作",
-        "order": 6
-      }
-    ],
-    "status": "not_started",
-    "graphPosition": {
-      "x": 500,
-      "y": 600
-    }
-  },
-  {
-    "id": "cs304",
-    "order": 18,
-    "title": "编程语言与编译器",
-    "description": "学习编译器的设计与实现，理解程序是如何被翻译成机器代码的。",
-    "subject": "计算机科学",
-    "category": "编程基础",
-    "difficulty": 5,
-    "prerequisites": [
-      "cs206-pl"
-    ],
-    "learningPath": "第三学年 > 第六学期",
-    "estimatedHours": 180,
-    "contentSnippet": "词法分析、语法分析、语义分析",
-    "resources": [
-      {
-        "type": "book",
-        "title": "Compilers: Principles, Techniques, and Tools (Dragon Book)",
-        "url": ""
-      },
-      {
-        "type": "book",
-        "title": "《编译原理》",
-        "url": ""
-      },
-      {
-        "type": "video",
-        "title": "Stanford CS143",
-        "url": ""
-      }
-    ],
-    "tags": [
-      "编译器",
-      "词法分析",
-      "语法分析",
-      "代码生成"
-    ],
-    "subtopics": [
-      {
-        "title": "词法分析",
-        "content": "正则表达式、有限自动机(DFA/NFA)、Lex/Flex",
-        "order": 1
-      },
-      {
-        "title": "语法分析",
-        "content": "上下文无关文法、LL解析、LR解析、Yacc/Bison",
-        "order": 2
-      },
-      {
-        "title": "语义分析",
-        "content": "符号表、类型检查、语法制导翻译",
-        "order": 3
-      },
-      {
-        "title": "中间代码生成",
-        "content": "三地址码、抽象语法树(AST)、IR表示",
-        "order": 4
-      },
-      {
-        "title": "代码优化",
-        "content": "常量折叠、死代码消除、循环优化、寄存器分配",
-        "order": 5
-      },
-      {
-        "title": "目标代码生成",
-        "content": "指令选择、寄存器分配、指令调度",
-        "order": 6
-      }
-    ],
-    "status": "not_started",
-    "graphPosition": {
-      "x": 750,
       "y": 600
     }
   },
@@ -387,148 +311,95 @@ const year3KnowledgePoints = [
     }
   },
   {
-    "id": "web1",
-    "order": 20,
-    "title": "现代Web开发",
-    "description": "学习现代Web开发技术栈，包括前端框架和后端API开发。",
+    "id": "ai2",
+    "order": 19,
+    "title": "深度学习",
+    "description": "学习深度神经网络的原理与应用，掌握现代深度学习框架。",
     "subject": "计算机科学",
-    "category": "Web与移动开发",
-    "difficulty": 3,
+    "category": "AI与机器学习",
+    "difficulty": 5,
     "prerequisites": [
-      "cs302"
+      "ai1",
+      "math201"
     ],
-    "learningPath": "第三学年 > 第六学期 > Web方向",
-    "estimatedHours": 180,
-    "contentSnippet": "HTML5 & CSS3、JavaScript ES6+、React基础",
+    "learningPath": "第三学年 > 第六学期 > AI方向",
+    "estimatedHours": 240,
+    "contentSnippet": "神经网络基础、优化方法、正则化",
     "resources": [
       {
         "type": "book",
-        "title": "JavaScript: The Definitive Guide",
+        "title": "Deep Learning (Goodfellow)",
+        "url": "https://www.deeplearningbook.org/"
+      },
+      {
+        "type": "video",
+        "title": "Stanford CS230",
         "url": ""
       },
       {
         "type": "video",
-        "title": "freeCodeCamp Full Stack",
-        "url": ""
+        "title": "DeepLearning.AI Specialization",
+        "url": "https://www.coursera.org/"
       },
       {
         "type": "practice",
-        "title": "Frontend Mentor",
-        "url": "https://www.frontendmentor.io/"
+        "title": "Kaggle",
+        "url": "https://www.kaggle.com/"
       }
     ],
     "tags": [
-      "Web",
-      "JavaScript",
-      "React",
-      "Node.js"
+      "深度学习",
+      "CNN",
+      "RNN",
+      "Transformer",
+      "PyTorch"
     ],
     "subtopics": [
       {
-        "title": "HTML5 & CSS3",
-        "content": "语义化标签、Flexbox、Grid布局、响应式设计",
+        "title": "神经网络基础",
+        "content": "感知机、多层感知机(MLP)、激活函数、反向传播",
         "order": 1
       },
       {
-        "title": "JavaScript ES6+",
-        "content": "let/const、箭头函数、Promise、async/await、模块化",
+        "title": "优化方法",
+        "content": "SGD、Momentum、Adam、学习率调度、批归一化",
         "order": 2
       },
       {
-        "title": "React基础",
-        "content": "组件、Props、State、生命周期、Hooks",
+        "title": "正则化",
+        "content": "Dropout、L1/L2正则化、数据增强、早停",
         "order": 3
       },
       {
-        "title": "Node.js & Express",
-        "content": "HTTP服务器、路由、中间件、RESTful API",
+        "title": "卷积神经网络(CNN)",
+        "content": "卷积层、池化层、经典架构(LeNet/AlexNet/VGG/ResNet)",
         "order": 4
       },
       {
-        "title": "用户认证",
-        "content": "JWT、Session、OAuth2.0、密码哈希",
-        "order": 5
-      }
-    ],
-    "status": "not_started",
-    "graphPosition": {
-      "x": 0,
-      "y": 750
-    }
-  },
-  {
-    "id": "sec1",
-    "order": 21,
-    "title": "网络安全导论",
-    "description": "学习网络安全的基本概念，包括密码学、Web安全等。",
-    "subject": "计算机科学",
-    "category": "系统与安全",
-    "difficulty": 3,
-    "prerequisites": [
-      "cs301"
-    ],
-    "learningPath": "第三学年 > 第六学期 > 安全方向",
-    "estimatedHours": 180,
-    "contentSnippet": "安全基础、密码学基础、Web安全",
-    "resources": [
-      {
-        "type": "book",
-        "title": "Cybersecurity Essentials",
-        "url": ""
-      },
-      {
-        "type": "book",
-        "title": "Network Security Essentials",
-        "url": ""
-      },
-      {
-        "type": "practice",
-        "title": "HackTheBox",
-        "url": "https://www.hackthebox.com/"
-      }
-    ],
-    "tags": [
-      "安全",
-      "密码学",
-      "Web安全",
-      "渗透测试"
-    ],
-    "subtopics": [
-      {
-        "title": "安全基础",
-        "content": "CIA三要素(机密性/完整性/可用性)、威胁模型",
-        "order": 1
-      },
-      {
-        "title": "密码学基础",
-        "content": "对称加密(AES)、非对称加密(RSA)、哈希函数(SHA)、数字签名",
-        "order": 2
-      },
-      {
-        "title": "Web安全",
-        "content": "OWASP Top 10、XSS、CSRF、SQL注入、安全编码",
-        "order": 3
-      },
-      {
-        "title": "网络安全",
-        "content": "防火墙、入侵检测系统(IDS)、VPN",
-        "order": 4
-      },
-      {
-        "title": "恶意软件",
-        "content": "病毒、木马、勒索软件、防护措施",
+        "title": "循环神经网络(RNN)",
+        "content": "RNN、LSTM、GRU、序列建模",
         "order": 5
       },
       {
-        "title": "道德黑客",
-        "content": "渗透测试流程、信息收集、漏洞扫描",
+        "title": "Transformer",
+        "content": "注意力机制、Self-Attention、Multi-Head Attention、BERT/GPT",
         "order": 6
+      },
+      {
+        "title": "深度学习框架",
+        "content": "PyTorch基础、TensorFlow、模型训练与调试",
+        "order": 7
+      },
+      {
+        "title": "计算机视觉",
+        "content": "图像分类、目标检测(YOLO/Faster R-CNN)、图像分割",
+        "order": 8
       }
     ],
     "status": "not_started",
     "graphPosition": {
-      "x": 250,
-      "y": 750
+      "x": 1000,
+      "y": 600
     }
   }
 ];

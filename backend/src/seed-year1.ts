@@ -6,8 +6,71 @@ dotenv.config();
 
 const year1KnowledgePoints = [
   {
-    "id": "cs101",
+    "id": "cs100",
     "order": 1,
+    "title": "计算机导论",
+    "description": "了解计算机科学的基本概念，包括计算机历史、硬件组成、软件系统、网络基础等。",
+    "subject": "计算机科学",
+    "category": "计算机系统",
+    "difficulty": 1,
+    "prerequisites": [],
+    "learningPath": "第一学年 > 第一学期",
+    "estimatedHours": 60,
+    "contentSnippet": "计算机历史、硬件组成、操作系统概述",
+    "resources": [
+      {
+        "type": "book",
+        "title": "Computer Science: An Overview (Brookshear)",
+        "url": ""
+      },
+      {
+        "type": "book",
+        "title": "《计算机科学导论》",
+        "url": ""
+      }
+    ],
+    "tags": [
+      "计算机导论",
+      "计算机历史",
+      "硬件",
+      "软件"
+    ],
+    "subtopics": [
+      {
+        "title": "计算机历史",
+        "content": "计算机发展史、图灵机、冯诺依曼架构",
+        "order": 1
+      },
+      {
+        "title": "硬件组成",
+        "content": "CPU、内存、存储设备、输入输出设备",
+        "order": 2
+      },
+      {
+        "title": "操作系统概述",
+        "content": "操作系统功能、常见操作系统、文件系统",
+        "order": 3
+      },
+      {
+        "title": "网络基础",
+        "content": "互联网概述、TCP/IP协议、Web浏览器",
+        "order": 4
+      },
+      {
+        "title": "编程语言概述",
+        "content": "编程语言分类、编译与解释、算法思维",
+        "order": 5
+      }
+    ],
+    "status": "not_started",
+    "graphPosition": {
+      "x": 0,
+      "y": 100
+    }
+  },
+  {
+    "id": "cs101",
+    "order": 2,
     "title": "编程导论 (C语言)",
     "description": "学习计算机编程的基础知识，使用C语言作为入门语言，掌握基本的编程思维和内存管理概念。",
     "subject": "计算机科学",
@@ -333,219 +396,6 @@ const year1KnowledgePoints = [
     "graphPosition": {
       "x": 750,
       "y": 200
-    }
-  },
-  {
-    "id": "cs104",
-    "order": 5,
-    "title": "高级编程与代码规范",
-    "description": "学习面向对象编程思想、异常处理、模块化设计和代码整洁原则。",
-    "subject": "计算机科学",
-    "category": "编程基础",
-    "difficulty": 1,
-    "prerequisites": [
-      "cs101"
-    ],
-    "learningPath": "第一学年 > 第二学期",
-    "estimatedHours": 90,
-    "contentSnippet": "面向对象基础、异常处理、模块化",
-    "resources": [
-      {
-        "type": "book",
-        "title": "Clean Code (Robert C. Martin)",
-        "url": ""
-      },
-      {
-        "type": "book",
-        "title": "《代码整洁之道》",
-        "url": ""
-      },
-      {
-        "type": "video",
-        "title": "MIT 6.0001 Introduction to CS",
-        "url": "https://ocw.mit.edu/"
-      }
-    ],
-    "tags": [
-      "OOP",
-      "代码规范",
-      "异常处理",
-      "模块化"
-    ],
-    "subtopics": [
-      {
-        "title": "面向对象基础",
-        "content": "类与对象、封装、继承、多态",
-        "order": 1
-      },
-      {
-        "title": "异常处理",
-        "content": "try-catch-finally、自定义异常、异常传播",
-        "order": 2
-      },
-      {
-        "title": "模块化",
-        "content": "包管理、模块导入、命名空间",
-        "order": 3
-      },
-      {
-        "title": "代码整洁原则",
-        "content": "命名规范、函数设计、注释规范、DRY原则",
-        "order": 4
-      },
-      {
-        "title": "版本控制",
-        "content": "Git基础、分支管理、协作流程",
-        "order": 5
-      }
-    ],
-    "status": "not_started",
-    "graphPosition": {
-      "x": 1000,
-      "y": 200
-    }
-  },
-  {
-    "id": "math102",
-    "order": 6,
-    "title": "离散数学",
-    "description": "深入学习离散数学，包括组合数学、图论、数论等计算机科学的数学基础。",
-    "subject": "数学",
-    "category": "数学基础",
-    "difficulty": 1,
-    "prerequisites": [
-      "cs102-discrete"
-    ],
-    "learningPath": "第一学年 > 第二学期",
-    "estimatedHours": 150,
-    "contentSnippet": "组合数学、图论、树论",
-    "resources": [
-      {
-        "type": "book",
-        "title": "Discrete Mathematics: An Open Introduction",
-        "url": ""
-      },
-      {
-        "type": "book",
-        "title": "《离散数学》(屈婉玲)",
-        "url": ""
-      }
-    ],
-    "tags": [
-      "离散数学",
-      "组合数学",
-      "图论",
-      "数论"
-    ],
-    "subtopics": [
-      {
-        "title": "组合数学",
-        "content": "排列组合、鸽巢原理、容斥原理、生成函数",
-        "order": 1
-      },
-      {
-        "title": "图论",
-        "content": "图的表示、路径与环、连通性、欧拉图与哈密顿图",
-        "order": 2
-      },
-      {
-        "title": "树论",
-        "content": "树的性质、生成树、最小生成树",
-        "order": 3
-      },
-      {
-        "title": "数论基础",
-        "content": "整除、素数、最大公约数、模运算",
-        "order": 4
-      }
-    ],
-    "status": "not_started",
-    "graphPosition": {
-      "x": 0,
-      "y": 350
-    }
-  },
-  {
-    "id": "math201",
-    "order": 7,
-    "title": "线性代数",
-    "description": "学习线性代数的核心概念，包括向量、矩阵、线性变换等，为机器学习和图形学打基础。",
-    "subject": "数学",
-    "category": "数学基础",
-    "difficulty": 1,
-    "prerequisites": [],
-    "learningPath": "第一学年 > 第二学期",
-    "estimatedHours": 120,
-    "contentSnippet": "向量、矩阵、行列式",
-    "resources": [
-      {
-        "type": "book",
-        "title": "Introduction to Linear Algebra (Gilbert Strang)",
-        "url": ""
-      },
-      {
-        "type": "book",
-        "title": "《线性代数》(清华大学)",
-        "url": ""
-      },
-      {
-        "type": "video",
-        "title": "3Blue1Brown - Essence of Linear Algebra",
-        "url": "https://www.youtube.com/playlist?list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab"
-      },
-      {
-        "type": "video",
-        "title": "MIT 18.06 Linear Algebra",
-        "url": "https://ocw.mit.edu/"
-      }
-    ],
-    "tags": [
-      "线性代数",
-      "矩阵",
-      "向量",
-      "特征值"
-    ],
-    "subtopics": [
-      {
-        "title": "向量",
-        "content": "向量概念、向量运算、线性组合、线性相关性",
-        "order": 1
-      },
-      {
-        "title": "矩阵",
-        "content": "矩阵运算、矩阵乘法、转置、逆矩阵",
-        "order": 2
-      },
-      {
-        "title": "行列式",
-        "content": "行列式定义、性质、计算方法",
-        "order": 3
-      },
-      {
-        "title": "线性方程组",
-        "content": "高斯消元法、矩阵的秩、解的结构",
-        "order": 4
-      },
-      {
-        "title": "向量空间",
-        "content": "向量空间、子空间、基与维数",
-        "order": 5
-      },
-      {
-        "title": "特征值与特征向量",
-        "content": "特征值定义、特征向量、对角化",
-        "order": 6
-      },
-      {
-        "title": "正交性",
-        "content": "内积、正交向量、正交矩阵、最小二乘法",
-        "order": 7
-      }
-    ],
-    "status": "not_started",
-    "graphPosition": {
-      "x": 250,
-      "y": 350
     }
   }
 ];
