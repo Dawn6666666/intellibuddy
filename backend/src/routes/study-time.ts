@@ -1,6 +1,6 @@
 // backend/src/routes/study-time.ts
 import { Router, Response, Request } from 'express';
-import { authMiddleware } from './auth';
+import { authMiddleware } from '../middleware/auth';
 import StudySession from '../models/StudySession';
 import KnowledgePoint from '../models/KnowledgePoint';
 

@@ -21,7 +21,16 @@ import assessmentRoutes from './routes/assessment';
 import learningPathRoutes from './routes/learning-path';
 import wrongQuestionsRoutes from './routes/wrong-questions';
 import studyTimeRoutes from './routes/study-time';
+import achievementsRoutes from './routes/achievements';
+import learningReportRoutes from './routes/learning-report';
+import analyticsRoutes from './routes/analytics';
 import User, {IUser} from './models/User';
+
+// 导入中间件
+import { errorHandler, notFoundHandler } from './middleware/errorHandler';
+import { globalRateLimitMiddleware, authRateLimitMiddleware, aiRateLimitMiddleware } from './middleware/rateLimiter';
+import { analyticsMiddleware } from './middleware/analytics';
+import { requestLogger } from './middleware/logger';
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -36,19 +45,29 @@ mongoose.connect(mongoUri)
     .catch(err => console.error("无法连接到 MongoDB:", err));
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 app.use(passport.initialize());
 
+// --- 日志和分析中间件 ---
+app.use(requestLogger);
+app.use(analyticsMiddleware);
+
+// --- 全局限流（放在路由之前）---
+app.use(globalRateLimitMiddleware);
+
 // --- API 路由 ---
-app.use('/api/auth', authRoutes);
+app.use('/api/auth', authRateLimitMiddleware, authRoutes);
 app.use('/api/progress', progressRoutes);
 app.use('/api/chats', chatRoutes);
-app.use('/api/ai', aiRoutes);
+app.use('/api/ai', aiRateLimitMiddleware, aiRoutes);
 app.use('/api/quiz', quizRoutes);
 app.use('/api/assessment', assessmentRoutes);
 app.use('/api/learning-path', learningPathRoutes);
 app.use('/api/wrong-questions', wrongQuestionsRoutes);
 app.use('/api/study-time', studyTimeRoutes);
+app.use('/api/achievements', achievementsRoutes);
+app.use('/api/learning-report', learningReportRoutes);
+app.use('/api/analytics', analyticsRoutes);
 
 // --- GitHub 认证路由 ---
 app.get('/api/auth/github',
@@ -92,8 +111,19 @@ app.get('/api/knowledge-points', async (req, res) => {
     }
 });
 app.get('/', (req, res) => {
-    res.send('智学伴后端服务已成功运行！');
+    res.json({
+        success: true,
+        message: '智学伴后端服务已成功运行！',
+        version: '2.0.0',
+        timestamp: new Date().toISOString(),
+    });
 });
+
+// --- 404 处理 ---
+app.use(notFoundHandler);
+
+// --- 全局错误处理 ---
+app.use(errorHandler);
 
 // 导出 app 实例，供 Vercel 调用
 export default app;

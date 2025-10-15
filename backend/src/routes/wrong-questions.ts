@@ -1,9 +1,9 @@
 // backend/src/routes/wrong-questions.ts
 import { Router, Response, Request } from 'express';
-import { authMiddleware } from './auth';
+import { authMiddleware } from '../middleware/auth';
 import WrongQuestion from '../models/WrongQuestion';
 import KnowledgePoint from '../models/KnowledgePoint';
-import { getChatCompletion } from './ai';
+import { getChatCompletion } from '../services/ai';
 
 const router = Router();
 

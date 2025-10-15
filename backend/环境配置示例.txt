@@ -1,0 +1,45 @@
+# 将此文件重命名为 .env 并填入你的实际配置
+
+# MongoDB 连接配置
+# MongoDB Atlas 连接字符串（推荐用于生产环境）
+# 格式: mongodb+srv://<username>:<password>@<cluster>.mongodb.net/<database>?retryWrites=true&w=majority
+MONGO_URI=mongodb+srv://your_username:your_password@your_cluster.mongodb.net/intellibuddy?retryWrites=true&w=majority
+
+# 或者使用本地 MongoDB（适用于开发环境）
+# MONGO_URI=mongodb://localhost:27017/intellibuddy
+
+# JWT 密钥（用于用户认证，建议使用随机字符串）
+JWT_SECRET=your_random_jwt_secret_key_here_please_change_this
+
+# 端口配置
+PORT=5001
+
+# URL 配置
+# 后端服务器地址（用于 OAuth 回调）
+BACKEND_URL=http://localhost:5001
+# 前端服务器地址（用于 OAuth 重定向）
+FRONTEND_URL=http://localhost:5173
+
+# 第三方登录配置（可选）
+# GitHub OAuth
+# GITHUB_CLIENT_ID=your_github_client_id
+# GITHUB_CLIENT_SECRET=your_github_client_secret
+
+# QQ 登录
+# QQ_APP_ID=your_qq_app_id
+# QQ_APP_KEY=your_qq_app_key
+
+# AI API 配置（可选，用于 AI 功能）
+# 千问 API
+# QIANWEN_API_KEY=your_qianwen_api_key
+# 智谱 API
+# ZHIPU_API_KEY=your_zhipu_api_key
+# 文心一言 API
+# ERNIE_API_KEY=your_ernie_api_key
+# ERNIE_SECRET_KEY=your_ernie_secret_key
+# Kimi API
+# KIMI_API_KEY=your_kimi_api_key
+
+# 环境设置
+NODE_ENV=development
+

@@ -1,15 +1,16 @@
 // backend/src/routes/learning-path.ts
 import {Router, Response, Request} from 'express';
-import {authMiddleware} from './auth';
+import {authMiddleware} from '../middleware/auth';
 import {generateRecommendedPath, canUnlockPoint} from '../utils/pathRecommender';
 import KnowledgePoint from '../models/KnowledgePoint';
+import { Types } from 'mongoose';
 
 const router = Router();
 
 // 获取推荐学习路径
 router.get('/recommend', authMiddleware, async (req: Request, res: Response) => {
     try {
-        const userId = req.user?._id;
+        const userId = req.user?._id as Types.ObjectId;
 
         if (!userId) {
             return res.status(401).json({message: '未授权'});
@@ -48,7 +49,7 @@ router.get('/recommend', authMiddleware, async (req: Request, res: Response) => 
 router.post('/unlock-check', authMiddleware, async (req: Request, res: Response) => {
     try {
         const {pointId} = req.body;
-        const userId = req.user?._id;
+        const userId = req.user?._id as Types.ObjectId;
 
         if (!userId) {
             return res.status(401).json({message: '未授权'});

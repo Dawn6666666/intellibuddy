@@ -1,0 +1,9 @@
+# pnpm workspace configuration
+# 定义 monorepo 的子包
+packages:
+  - 'frontend'
+  - 'backend'
+
+# 确保前后端依赖完全隔离
+shared-workspace-lockfile: true
+

@@ -1,7 +1,7 @@
 // backend/src/routes/progress.ts
 import {Router, Request, Response} from 'express';
 import UserProgress from '../models/UserProgress';
-import {authMiddleware} from './auth';
+import {authMiddleware} from '../middleware/auth';
 
 const router = Router();
 

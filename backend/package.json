@@ -1,10 +1,17 @@
 {
-  "name": "backend",
+  "name": "@intellibuddy/backend",
   "version": "1.0.0",
+  "private": true,
   "main": "index.js",
+  "packageManager": "pnpm@8.15.0",
   "scripts": {
+    "preinstall": "npx only-allow pnpm",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "lint": "eslint src --ext .ts --fix",
+    "format": "prettier --write \"src/**/*.ts\"",
     "seed": "ts-node src/seed.ts",
     "seed:java": "ts-node src/java-module.ts",
     "seed:cs": "ts-node src/seed-cs-curriculum.ts",
@@ -15,26 +22,32 @@
     "seed:all": "ts-node src/seed-all.ts",
     "import": "node import-data-local.cjs",
     "fill:content": "ts-node src/fill-content.ts",
-    "fill:content:clear": "ts-node src/fill-content.ts --clear"
+    "fill:content:clear": "ts-node src/fill-content.ts --clear",
+    "db:indexes": "ts-node src/utils/dbIndexes.ts",
+    "clean": "rimraf dist node_modules/.cache"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
   "dependencies": {
+    "axios": "^1.6.0",
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
-    "katex": "^0.16.25",
-    "marked-katex-extension": "^5.1.5",
     "mongoose": "^8.18.2",
     "passport": "^0.7.0",
     "passport-github2": "^0.1.12",
     "passport-qq": "^0.1.0"
   },
   "devDependencies": {
+    "@types/axios": "^0.14.0",
     "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
@@ -43,6 +56,11 @@
     "@types/passport": "^1.0.17",
     "@types/passport-github2": "^1.2.9",
     "@types/passport-qq": "^0.1.1",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.50.0",
+    "prettier": "^3.0.0",
+    "ts-node": "^10.9.1",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.9.2"
   }

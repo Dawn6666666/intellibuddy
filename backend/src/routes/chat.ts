@@ -1,6 +1,6 @@
 // backend/src/routes/chat.ts
 import {Router, Request, Response} from 'express';
-import {authMiddleware} from './auth';
+import {authMiddleware} from '../middleware/auth';
 import Chat from '../models/Chat';
 import {IMessage} from '../models/Chat';
 

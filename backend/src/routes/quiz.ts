@@ -1,6 +1,6 @@
 // backend/src/routes/quiz.ts
 import {Router, Response, Request} from 'express';
-import {authMiddleware} from './auth';
+import {authMiddleware} from '../middleware/auth';
 import KnowledgePoint from '../models/KnowledgePoint';
 import UserProgress from '../models/UserProgress';
 

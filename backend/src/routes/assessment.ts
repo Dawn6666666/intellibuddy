@@ -1,6 +1,6 @@
 // backend/src/routes/assessment.ts
 import {Router, Response, Request} from 'express';
-import {authMiddleware} from './auth';
+import {authMiddleware} from '../middleware/auth';
 import Assessment from '../models/Assessment';
 import KnowledgePoint from '../models/KnowledgePoint';
 

@@ -1,8 +1,9 @@
 // backend/src/routes/auth.ts
-import {Router, Request, Response, NextFunction} from 'express';
+import {Router, Request, Response} from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import User, {IUser} from '../models/User';
+import User from '../models/User';
+import { authMiddleware } from '../middleware/auth';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -51,26 +52,6 @@ router.post('/login', async (req, res) => {
         res.status(500).json({message: '服务器错误'});
     }
 });
-
-export const authMiddleware = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    const token = req.header('Authorization')?.replace('Bearer ', '');
-    if (!token) {
-        res.status(401).json({message: '未授权的访问，缺少Token'});
-        return;
-    }
-    try {
-        const decoded = jwt.verify(token, JWT_SECRET) as { userId: string };
-        const user = await User.findById(decoded.userId).select('-passwordHash');
-        if (!user) {
-            res.status(401).json({message: '用户不存在'});
-            return;
-        }
-        req.user = user;
-        next();
-    } catch (error) {
-        res.status(401).json({message: '无效的Token'});
-    }
-};
 
 router.get('/me', authMiddleware, (req: Request, res: Response) => {
     res.json(req.user);
