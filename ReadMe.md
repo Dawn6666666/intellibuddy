@@ -89,8 +89,10 @@ pnpm build
 #### 一键检查部署准备
 
 ```bash
-node check-deployment.js
+node check-vercel-deployment.js
 ```
+
+> ✅ 这将验证所有必需的文件和配置
 
 #### 快速部署
 
