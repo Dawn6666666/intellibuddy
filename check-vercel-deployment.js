@@ -217,6 +217,48 @@ function checkBuildOutputs() {
   return { frontendBuilt, backendBuilt };
 }
 
+function checkVercelIgnore() {
+  const vercelIgnorePath = path.join(__dirname, '.vercelignore');
+  
+  if (!fs.existsSync(vercelIgnorePath)) {
+    log('✅ .vercelignore 不存在（将上传所有文件）', 'green');
+    return true;
+  }
+
+  try {
+    const content = fs.readFileSync(vercelIgnorePath, 'utf-8');
+    const lines = content.split('\n').map(l => l.trim()).filter(l => l && !l.startsWith('#'));
+    
+    // 检查是否错误地忽略了源代码
+    const dangerousPatterns = [
+      { pattern: 'backend/src/', desc: '后端源代码' },
+      { pattern: 'frontend/src/', desc: '前端源代码' },
+      { pattern: 'backend/package.json', desc: '后端依赖配置' },
+      { pattern: 'frontend/package.json', desc: '前端依赖配置' },
+      { pattern: 'tsconfig.json', desc: 'TypeScript 配置' },
+      { pattern: 'vite.config.ts', desc: 'Vite 配置' }
+    ];
+
+    let hasIssues = false;
+    for (const { pattern, desc } of dangerousPatterns) {
+      if (lines.some(line => line === pattern || line === pattern.replace(/\/$/, ''))) {
+        log(`❌ .vercelignore 错误地忽略了 ${desc}: ${pattern}`, 'red');
+        log(`   这会导致构建失败！请从 .vercelignore 中移除此行`, 'red');
+        hasIssues = true;
+      }
+    }
+
+    if (!hasIssues) {
+      log('✅ .vercelignore 配置正确', 'green');
+    }
+
+    return !hasIssues;
+  } catch (error) {
+    log(`⚠️  .vercelignore 读取错误: ${error.message}`, 'yellow');
+    return true;
+  }
+}
+
 function checkEnvironmentVariables() {
   log('\n🔐 环境变量提醒...', 'cyan');
   
@@ -252,7 +294,7 @@ function main() {
   allChecks = checkVercelJson() && allChecks;
   allChecks = checkApiIndex() && allChecks;
   allChecks = checkPackageJson() && allChecks;
-  allChecks = checkFile('.vercelignore', '.vercelignore 文件') && allChecks;
+  allChecks = checkVercelIgnore() && allChecks;
 
   // 2. 检查项目结构
   log('\n📁 检查项目结构...', 'cyan');
