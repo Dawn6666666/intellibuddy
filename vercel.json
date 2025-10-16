@@ -1,50 +1,17 @@
 {
-  "version": 2,
-  "builds": [
+  "buildCommand": "pnpm build",
+  "outputDirectory": "frontend/dist",
+  "installCommand": "pnpm install --no-frozen-lockfile",
+  "framework": null,
+  "rewrites": [
     {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "frontend/dist"
-      }
-    },
-    {
-      "src": "api/index.ts",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": ["backend/dist/**"]
-      }
+      "source": "/api/(.*)",
+      "destination": "/api/index"
     }
   ],
-  "routes": [
-    {
-      "src": "/api/auth/github",
-      "dest": "/api/index"
-    },
-    {
-      "src": "/api/auth/github/callback",
-      "dest": "/api/index"
-    },
-    {
-      "src": "/api/auth/qq",
-      "dest": "/api/index"
-    },
-    {
-      "src": "/api/auth/qq/callback",
-      "dest": "/api/index"
-    },
-    {
-      "src": "/api/(.*)",
-      "dest": "/api/index"
-    },
-    {
-      "handle": "filesystem"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
-    }
-  ],
+  "redirects": [],
+  "cleanUrls": true,
+  "trailingSlash": false,
   "env": {
     "NODE_ENV": "production",
     "TRUST_PROXY": "true"
