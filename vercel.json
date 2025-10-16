@@ -4,51 +4,30 @@
   "outputDirectory": "frontend/dist",
   "installCommand": "pnpm install",
   "framework": null,
-  "builds": [
+  "rewrites": [
     {
-      "src": "backend/src/index.ts",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": ["backend/dist/**", "backend/uploads/**"]
-      }
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/auth/github",
-      "dest": "backend/src/index.ts"
+      "source": "/api/auth/github",
+      "destination": "/api/index"
     },
     {
-      "src": "/api/auth/github/callback",
-      "dest": "backend/src/index.ts"
+      "source": "/api/auth/github/callback",
+      "destination": "/api/index"
     },
     {
-      "src": "/api/auth/qq",
-      "dest": "backend/src/index.ts"
+      "source": "/api/auth/qq",
+      "destination": "/api/index"
     },
     {
-      "src": "/api/auth/qq/callback",
-      "dest": "backend/src/index.ts"
+      "source": "/api/auth/qq/callback",
+      "destination": "/api/index"
     },
     {
-      "src": "/api/(.*)",
-      "dest": "backend/src/index.ts"
+      "source": "/api/:path*",
+      "destination": "/api/index"
     },
     {
-      "src": "/uploads/(.*)",
-      "dest": "backend/src/index.ts"
-    },
-    {
-      "src": "/assets/(.*)",
-      "dest": "/assets/$1"
-    },
-    {
-      "src": "/(.*\\.(js|css|png|jpg|jpeg|gif|svg|ico|json|woff|woff2|ttf|eot))",
-      "dest": "/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
+      "source": "/((?!api).*)",
+      "destination": "/index.html"
     }
   ],
   "env": {
@@ -106,15 +85,9 @@
     }
   ],
   "functions": {
-    "backend/src/index.ts": {
+    "api/index.ts": {
       "memory": 1024,
       "maxDuration": 30
     }
-  },
-  "rewrites": [
-    {
-      "source": "/((?!api|uploads|assets|_next|static|favicon.ico|.*\\.(js|css|png|jpg|jpeg|gif|svg|ico|json|woff|woff2|ttf|eot)).*)",
-      "destination": "/index.html"
-    }
-  ]
+  }
 }

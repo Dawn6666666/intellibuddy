@@ -79,7 +79,12 @@ pnpm build
 
 ### 部署到 Vercel
 
-> 🚀 本项目已完成 Vercel 部署配置优化！
+> 🚀 本项目已完成 Vercel 部署配置优化！**已修复部署问题** ✅
+
+#### 📖 部署文档
+
+- 🔧 **[Vercel 部署修复指南](./VERCEL_DEPLOYMENT_FIXED.md)** - ⭐ **最新！已修复部署问题**
+- 📖 [Vercel 部署完整指南](./VERCEL_DEPLOYMENT_GUIDE.md) - 详细步骤和配置说明
 
 #### 一键检查部署准备
 

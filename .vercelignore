@@ -1,0 +1,59 @@
+# 开发文件
+*.md
+!ReadMe.md
+.env
+.env.local
+.env.*.local
+
+# 测试文件
+*.test.ts
+*.test.js
+*.spec.ts
+*.spec.js
+__tests__/
+coverage/
+
+# 开发工具
+.vscode/
+.idea/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# 临时文件
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# 源文件（已编译）
+backend/src/
+frontend/src/
+
+# Node modules（Vercel 会自己安装）
+node_modules/
+
+# 构建缓存
+.turbo/
+.cache/
+
+# 上传文件（应该使用云存储）
+backend/uploads/
+
+# 脚本文件
+backend/*.js
+backend/*.ps1
+backend/*.txt
+
+# 数据文件
+backend/quiz-templates/
+backend/backend/
+
+# 文档
+docs/
+素材对比分析.md
+转场动画实现总结.md
+转场动画快速指南.md
+
