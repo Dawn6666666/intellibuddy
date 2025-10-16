@@ -1,44 +1,37 @@
-# 开发工具
-.vscode/
-.idea/
+# 开发文件
+.git
+.github
+.vscode
+.cursor
+
+# 依赖
+node_modules
+
+# 源代码（只需要编译后的文件）
+backend/src
+frontend/src
+
+# 测试和文档
+*.test.ts
+*.test.js
+*.spec.ts
+*.spec.js
+__tests__
+tests
+docs
+
+# 配置文件
+.env.local
+.env.development
+.env.test
+tsconfig.json
+tsconfig.*.json
+
+# 日志
 *.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
+logs
 
 # 临时文件
 *.tmp
 *.temp
 .DS_Store
-Thumbs.db
-
-# 测试文件
-*.test.ts
-*.test.js
-*.spec.ts
-*.spec.js
-__tests__/
-coverage/
-
-# 构建缓存
-.turbo/
-.cache/
-node_modules/.cache/
-
-# 上传文件（应该使用云存储）
-backend/uploads/
-
-# 临时脚本和数据文件
-backend/*.js
-backend/*.ps1
-backend/temp-*.txt
-backend/quiz-templates/
-backend/backend/
-
-# 文档（保留主要文档）
-docs/
-素材对比分析.md
-转场动画实现总结.md
-转场动画快速指南.md
-数据库结构报告.md
