@@ -163,7 +163,7 @@ importers:
         version: 8.0.1(echarts@6.0.0)(vue@3.5.22)
       vue-router:
         specifier: ^4.5.1
-        version: 4.6.0(vue@3.5.22)
+        version: 4.6.3(vue@3.5.22)
     devDependencies:
       '@types/katex':
         specifier: ^0.16.7
@@ -1314,7 +1314,7 @@ packages:
       '@volar/language-core': 2.4.23
       '@vue/compiler-dom': 3.5.22
       '@vue/shared': 3.5.22
-      alien-signals: 3.0.0
+      alien-signals: 3.0.1
       muggle-string: 0.4.1
       path-browserify: 1.0.1
       picomatch: 4.0.3
@@ -1453,8 +1453,8 @@ packages:
       uri-js: 4.4.1
     dev: true
 
-  /alien-signals@3.0.0:
-    resolution: {integrity: sha512-JHoRJf18Y6HN4/KZALr3iU+0vW9LKG+8FMThQlbn4+gv8utsLIkwpomjElGPccGeNwh0FI2HN6BLnyFLo6OyLQ==}
+  /alien-signals@3.0.1:
+    resolution: {integrity: sha512-ec02Wv5iOg7yG979PH9ykv5KN/KHznOxMlKy/Jr8lnBo3T94d4MUGo7FVdM8B2fM0e94twzEcWCyWzfIyeV19g==}
     dev: true
 
   /ansi-regex@5.0.1:
@@ -3924,8 +3924,8 @@ packages:
       - supports-color
     dev: true
 
-  /vue-router@4.6.0(vue@3.5.22):
-    resolution: {integrity: sha512-YRrWLi4ayHe1d6zyH6sMPwF/WwcDY8XgUOfQGa0Kx4kmugSorLavD1ExrM/Y83B4X2NQMXYpJFSq2pbZh9ildQ==}
+  /vue-router@4.6.3(vue@3.5.22):
+    resolution: {integrity: sha512-ARBedLm9YlbvQomnmq91Os7ck6efydTSpRP3nuOKCvgJOHNrhRoJDSKtee8kcL1Vf7nz6U+PMBL+hTvR3bTVQg==}
     peerDependencies:
       vue: ^3.5.0
     dependencies:
