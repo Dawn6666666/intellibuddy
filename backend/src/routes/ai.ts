@@ -1,7 +1,7 @@
 // backend/src/routes/ai.ts
 import { Router, Response, Request } from 'express';
 import { authMiddleware } from '../middleware/auth';
-import { getChatCompletion, streamChatCompletion, explainCode, chat, checkAIHealth, ChatMessage } from '../services/ai';
+import { getChatCompletion, streamChatCompletion, chat, checkAIHealth, ChatMessage } from '../services/ai';
 
 const router = Router();
 
@@ -104,41 +104,6 @@ router.post('/chat/stream', authMiddleware, async (req: Request, res: Response) 
     res.status(500).json({ 
       success: false,
       message: '流式调用 AI 服务时出错',
-      error: error.message,
-    });
-  }
-});
-
-/**
- * 代码解释器端点
- */
-router.post('/explain-code', authMiddleware, async (req: Request, res: Response) => {
-  try {
-    const { code, language } = req.body;
-
-    if (!code) {
-      return res.status(400).json({ 
-        success: false,
-        message: '缺少必要参数: code' 
-      });
-    }
-
-    console.log(`[Code Explainer] 用户 ${req.user?._id} 请求解释 ${language || 'unknown'} 代码`);
-
-    const explanation = await explainCode(code, language || 'auto-detected');
-
-    res.json({
-      success: true,
-      data: {
-        explanation,
-        language: language || 'auto-detected',
-      },
-    });
-  } catch (error: any) {
-    console.error('[Code Explainer] 错误:', error.message);
-    res.status(500).json({ 
-      success: false,
-      message: '代码解释时发生错误',
       error: error.message,
     });
   }

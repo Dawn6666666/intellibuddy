@@ -21,7 +21,7 @@
 
     <div class="card-body">
       <h4 class="question-title">{{ question.pointTitle }}</h4>
-      <p class="question-text">{{ question.question }}</p>
+      <div class="question-text" v-html="renderMarkdown(question.question)"></div>
 
       <div class="options-grid">
         <div 
@@ -35,7 +35,7 @@
           }"
         >
           <span class="option-label">{{ String.fromCharCode(65 + index) }}</span>
-          <span class="option-text">{{ option }}</span>
+          <span class="option-text" v-html="renderMarkdown(option)"></span>
           <i v-if="isCorrectAnswer(index)" class="fa-solid fa-check"></i>
           <i v-if="isUserAnswer(index) && !isCorrectAnswer(index)" class="fa-solid fa-xmark"></i>
         </div>
@@ -43,11 +43,22 @@
 
       <div class="explanation-section">
         <h5><i class="fa-solid fa-lightbulb"></i> 标准解析</h5>
-        <p>{{ question.explanation }}</p>
+        <div class="explanation-content" v-html="renderMarkdown(question.explanation)"></div>
       </div>
 
       <div v-if="question.aiAnalysis" class="ai-analysis-section">
-        <h5><i class="fa-solid fa-robot"></i> AI 深度解析</h5>
+        <div class="ai-analysis-header">
+          <h5><i class="fa-solid fa-robot"></i> AI 深度解析</h5>
+          <button 
+            class="btn-regenerate" 
+            @click="$emit('analyze', question._id)"
+            :disabled="isAnalyzing"
+            title="重新生成 AI 解析"
+          >
+            <i class="fa-solid fa-rotate"></i>
+            {{ isAnalyzing ? '正在生成...' : '重新生成' }}
+          </button>
+        </div>
         <div class="ai-content" v-html="renderMarkdown(question.aiAnalysis)"></div>
       </div>
 
@@ -90,6 +101,37 @@
 
 <script setup lang="ts">
 import { marked } from 'marked';
+import hljs from 'highlight.js';
+import markedKatex from 'marked-katex-extension';
+import 'katex/dist/katex.min.css';
+
+// 配置 marked 渲染器
+marked.use({
+  renderer: {
+    code({ text, lang }: { text: string; lang?: string }) {
+      if (lang && hljs.getLanguage(lang)) {
+        try {
+          const highlighted = hljs.highlight(text, { language: lang }).value;
+          return `<pre class="wrong-code-block"><code class="hljs language-${lang}">${highlighted}</code></pre>`;
+        } catch (error) {
+          console.error('代码高亮失败:', error);
+        }
+      }
+      return `<pre class="wrong-code-block"><code>${text}</code></pre>`;
+    },
+  },
+});
+
+// 配置 KaTeX 扩展
+marked.use(
+  markedKatex({
+    throwOnError: false,
+    output: 'html',
+    nonStandard: true,
+    strict: false,
+    trust: true,
+  })
+);
 
 interface WrongQuestion {
   _id: string;
@@ -149,8 +191,15 @@ const formatDate = (dateString: string) => {
   return date.toLocaleDateString('zh-CN');
 };
 
-const renderMarkdown = (text: string) => {
-  return marked(text);
+const renderMarkdown = (text: string): string => {
+  if (!text) return '';
+  try {
+    const parsed = marked.parse(text);
+    return typeof parsed === 'string' ? parsed : parsed.toString();
+  } catch (error) {
+    console.error('Markdown 渲染失败:', error);
+    return text;
+  }
 };
 </script>
 
@@ -253,6 +302,11 @@ const renderMarkdown = (text: string) => {
   line-height: 1.6;
   margin-bottom: 20px;
   font-weight: 500;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+.question-text :deep(*) {
+  font-family: inherit;
 }
 
 .options-grid {
@@ -306,6 +360,11 @@ const renderMarkdown = (text: string) => {
 
 .option-text {
   flex-grow: 1;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+.option-text :deep(*) {
+  font-family: inherit;
 }
 
 .option-item i {
@@ -326,6 +385,12 @@ const renderMarkdown = (text: string) => {
   padding: 16px;
   background: rgba(0, 0, 0, 0.2);
   border-radius: 10px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+.explanation-section :deep(*),
+.ai-analysis-section :deep(*) {
+  font-family: inherit;
 }
 
 .explanation-section h5,
@@ -338,16 +403,110 @@ const renderMarkdown = (text: string) => {
   font-size: 1rem;
 }
 
+.ai-analysis-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.ai-analysis-header h5 {
+  margin-bottom: 0;
+}
+
 .explanation-section p {
   line-height: 1.6;
   color: var(--text-secondary);
 }
 
+/* 标准解析和 AI 解析内容样式 */
+.explanation-content,
 .ai-content {
   line-height: 1.8;
   color: var(--text-secondary);
 }
 
+/* Markdown 渲染样式 */
+.question-text :deep(p),
+.option-text :deep(p),
+.explanation-content :deep(p),
+.ai-content :deep(p) {
+  margin: 8px 0;
+  line-height: 1.6;
+}
+
+.question-text :deep(code),
+.option-text :deep(code),
+.explanation-content :deep(code),
+.ai-content :deep(code) {
+  background: rgba(138, 127, 251, 0.2);
+  color: var(--primary-color);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 0.9em;
+}
+
+.question-text :deep(strong),
+.option-text :deep(strong),
+.explanation-content :deep(strong),
+.ai-content :deep(strong) {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* 代码块样式 */
+.question-text :deep(.wrong-code-block),
+.option-text :deep(.wrong-code-block),
+.explanation-content :deep(.wrong-code-block),
+.ai-content :deep(.wrong-code-block) {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  padding: 16px;
+  overflow-x: auto;
+  margin: 12px 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.question-text :deep(.wrong-code-block code),
+.option-text :deep(.wrong-code-block code),
+.explanation-content :deep(.wrong-code-block code),
+.ai-content :deep(.wrong-code-block code) {
+  background: none;
+  padding: 0;
+  color: inherit;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+/* KaTeX 公式样式 */
+.question-text :deep(.katex),
+.option-text :deep(.katex),
+.explanation-content :deep(.katex),
+.ai-content :deep(.katex) {
+  font-size: 1.1em;
+}
+
+.question-text :deep(.katex-display),
+.option-text :deep(.katex-display),
+.explanation-content :deep(.katex-display),
+.ai-content :deep(.katex-display) {
+  margin: 16px 0;
+}
+
+/* 深色主题适配 */
+:root[data-theme='dark'] .question-text :deep(.katex),
+:root[data-theme='dark'] .option-text :deep(.katex),
+:root[data-theme='dark'] .explanation-content :deep(.katex),
+:root[data-theme='dark'] .ai-content :deep(.katex) {
+  color: #e0e0e0;
+}
+
+/* 标题样式 */
+.explanation-content :deep(h1),
+.explanation-content :deep(h2),
+.explanation-content :deep(h3),
+.explanation-content :deep(h4),
 .ai-content :deep(h1),
 .ai-content :deep(h2),
 .ai-content :deep(h3),
@@ -356,21 +515,33 @@ const renderMarkdown = (text: string) => {
   margin: 16px 0 8px 0;
 }
 
-.ai-content :deep(p) {
-  margin: 8px 0;
-}
-
+/* 列表样式 */
+.explanation-content :deep(ul),
+.explanation-content :deep(ol),
 .ai-content :deep(ul),
 .ai-content :deep(ol) {
   margin: 8px 0;
   padding-left: 24px;
 }
 
-.ai-content :deep(code) {
-  background: rgba(0, 0, 0, 0.3);
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-family: 'Consolas', 'Monaco', monospace;
+.explanation-content :deep(li),
+.ai-content :deep(li) {
+  margin: 4px 0;
+}
+
+/* em 和 mark 标签样式 */
+.explanation-content :deep(em),
+.ai-content :deep(em) {
+  font-style: italic;
+  color: var(--text-primary);
+}
+
+.explanation-content :deep(mark),
+.ai-content :deep(mark) {
+  background-color: rgba(255, 77, 79, 0.2);
+  color: #ff4d4f;
+  padding: 2px 4px;
+  border-radius: 3px;
 }
 
 .ai-analysis-placeholder {
@@ -401,6 +572,37 @@ const renderMarkdown = (text: string) => {
 .btn-analyze:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.btn-regenerate {
+  background: rgba(138, 127, 251, 0.15);
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.btn-regenerate:hover:not(:disabled) {
+  background: rgba(138, 127, 251, 0.25);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(138, 127, 251, 0.3);
+}
+
+.btn-regenerate:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-regenerate i {
+  font-size: 0.875rem;
 }
 
 .card-footer {

@@ -27,7 +27,7 @@
         </div>
 
         <div class="question-card">
-          <h4>{{ currentQuestion.question }}</h4>
+          <h4 class="question-text" v-html="renderMarkdown(currentQuestion.question)"></h4>
           <div class="options">
             <div
               v-for="(option, index) in currentQuestion.options"
@@ -42,7 +42,7 @@
               @click="selectAnswer(index)"
             >
               <span class="option-label">{{ String.fromCharCode(65 + index) }}</span>
-              <span class="option-text">{{ option }}</span>
+              <span class="option-text" v-html="renderMarkdown(option)"></span>
               <i
                 v-if="
                   currentQuestion.type === 'multiple' &&
@@ -113,7 +113,7 @@
                 {{ item.isCorrect ? '正确' : '错误' }}
               </span>
             </div>
-            <p class="question-text">{{ quiz[index]?.question }}</p>
+            <div class="question-text" v-html="renderMarkdown(quiz[index]?.question || '')"></div>
             <p v-if="!item.isCorrect && item.correctAnswer !== undefined" class="correct-answer">
               正确答案：
               {{
@@ -122,7 +122,7 @@
                   : String.fromCharCode(65 + (item.correctAnswer as number))
               }}
             </p>
-            <p class="explanation">{{ item.explanation }}</p>
+            <div class="explanation" v-html="renderMarkdown(item.explanation)"></div>
           </div>
         </div>
 
@@ -146,6 +146,10 @@
 import {ref, computed, onMounted} from 'vue';
 import {apiGetQuiz, apiSubmitQuiz, apiAddWrongQuestion} from '@/services/apiService';
 import {useUserStore} from '@/stores/user';
+import {marked} from 'marked';
+import hljs from 'highlight.js';
+import markedKatex from 'marked-katex-extension';
+import 'katex/dist/katex.min.css';
 
 interface Props {
   pointId: string;
@@ -177,6 +181,61 @@ const emit = defineEmits<{
   completed: [];
   failed: [];
 }>();
+
+// 配置 marked 以支持代码高亮和数学公式
+const renderer = new marked.Renderer();
+
+// 简化的代码块渲染器（适用于题目中的代码片段）
+renderer.code = function({ text, lang }: { text: string; lang?: string }) {
+  const codeString = typeof text === 'string' ? text : '';
+  let language = lang || '';
+  let highlightedCode = '';
+  
+  if (!language) {
+    const detected = hljs.highlightAuto(codeString);
+    language = detected.language || 'plaintext';
+    highlightedCode = detected.value;
+  } else if (hljs.getLanguage(language)) {
+    try {
+      highlightedCode = hljs.highlight(codeString, {language, ignoreIllegals: true}).value;
+    } catch (e) {
+      highlightedCode = hljs.highlight(codeString, {language: 'plaintext'}).value;
+    }
+  } else {
+    const detected = hljs.highlightAuto(codeString);
+    highlightedCode = detected.value;
+  }
+  
+  return `<pre class="quiz-code-block"><code class="hljs language-${language}">${highlightedCode}</code></pre>`;
+};
+
+// 配置 KaTeX 支持数学公式
+marked.use(markedKatex({
+  throwOnError: false,
+  output: 'html',
+  nonStandard: true,
+  strict: false,
+  trust: true
+}));
+
+marked.setOptions({
+  renderer,
+  gfm: true,
+  pedantic: false,
+  breaks: false,
+});
+
+// Markdown 渲染函数
+const renderMarkdown = (text: string): string => {
+  if (!text) return '';
+  try {
+    const parsed = marked.parse(text);
+    return typeof parsed === 'string' ? parsed : parsed.toString();
+  } catch (error) {
+    console.error('Markdown 渲染失败:', error);
+    return text;
+  }
+};
 
 const userStore = useUserStore();
 const isLoading = ref(true);
@@ -421,6 +480,86 @@ onMounted(async () => {
   font-size: 1.125rem;
   margin-bottom: 20px;
   line-height: 1.6;
+}
+
+/* Markdown 渲染样式 */
+.question-text :deep(p) {
+  margin: 0.5em 0;
+  line-height: 1.6;
+}
+
+.question-text :deep(code) {
+  background: rgba(0, 0, 0, 0.1);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: 'Fira Code', Consolas, monospace;
+  font-size: 0.9em;
+}
+
+.question-text :deep(.katex) {
+  font-size: 1.1em;
+}
+
+.question-text :deep(.katex-display) {
+  margin: 1em 0;
+  overflow-x: auto;
+}
+
+.option-text :deep(p) {
+  margin: 0;
+  display: inline;
+}
+
+.option-text :deep(code) {
+  background: rgba(0, 0, 0, 0.15);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: 'Fira Code', Consolas, monospace;
+  font-size: 0.9em;
+}
+
+.option-text :deep(.katex) {
+  font-size: 1em;
+  vertical-align: middle;
+}
+
+.explanation :deep(p) {
+  margin: 0.5em 0;
+}
+
+.explanation :deep(code) {
+  background: rgba(0, 0, 0, 0.1);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: 'Fira Code', Consolas, monospace;
+  font-size: 0.9em;
+}
+
+.explanation :deep(.katex) {
+  font-size: 1em;
+}
+
+/* 代码块样式 */
+.quiz-code-block {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 6px;
+  padding: 12px;
+  margin: 12px 0;
+  overflow-x: auto;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.quiz-code-block code {
+  font-family: 'Fira Code', Consolas, 'Courier New', monospace;
+  color: inherit;
+}
+
+/* 深色主题下的公式 */
+html.dark-theme .question-text :deep(.katex),
+html.dark-theme .option-text :deep(.katex),
+html.dark-theme .explanation :deep(.katex) {
+  color: #e0e0e0;
 }
 
 .options {

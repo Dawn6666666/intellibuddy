@@ -1,0 +1,218 @@
+{
+  "说明": "这是题库数据的 JSON 模板，方便批量编辑和管理",
+  "注意": "correctAnswer 对于单选和判断题是数字索引，对于多选题是数组",
+  
+  "示例_数据结构": [
+    {
+      "pointId": "ds101",
+      "pointTitle": "算法复杂度分析",
+      "quiz": [
+        {
+          "question": "时间复杂度 O(n²) 表示什么？",
+          "type": "single",
+          "options": [
+            "算法执行时间与输入规模 n 的平方成正比",
+            "算法需要 n² 个存储单元",
+            "算法最多执行 n² 次",
+            "算法的空间复杂度"
+          ],
+          "correctAnswer": 0,
+          "explanation": "O(n²) 表示算法的时间复杂度随输入规模 n 的平方增长，常见于嵌套循环。"
+        }
+      ]
+    }
+  ],
+  
+  "模板_空白": [
+    {
+      "pointId": "填写知识点ID",
+      "pointTitle": "知识点标题（仅用于参考）",
+      "quiz": [
+        {
+          "question": "问题描述",
+          "type": "single",
+          "options": ["选项A", "选项B", "选项C", "选项D"],
+          "correctAnswer": 0,
+          "explanation": "答案解析"
+        },
+        {
+          "question": "多选题描述",
+          "type": "multiple",
+          "options": ["选项A", "选项B", "选项C", "选项D"],
+          "correctAnswer": [0, 1],
+          "explanation": "答案解析"
+        },
+        {
+          "question": "判断题描述",
+          "type": "boolean",
+          "options": ["正确", "错误"],
+          "correctAnswer": 0,
+          "explanation": "答案解析"
+        }
+      ]
+    }
+  ],
+  
+  "你的题库_数据结构": [
+    {
+      "pointId": "ds101",
+      "pointTitle": "算法复杂度分析",
+      "quiz": []
+    },
+    {
+      "pointId": "ds102",
+      "pointTitle": "线性数据结构",
+      "quiz": []
+    },
+    {
+      "pointId": "ds103",
+      "pointTitle": "链表",
+      "quiz": []
+    }
+  ],
+  
+  "你的题库_编程基础": [
+    {
+      "pointId": "prog101",
+      "pointTitle": "变量与数据类型",
+      "quiz": []
+    },
+    {
+      "pointId": "prog102",
+      "pointTitle": "控制流程",
+      "quiz": []
+    }
+  ],
+  
+  "你的题库_数据库": [
+    {
+      "pointId": "db101",
+      "pointTitle": "SQL基础",
+      "quiz": []
+    }
+  ],
+  
+  "示例_LaTeX公式题库": [
+    {
+      "pointId": "math301",
+      "pointTitle": "微积分（LaTeX 公式示例）",
+      "quiz": [
+        {
+          "question": "函数 $f(x) = x^3 - 3x^2 + 2$ 的导数是？",
+          "type": "single",
+          "options": [
+            "$f'(x) = 3x^2 - 6x$",
+            "$f'(x) = 3x^2 + 6x$",
+            "$f'(x) = x^2 - 6x$",
+            "$f'(x) = 3x - 6$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "使用幂函数求导法则：$(x^n)' = nx^{n-1}$，因此 $(x^3)' = 3x^2$，$(3x^2)' = 6x$，常数项导数为 0。"
+        },
+        {
+          "question": "定积分 $\\int_0^1 x^2 \\, dx$ 的值是多少？",
+          "type": "single",
+          "options": [
+            "$\\frac{1}{3}$",
+            "$\\frac{1}{2}$",
+            "$1$",
+            "$\\frac{2}{3}$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "使用牛顿-莱布尼茨公式：$\\int_0^1 x^2 \\, dx = \\left[\\frac{x^3}{3}\\right]_0^1 = \\frac{1}{3} - 0 = \\frac{1}{3}$"
+        },
+        {
+          "question": "极限 $\\lim_{x \\to 0} \\frac{\\sin x}{x} = 1$",
+          "type": "boolean",
+          "options": ["正确", "错误"],
+          "correctAnswer": 0,
+          "explanation": "正确。这是一个重要极限公式，常用于求解三角函数相关的极限问题。"
+        }
+      ]
+    },
+    {
+      "pointId": "phys101",
+      "pointTitle": "经典力学（LaTeX 公式示例）",
+      "quiz": [
+        {
+          "question": "牛顿第二定律的表达式是什么？",
+          "type": "single",
+          "options": [
+            "$F = ma$",
+            "$F = \\frac{mv^2}{r}$",
+            "$E = mc^2$",
+            "$p = mv$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "牛顿第二定律：物体的加速度与所受合力成正比，与质量成反比，即：\\n\\n$$\\nF = ma\\n$$\\n\\n其中 $F$ 是合力，$m$ 是质量，$a$ 是加速度。"
+        },
+        {
+          "question": "一个质量为 2kg 的物体，受到 10N 的力，其加速度是？",
+          "type": "single",
+          "options": [
+            "$5 \\text{ m/s}^2$",
+            "$10 \\text{ m/s}^2$",
+            "$20 \\text{ m/s}^2$",
+            "$2 \\text{ m/s}^2$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "根据牛顿第二定律 $F = ma$，可得：\\n\\n$$\\na = \\frac{F}{m} = \\frac{10}{2} = 5 \\text{ m/s}^2\\n$$"
+        }
+      ]
+    }
+  ],
+  
+  "LaTeX公式模板_空白": [
+    {
+      "pointId": "填写知识点ID",
+      "pointTitle": "LaTeX 公式题目模板",
+      "quiz": [
+        {
+          "question": "行内公式示例：$f(x) = x^2$",
+          "type": "single",
+          "options": [
+            "$选项A 包含公式$",
+            "$选项B 包含公式$",
+            "选项C 纯文本",
+            "选项D 纯文本"
+          ],
+          "correctAnswer": 0,
+          "explanation": "解析中也可以包含公式：$答案解析 = 公式$"
+        },
+        {
+          "question": "块级公式会在解析中展示",
+          "type": "boolean",
+          "options": ["正确", "错误"],
+          "correctAnswer": 0,
+          "explanation": "块级公式需要前后换行：\\n\\n$$\\n公式内容\\n$$\\n\\n继续说明..."
+        }
+      ]
+    }
+  ],
+  
+  "LaTeX常用符号参考": {
+    "说明": "在 JSON 中使用 LaTeX 时，反斜杠需要转义（\\变成\\\\）",
+    "行内公式": "$公式内容$",
+    "块级公式": "$$\\n公式内容\\n$$",
+    "常用符号": {
+      "分数": "\\frac{a}{b}",
+      "根号": "\\sqrt{x} 或 \\sqrt[n]{x}",
+      "上下标": "x^2, x_i",
+      "求和": "\\sum_{i=1}^{n}",
+      "积分": "\\int_{a}^{b} f(x) \\, dx",
+      "极限": "\\lim_{x \\to \\infty}",
+      "偏导": "\\frac{\\partial f}{\\partial x}",
+      "希腊字母": "\\alpha, \\beta, \\gamma, \\theta, \\lambda",
+      "不等式": "\\leq, \\geq, \\neq",
+      "向量": "\\vec{v} 或 \\mathbf{v}",
+      "矩阵": "\\begin{bmatrix} a & b \\\\ c & d \\end{bmatrix}"
+    },
+    "注意事项": [
+      "JSON 中反斜杠必须转义：\\ → \\\\",
+      "换行符使用 \\n",
+      "必须使用 $ 或 $$ 包裹公式",
+      "禁止使用 \\( \\) 或 \\[ \\] 格式"
+    ]
+  }
+}
+

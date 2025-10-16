@@ -1,0 +1,360 @@
+{
+  "题库说明": "本题库对应《网络安全导论 (sec1)》知识点，涵盖密码学基础、网络攻击与防御、Web安全、系统安全等内容。",
+  "题库": [
+    {
+      "pointId": "sec1",
+      "pointTitle": "网络安全导论",
+      "quiz": [
+        {
+          "question": "信息安全的三大基本属性（CIA三元组）是？",
+          "type": "multiple",
+          "options": [
+            "机密性（Confidentiality）",
+            "完整性（Integrity）",
+            "可用性（Availability）",
+            "可追溯性（Traceability）"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "CIA三元组：机密性（防止未授权访问）、完整性（防止篡改）、可用性（系统正常服务）。扩展属性：认证性、不可否认性、可追溯性。"
+        },
+        {
+          "question": "对称加密和非对称加密的主要区别是？",
+          "type": "single",
+          "options": [
+            "对称加密使用相同密钥，非对称加密使用公钥和私钥",
+            "对称加密更安全",
+            "非对称加密更快",
+            "对称加密不需要密钥"
+          ],
+          "correctAnswer": 0,
+          "explanation": "对称加密（如AES、DES）：加解密用相同密钥，快但密钥分发困难。非对称加密（如RSA、ECC）：公钥加密、私钥解密，慢但解决密钥分发。实际常结合使用。"
+        },
+        {
+          "question": "常见的对称加密算法包括？",
+          "type": "multiple",
+          "options": [
+            "AES（Advanced Encryption Standard）",
+            "DES（Data Encryption Standard）",
+            "3DES（Triple DES）",
+            "RSA"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "对称加密算法：AES（当前标准，128/192/256位）、DES（已过时，56位易破解）、3DES（DES三次，过渡方案）、RC4、Blowfish。RSA是非对称加密。"
+        },
+        {
+          "question": "RSA算法的安全性基于什么数学难题？",
+          "type": "single",
+          "options": [
+            "大整数分解难题",
+            "离散对数问题",
+            "哈希碰撞",
+            "排序问题"
+          ],
+          "correctAnswer": 0,
+          "explanation": "RSA（1977）：基于大整数分解困难性。公钥$(n,e)$，私钥$(n,d)$，$n=pq$（大素数）。加密：$c = m^e \\\\bmod n$，解密：$m = c^d \\\\bmod n$。密钥长度2048位以上。"
+        },
+        {
+          "question": "哈希函数（Hash Function）的主要特性包括？",
+          "type": "multiple",
+          "options": [
+            "单向性（不可逆）",
+            "抗碰撞性（难以找到两个不同输入产生相同输出）",
+            "雪崩效应（输入微小变化导致输出巨大变化）",
+            "可逆性"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "哈希函数特性：单向（不可逆）、确定性（同输入同输出）、抗碰撞（弱抗碰撞、强抗碰撞）、雪崩效应、固定输出长度。应用：完整性校验、数字签名、密码存储。"
+        },
+        {
+          "question": "常用的哈希算法包括？",
+          "type": "multiple",
+          "options": [
+            "SHA-256（Secure Hash Algorithm）",
+            "MD5（Message Digest 5）",
+            "SHA-1",
+            "AES"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "哈希算法：SHA-256（SHA-2家族，安全）、SHA-1（已不安全，碰撞攻击）、MD5（已破解，不应用于安全）、SHA-3（最新标准）。AES是加密算法不是哈希。"
+        },
+        {
+          "question": "数字签名的作用包括？",
+          "type": "multiple",
+          "options": [
+            "身份认证（验证发送者）",
+            "完整性保护（检测篡改）",
+            "不可否认性（不能否认发送）",
+            "加密消息内容"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "数字签名：私钥签名，公钥验证。过程：哈希消息→私钥加密哈希→接收方公钥解密验证。提供认证、完整性、不可否认。但不加密内容（需单独加密）。"
+        },
+        {
+          "question": "数字证书（Digital Certificate）的作用是？",
+          "type": "single",
+          "options": [
+            "绑定公钥和身份，由CA（证书颁发机构）签发",
+            "存储密码",
+            "加密文件",
+            "扫描病毒"
+          ],
+          "correctAnswer": 0,
+          "explanation": "数字证书（X.509）：包含公钥、身份信息、CA签名等。解决公钥分发和身份认证问题。PKI（公钥基础设施）：CA、证书、CRL（证书吊销列表）。HTTPS使用证书。"
+        },
+        {
+          "question": "SSL/TLS协议的主要功能是？",
+          "type": "multiple",
+          "options": [
+            "加密通信数据",
+            "服务器身份认证",
+            "数据完整性保护",
+            "替代TCP协议"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "SSL/TLS（传输层安全）：位于TCP和应用层之间，提供加密、认证、完整性。握手阶段：协商算法、交换密钥、验证证书。TLS 1.3是最新版本。HTTPS = HTTP over TLS。"
+        },
+        {
+          "question": "HTTPS的握手过程主要步骤包括？",
+          "type": "multiple",
+          "options": [
+            "客户端发送ClientHello（支持的加密套件）",
+            "服务器发送证书和ServerHello",
+            "客户端验证证书，生成预主密钥",
+            "双方生成会话密钥，开始加密通信"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "TLS握手：1) ClientHello（协议版本、随机数、加密套件）；2) ServerHello+证书；3) 客户端验证证书；4) 密钥交换（RSA或DH）；5) 生成会话密钥；6) 握手完成，开始加密通信。"
+        },
+        {
+          "question": "常见的网络攻击类型包括？",
+          "type": "multiple",
+          "options": [
+            "DDoS（分布式拒绝服务）",
+            "中间人攻击（MITM）",
+            "SQL注入",
+            "缓冲区溢出"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "网络攻击类型：DoS/DDoS（耗尽资源）、MITM（窃听/篡改）、钓鱼、SQL注入、XSS、CSRF、缓冲区溢出、恶意软件、社会工程等。"
+        },
+        {
+          "question": "DDoS攻击的防御措施包括？",
+          "type": "multiple",
+          "options": [
+            "流量清洗（过滤恶意流量）",
+            "CDN分散流量",
+            "限速和黑名单",
+            "关闭服务器"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "DDoS防御：流量清洗（识别和过滤）、CDN（分散流量、就近响应）、限速（rate limiting）、防火墙、黑洞路由、弹性扩容。关闭服务器是攻击目标，不是防御。"
+        },
+        {
+          "question": "SQL注入攻击的原理是？",
+          "type": "single",
+          "options": [
+            "在输入中插入恶意SQL代码，操纵数据库查询",
+            "直接攻击数据库服务器",
+            "破解数据库密码",
+            "删除数据库文件"
+          ],
+          "correctAnswer": 0,
+          "explanation": "SQL注入：利用未过滤的用户输入构造恶意SQL。如：`username = 'admin' OR '1'='1'`绕过认证。防御：参数化查询（预编译）、输入验证、最小权限原则、WAF。"
+        },
+        {
+          "question": "跨站脚本攻击（XSS）的类型包括？",
+          "type": "multiple",
+          "options": [
+            "存储型XSS（持久化）",
+            "反射型XSS（非持久化）",
+            "DOM型XSS",
+            "SQL型XSS"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "XSS：注入恶意脚本到网页。类型：1) 存储型（存入数据库，危害大）；2) 反射型（通过URL，一次性）；3) DOM型（纯客户端）。防御：输出编码、CSP、HttpOnly cookie。"
+        },
+        {
+          "question": "跨站请求伪造（CSRF）的攻击原理是？",
+          "type": "single",
+          "options": [
+            "利用用户已登录状态，诱导执行非本意操作",
+            "窃取用户密码",
+            "注入脚本",
+            "破解加密"
+          ],
+          "correctAnswer": 0,
+          "explanation": "CSRF：用户已登录站点A，访问恶意站点B，B诱导浏览器向A发起请求（携带A的cookie）。防御：CSRF Token（随机值验证）、SameSite Cookie、验证Referer、二次确认。"
+        },
+        {
+          "question": "防火墙（Firewall）的主要类型包括？",
+          "type": "multiple",
+          "options": [
+            "包过滤防火墙（基于IP、端口）",
+            "状态检测防火墙（跟踪连接状态）",
+            "应用层防火墙（深度包检测）",
+            "Web应用防火墙（WAF）"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "防火墙类型：1) 包过滤（网络层，简单快速）；2) 状态检测（跟踪TCP连接）；3) 应用层/代理（检查应用内容，慢但安全）；4) WAF（专门保护Web应用，防SQL注入、XSS）。"
+        },
+        {
+          "question": "入侵检测系统（IDS）和入侵防御系统（IPS）的区别是？",
+          "type": "single",
+          "options": [
+            "IDS被动监测和告警，IPS主动阻断攻击",
+            "IDS比IPS更强大",
+            "IPS不能检测攻击",
+            "两者完全相同"
+          ],
+          "correctAnswer": 0,
+          "explanation": "IDS（Intrusion Detection System）：被动监控、检测、告警（旁路部署）。IPS（Intrusion Prevention System）：主动阻断（串联部署）。检测方法：基于签名（已知攻击）、基于异常（统计学习）。"
+        },
+        {
+          "question": "缓冲区溢出攻击的原理是？",
+          "type": "single",
+          "options": [
+            "向缓冲区写入超过其容量的数据，覆盖相邻内存（如返回地址）",
+            "填满磁盘空间",
+            "耗尽内存",
+            "网络拥塞"
+          ],
+          "correctAnswer": 0,
+          "explanation": "缓冲区溢出：写入数据超出缓冲区边界，覆盖返回地址、函数指针等，执行恶意代码。常见于C/C++（无边界检查）。防御：栈金丝雀、ASLR、DEP/NX、安全函数、边界检查。"
+        },
+        {
+          "question": "ASLR（地址空间布局随机化）的作用是？",
+          "type": "single",
+          "options": [
+            "随机化内存地址，增加攻击难度",
+            "加速程序运行",
+            "加密内存内容",
+            "压缩内存"
+          ],
+          "correctAnswer": 0,
+          "explanation": "ASLR：随机化栈、堆、库的加载地址，使攻击者难以预测目标地址（如缓冲区溢出跳转）。现代操作系统默认启用。配合DEP（数据执行保护）、栈金丝雀等防御。"
+        },
+        {
+          "question": "密码安全的最佳实践包括？",
+          "type": "multiple",
+          "options": [
+            "使用强密码（长度、复杂度）",
+            "不重复使用密码",
+            "启用多因素认证（MFA）",
+            "将密码明文存储"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "密码安全：强密码（12+字符、大小写数字符号）、唯一性（密码管理器）、MFA（多因素认证）、定期更换。存储：加盐哈希（bcrypt、PBKDF2、Argon2），绝不明文存储。"
+        },
+        {
+          "question": "彩虹表攻击（Rainbow Table Attack）针对什么？",
+          "type": "single",
+          "options": [
+            "预计算哈希值，快速破解未加盐的哈希密码",
+            "网络流量",
+            "文件系统",
+            "加密算法本身"
+          ],
+          "correctAnswer": 0,
+          "explanation": "彩虹表：预计算大量密码的哈希值（时空权衡）。攻击：查表反推密码。防御：加盐（每个密码唯一随机盐），使彩虹表失效。现代哈希（bcrypt、scrypt）有内置盐和慢速特性。"
+        },
+        {
+          "question": "零日漏洞（Zero-Day Vulnerability）是指？",
+          "type": "single",
+          "options": [
+            "未被公开、供应商未修复的漏洞",
+            "已修复的漏洞",
+            "理论上的漏洞",
+            "低危漏洞"
+          ],
+          "correctAnswer": 0,
+          "explanation": "零日漏洞：供应商不知道或未发布补丁的漏洞。攻击者可利用（零日攻击）。特点：窗口期（从发现到修复）、高价值（黑市交易）。防御：IDS/IPS、行为监控、纵深防御。"
+        },
+        {
+          "question": "社会工程学（Social Engineering）攻击的常见手段包括？",
+          "type": "multiple",
+          "options": [
+            "钓鱼邮件（Phishing）",
+            "伪装身份（Pretexting）",
+            "尾随（Tailgating）",
+            "DDoS攻击"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "社会工程学：利用人性弱点（信任、好奇、恐惧）获取信息。手段：钓鱼（伪装邮件/网站）、伪装（假冒身份）、尾随（跟随进入）、垃圾搜集、肩窥。防御：安全意识培训、验证身份。"
+        },
+        {
+          "question": "VPN（虚拟专用网络）的作用包括？",
+          "type": "multiple",
+          "options": [
+            "加密网络流量",
+            "隐藏真实IP地址",
+            "安全访问远程网络",
+            "提高网速"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "VPN：在公网上建立加密隧道。作用：保护隐私（加密、匿名）、绕过地理限制、远程访问企业网络。协议：IPsec、OpenVPN、WireGuard。可能降低速度（加密开销）。"
+        },
+        {
+          "question": "勒索软件（Ransomware）的攻击模式是？",
+          "type": "single",
+          "options": [
+            "加密用户文件，勒索解密费用",
+            "窃取密码",
+            "DDoS攻击",
+            "删除系统文件"
+          ],
+          "correctAnswer": 0,
+          "explanation": "勒索软件：加密受害者文件，要求支付赎金（通常加密货币）才提供解密密钥。传播：钓鱼邮件、漏洞利用、RDP暴力破解。防御：备份（3-2-1原则）、补丁、安全软件、网络隔离。"
+        },
+        {
+          "question": "渗透测试（Penetration Testing）的目的是？",
+          "type": "single",
+          "options": [
+            "模拟攻击，主动发现系统安全漏洞",
+            "攻击竞争对手",
+            "破坏系统",
+            "窃取数据"
+          ],
+          "correctAnswer": 0,
+          "explanation": "渗透测试（Pentest）：授权的模拟攻击，评估安全性。流程：信息收集→漏洞扫描→利用→权限提升→报告。类型：黑盒（外部）、白盒（有源码）、灰盒。合法且必要。"
+        },
+        {
+          "question": "安全开发生命周期（SDL）的核心思想是？",
+          "type": "single",
+          "options": [
+            "在软件开发的每个阶段融入安全考虑",
+            "只在测试阶段考虑安全",
+            "开发完成后加固",
+            "忽略安全问题"
+          ],
+          "correctAnswer": 0,
+          "explanation": "SDL（Security Development Lifecycle）：将安全融入整个软件生命周期。阶段：需求（威胁建模）→设计（安全架构）→实现（安全编码）→测试（安全测试）→部署（加固）→维护（补丁）。"
+        },
+        {
+          "question": "最小权限原则（Principle of Least Privilege）是指？",
+          "type": "single",
+          "options": [
+            "用户/进程只拥有完成任务所需的最小权限",
+            "给所有用户管理员权限",
+            "不设置任何权限",
+            "权限越多越好"
+          ],
+          "correctAnswer": 0,
+          "explanation": "最小权限原则：限制访问权限到最小必需范围，降低安全风险（如被攻陷后的损害范围）。应用：用户权限、进程权限、数据库权限、API权限。纵深防御的基础。"
+        },
+        {
+          "question": "纵深防御（Defense in Depth）策略是什么？",
+          "type": "single",
+          "options": [
+            "多层次、多手段的安全防护，避免单点失败",
+            "只依赖防火墙",
+            "只依赖杀毒软件",
+            "不需要多重防护"
+          ],
+          "correctAnswer": 0,
+          "explanation": "纵深防御：多层安全控制，一层被突破，其他层仍能防御。层次：物理安全、网络安全、主机安全、应用安全、数据安全。措施：防火墙+IDS+加密+访问控制+审计+备份等。"
+        }
+      ]
+    }
+  ]
+}
+

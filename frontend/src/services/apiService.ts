@@ -9,10 +9,38 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
 const apiClient = axios.create({
     baseURL: API_BASE_URL,
+    timeout: 15000, // 15秒超时
     headers: {
         'Content-Type': 'application/json',
     }
 });
+
+// 添加响应拦截器，自动重试
+apiClient.interceptors.response.use(
+    response => response,
+    async error => {
+        const config = error.config;
+        
+        // 如果没有配置或已经重试过，直接返回错误
+        if (!config || config._retry) {
+            return Promise.reject(error);
+        }
+        
+        // 对于网络错误或500错误，进行一次重试
+        if (error.code === 'ECONNABORTED' || 
+            error.code === 'ERR_NETWORK' || 
+            error.response?.status === 500) {
+            config._retry = true;
+            console.log('请求失败，正在重试...');
+            
+            // 等待1秒后重试
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            return apiClient.request(config);
+        }
+        
+        return Promise.reject(error);
+    }
+);
 
 // 导出 API_BASE_URL 供其他组件使用
 export {API_BASE_URL};
@@ -77,6 +105,13 @@ export const apiNewChat = async (token: string, messages: ChatMessage[]) => {
 
 export const apiUpdateChat = async (token: string, chatId: string, messages: ChatMessage[]) => {
     const response = await apiClient.put(`/chats/${chatId}`, {messages}, {
+        headers: {'Authorization': `Bearer ${token}`}
+    });
+    return response.data;
+};
+
+export const apiDeleteChat = async (token: string, chatId: string) => {
+    const response = await apiClient.delete(`/chats/${chatId}`, {
         headers: {'Authorization': `Bearer ${token}`}
     });
     return response.data;
@@ -174,8 +209,8 @@ export const apiAddWrongQuestion = async (token: string, wrongQuestionData: {
     return response.data;
 };
 
-export const apiAnalyzeWrongQuestion = async (token: string, questionId: string) => {
-    const response = await apiClient.post(`/wrong-questions/${questionId}/analyze`, {}, {
+export const apiAnalyzeWrongQuestion = async (token: string, questionId: string, regenerate: boolean = false) => {
+    const response = await apiClient.post(`/wrong-questions/${questionId}/analyze`, { regenerate }, {
         headers: {'Authorization': `Bearer ${token}`}
     });
     return response.data;
@@ -241,14 +276,6 @@ export const apiGetStudyTimeStats = async (token: string, filters?: {
 export const apiGetHeatmapData = async (token: string, year?: number) => {
     const params = year ? `?year=${year}` : '';
     const response = await apiClient.get(`/study-time/heatmap${params}`, {
-        headers: {'Authorization': `Bearer ${token}`}
-    });
-    return response.data;
-};
-
-// --- 代码解释器 API ---
-export const apiExplainCode = async (token: string, code: string, language?: string) => {
-    const response = await apiClient.post('/ai/explain-code', { code, language }, {
         headers: {'Authorization': `Bearer ${token}`}
     });
     return response.data;

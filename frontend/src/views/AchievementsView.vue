@@ -108,7 +108,7 @@ const filteredAchievements = computed(() => {
 const fetchAchievements = async () => {
   try {
     loading.value = true;
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('authToken');
 
     const [achievementsRes, statsRes] = await Promise.all([
       axios.get('/api/achievements', {

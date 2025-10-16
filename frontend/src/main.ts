@@ -28,18 +28,18 @@ app.use(pinia)
 
 const userStore = useUserStore()
 
-await userStore.tryLoginFromLocalStorage()
+// 使用 .then() 代替 top-level await 以支持更多浏览器
+userStore.tryLoginFromLocalStorage().then(() => {
+    router.beforeEach((to, _from, next) => {
+        if (to.meta.requiresAuth && !userStore.isLoggedIn) {
+            next({name: 'login'})
+        } else if (to.name === 'login' && userStore.isLoggedIn) {
+            next({name: 'dashboard'})
+        } else {
+            next()
+        }
+    })
 
-router.beforeEach((to, _from, next) => {
-    if (to.meta.requiresAuth && !userStore.isLoggedIn) {
-        next({name: 'login'})
-    } else if (to.name === 'login' && userStore.isLoggedIn) {
-        next({name: 'dashboard'})
-    } else {
-        next()
-    }
+    app.use(router)
+    app.mount('#app')
 })
-
-app.use(router)
-
-app.mount('#app')

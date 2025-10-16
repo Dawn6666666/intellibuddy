@@ -1,0 +1,187 @@
+{
+  "题库说明": "本题库对应《离散数学与计算机科学导论 (cs102-discrete)》知识点，涵盖数理逻辑、集合论、关系函数、组合数学、图论、递归递推等内容。",
+  "题库": [
+    {
+      "pointId": "cs102-discrete",
+      "pointTitle": "离散数学与计算机科学导论",
+      "quiz": [
+        {
+          "question": "命题逻辑中，合取（AND）的符号是？",
+          "type": "single",
+          "options": ["$\\\\land$", "$\\\\lor$", "$\\\\neg$", "$\\\\rightarrow$"],
+          "correctAnswer": 0,
+          "explanation": "$\\\\land$ 表示合取（AND），$\\\\lor$ 表示析取（OR），$\\\\neg$ 表示否定（NOT），$\\\\rightarrow$ 表示蕴含。"
+        },
+        {
+          "question": "德摩根定律的内容是？",
+          "type": "multiple",
+          "options": [
+            "$\\\\neg(p \\\\land q) \\\\equiv \\\\neg p \\\\lor \\\\neg q$",
+            "$\\\\neg(p \\\\lor q) \\\\equiv \\\\neg p \\\\land \\\\neg q$",
+            "$p \\\\land q \\\\equiv q \\\\land p$",
+            "$p \\\\lor q \\\\equiv q \\\\lor p$"
+          ],
+          "correctAnswer": [0, 1],
+          "explanation": "德摩根定律：否定合取等于析取的否定，否定析取等于合取的否定。选项C和D是交换律，不是德摩根定律。"
+        },
+        {
+          "question": "量词 $\\\\forall$ 表示什么？",
+          "type": "single",
+          "options": ["全称量词（对于所有）", "存在量词（存在）", "唯一量词", "否定量词"],
+          "correctAnswer": 0,
+          "explanation": "$\\\\forall$ 是全称量词，表示\"对于所有\"。$\\\\exists$ 是存在量词，表示\"存在\"。"
+        },
+        {
+          "question": "空集是任何集合的子集。",
+          "type": "boolean",
+          "options": ["正确", "错误"],
+          "correctAnswer": 0,
+          "explanation": "正确。空集 $\\\\emptyset$ 是任何集合的子集，包括空集本身。这是集合论的基本性质。"
+        },
+        {
+          "question": "集合 $\\\\{1, 2, 3\\\\}$ 的幂集有多少个元素？",
+          "type": "single",
+          "options": ["8个", "6个", "9个", "7个"],
+          "correctAnswer": 0,
+          "explanation": "含n个元素的集合，其幂集（所有子集的集合）有 $2^n$ 个元素。$|\\\\{1,2,3\\\\}| = 3$，所以幂集有 $2^3 = 8$ 个元素。"
+        },
+        {
+          "question": "关系的性质包括哪些？",
+          "type": "multiple",
+          "options": ["自反性", "对称性", "传递性", "反对称性", "连通性"],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "关系的主要性质：自反性（xRx）、对称性（xRy→yRx）、传递性（xRy且yRz→xRz）、反对称性（xRy且yRx→x=y）。连通性不是基本性质。"
+        },
+        {
+          "question": "等价关系必须满足哪些性质？",
+          "type": "multiple",
+          "options": ["自反性", "对称性", "传递性", "反对称性"],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "等价关系必须同时满足自反性、对称性和传递性。反对称性是偏序关系的性质，不是等价关系的。"
+        },
+        {
+          "question": "函数的定义域中每个元素必须有唯一的函数值。",
+          "type": "boolean",
+          "options": ["正确", "错误"],
+          "correctAnswer": 0,
+          "explanation": "正确。函数的定义是：定义域中每个元素都有唯一的函数值（值域中的元素）。一对一或一对多都不是函数。"
+        },
+        {
+          "question": "单射（一一映射）的定义是？",
+          "type": "single",
+          "options": [
+            "不同的自变量有不同的函数值",
+            "每个函数值都有原像",
+            "既是单射又是满射",
+            "定义域和值域元素个数相同"
+          ],
+          "correctAnswer": 0,
+          "explanation": "单射：不同的x对应不同的f(x)。满射：值域中每个元素都有原像。双射：既单又满。"
+        },
+        {
+          "question": "从n个不同元素中取r个元素的排列数是？",
+          "type": "single",
+          "options": ["$P(n,r) = \\\\frac{n!}{(n-r)!}$", "$C(n,r) = \\\\frac{n!}{r!(n-r)!}$", "$n^r$", "$r^n$"],
+          "correctAnswer": 0,
+          "explanation": "排列数（考虑顺序）：$P(n,r) = \\\\frac{n!}{(n-r)!}$。组合数（不考虑顺序）：$C(n,r) = \\\\frac{n!}{r!(n-r)!}$。"
+        },
+        {
+          "question": "从10个不同元素中选3个的组合数是多少？",
+          "type": "single",
+          "options": ["120", "720", "1000", "30"],
+          "correctAnswer": 0,
+          "explanation": "$C(10,3) = \\\\frac{10!}{3!7!} = \\\\frac{10 \\\\times 9 \\\\times 8}{3 \\\\times 2 \\\\times 1} = 120$"
+        },
+        {
+          "question": "鸽巢原理（抽屉原理）的内容是？",
+          "type": "single",
+          "options": [
+            "n+1个物体放入n个盒子，至少有一个盒子包含2个或更多物体",
+            "n个物体放入n个盒子，每个盒子恰好一个物体",
+            "物体数量等于盒子数量",
+            "每个盒子最多放一个物体"
+          ],
+          "correctAnswer": 0,
+          "explanation": "鸽巢原理：将n+1个物体放入n个盒子中，至少有一个盒子包含至少2个物体。这是组合数学中的重要原理。"
+        },
+        {
+          "question": "图论中，图G=(V,E)的V和E分别表示什么？",
+          "type": "single",
+          "options": ["顶点集和边集", "值集和方程集", "向量集和元素集", "变量集和等式集"],
+          "correctAnswer": 0,
+          "explanation": "图G=(V,E)由顶点集V（Vertex）和边集E（Edge）组成。边连接两个顶点。"
+        },
+        {
+          "question": "完全图 $K_n$ 有多少条边？",
+          "type": "single",
+          "options": ["$\\\\frac{n(n-1)}{2}$", "$n(n-1)$", "$n^2$", "$2^n$"],
+          "correctAnswer": 0,
+          "explanation": "完全图 $K_n$ 有n个顶点，任意两个顶点间都有边。边数为 $C(n,2) = \\\\frac{n(n-1)}{2}$。"
+        },
+        {
+          "question": "欧拉路径的存在条件是什么？",
+          "type": "single",
+          "options": [
+            "图中恰有0个或2个奇度顶点",
+            "图中所有顶点度数都是偶数",
+            "图是完全图",
+            "图是树"
+          ],
+          "correctAnswer": 0,
+          "explanation": "欧拉路径（一笔画）存在条件：图连通且恰有0个或2个奇度顶点。0个奇度顶点时有欧拉回路，2个奇度顶点时有欧拉路径。"
+        },
+        {
+          "question": "树的定义包括哪些？",
+          "type": "multiple",
+          "options": [
+            "连通无环图",
+            "n个顶点，n-1条边的连通图",
+            "任意两顶点间有唯一路径的图",
+            "有向无环图"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "树的等价定义：1) 连通无环图；2) n个顶点n-1条边的连通图；3) 任意两顶点间有唯一路径。有向无环图（DAG）不一定是树。"
+        },
+        {
+          "question": "二叉树和树的区别是？",
+          "type": "single",
+          "options": [
+            "二叉树的子树有左右之分，树没有",
+            "二叉树最多两个子节点，树可以有任意多个",
+            "二叉树是有序的，树是无序的",
+            "以上都对"
+          ],
+          "correctAnswer": 3,
+          "explanation": "二叉树与普通树的主要区别：1) 子树有序性（左右之分）；2) 度的限制（最多2个子节点）；3) 二叉树可以为空，空树是二叉树但不是树。"
+        },
+        {
+          "question": "递归算法必须包含什么？",
+          "type": "multiple",
+          "options": ["基线条件（终止条件）", "递归调用", "循环语句", "全局变量"],
+          "correctAnswer": [0, 1],
+          "explanation": "递归算法的两个要素：1) 基线条件（递归终止条件）；2) 递归调用（问题规模减小）。递归不需要循环和全局变量。"
+        },
+        {
+          "question": "汉诺塔问题移动n个盘子需要的最少步数是？",
+          "type": "single",
+          "options": ["$2^n - 1$", "$n^2$", "$2n$", "$n!$"],
+          "correctAnswer": 0,
+          "explanation": "汉诺塔问题的递推式：$T(n) = 2T(n-1) + 1$，$T(1) = 1$。解得 $T(n) = 2^n - 1$。"
+        },
+        {
+          "question": "斐波那契数列的递推公式是？",
+          "type": "single",
+          "options": [
+            "$F(n) = F(n-1) + F(n-2)$，$F(0)=0, F(1)=1$",
+            "$F(n) = 2F(n-1)$",
+            "$F(n) = F(n-1) \\\\times F(n-2)$",
+            "$F(n) = n!$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "斐波那契数列：$F(0)=0, F(1)=1, F(n)=F(n-1)+F(n-2)$（n≥2）。前几项：0, 1, 1, 2, 3, 5, 8, 13, ..."
+        }
+      ]
+    }
+  ]
+}
+

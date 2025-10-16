@@ -16,52 +16,46 @@ import Assessment from '../models/Assessment';
  * 创建所有必要的数据库索引
  */
 export async function createDatabaseIndexes() {
-  console.log('[DB Indexes] 开始创建数据库索引...');
+  console.log('[DB Indexes] 开始同步数据库索引...');
 
-  try {
-    // User 索引
-    await User.collection.createIndex({ email: 1 }, { unique: true });
-    await User.collection.createIndex({ username: 1 });
-    await User.collection.createIndex({ 'githubId': 1 }, { sparse: true });
-    await User.collection.createIndex({ 'qqId': 1 }, { sparse: true });
-    console.log('[DB Indexes] ✓ User 索引创建完成');
+  const models = [
+    { name: 'User', model: User },
+    { name: 'KnowledgePoint', model: KnowledgePoint },
+    { name: 'UserProgress', model: UserProgress },
+    { name: 'WrongQuestion', model: WrongQuestion },
+    { name: 'StudySession', model: StudySession },
+    { name: 'Assessment', model: Assessment },
+  ];
 
-    // KnowledgePoint 索引
-    await KnowledgePoint.collection.createIndex({ subject: 1 });
-    await KnowledgePoint.collection.createIndex({ title: 1 });
-    await KnowledgePoint.collection.createIndex({ subject: 1, title: 1 });
-    console.log('[DB Indexes] ✓ KnowledgePoint 索引创建完成');
+  let successCount = 0;
+  let failCount = 0;
 
-    // UserProgress 索引
-    await UserProgress.collection.createIndex({ userId: 1, pointId: 1 }, { unique: true });
-    await UserProgress.collection.createIndex({ userId: 1, status: 1 });
-    await UserProgress.collection.createIndex({ userId: 1 });
-    await UserProgress.collection.createIndex({ pointId: 1 });
-    console.log('[DB Indexes] ✓ UserProgress 索引创建完成');
+  for (const { name, model } of models) {
+    try {
+      // 为每个模型设置30秒超时
+      await Promise.race([
+        model.syncIndexes(),
+        new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('索引同步超时')), 30000)
+        )
+      ]);
+      console.log(`[DB Indexes] ✓ ${name} 索引同步完成`);
+      successCount++;
+    } catch (error: any) {
+      console.warn(`[DB Indexes] ⚠️  ${name} 索引同步失败:`, error.message);
+      failCount++;
+      // 继续处理其他模型，不中断整个流程
+    }
+  }
 
-    // WrongQuestion 索引
-    await WrongQuestion.collection.createIndex({ userId: 1, pointId: 1 });
-    await WrongQuestion.collection.createIndex({ userId: 1, mastered: 1 });
-    await WrongQuestion.collection.createIndex({ userId: 1, subject: 1 });
-    await WrongQuestion.collection.createIndex({ userId: 1, createdAt: -1 });
-    console.log('[DB Indexes] ✓ WrongQuestion 索引创建完成');
-
-    // StudySession 索引
-    await StudySession.collection.createIndex({ userId: 1, startTime: -1 });
-    await StudySession.collection.createIndex({ userId: 1, pointId: 1 });
-    await StudySession.collection.createIndex({ userId: 1, subject: 1 });
-    await StudySession.collection.createIndex({ startTime: -1 });
-    console.log('[DB Indexes] ✓ StudySession 索引创建完成');
-
-    // Assessment 索引
-    await Assessment.collection.createIndex({ userId: 1, createdAt: -1 });
-    await Assessment.collection.createIndex({ userId: 1 });
-    console.log('[DB Indexes] ✓ Assessment 索引创建完成');
-
-    console.log('[DB Indexes] ✅ 所有数据库索引创建完成！');
+  if (successCount === models.length) {
+    console.log('[DB Indexes] ✅ 所有数据库索引同步完成！');
     return true;
-  } catch (error: any) {
-    console.error('[DB Indexes] ❌ 创建索引时发生错误:', error.message);
+  } else if (successCount > 0) {
+    console.log(`[DB Indexes] ⚠️  部分索引同步完成 (${successCount}/${models.length})`);
+    return true;
+  } else {
+    console.warn('[DB Indexes] ⚠️  索引同步失败，但不影响应用运行');
     return false;
   }
 }

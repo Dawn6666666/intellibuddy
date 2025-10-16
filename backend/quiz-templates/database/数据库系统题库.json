@@ -1,0 +1,360 @@
+{
+  "题库说明": "本题库对应《数据库系统 (cs206-db)》知识点，涵盖关系模型、SQL语言、数据库设计、事务处理、索引优化等内容。",
+  "题库": [
+    {
+      "pointId": "cs206-db",
+      "pointTitle": "数据库系统",
+      "quiz": [
+        {
+          "question": "关系数据库中，关系（表）的每一行称为什么？",
+          "type": "single",
+          "options": [
+            "元组（Tuple）",
+            "属性（Attribute）",
+            "域（Domain）",
+            "关系模式（Schema）"
+          ],
+          "correctAnswer": 0,
+          "explanation": "关系数据库中，表的每一行称为元组（tuple）或记录（record），每一列称为属性（attribute）或字段（field）。"
+        },
+        {
+          "question": "主键（Primary Key）的特性包括？",
+          "type": "multiple",
+          "options": [
+            "唯一性（不重复）",
+            "非空性（不能为NULL）",
+            "最小性（没有冗余属性）",
+            "可以有多个"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "主键必须满足：1) 唯一性；2) 非空性；3) 最小性。一个表只能有一个主键（但可以有多个候选键）。"
+        },
+        {
+          "question": "外键（Foreign Key）的作用是？",
+          "type": "single",
+          "options": [
+            "维护表之间的参照完整性",
+            "提高查询速度",
+            "减少数据冗余",
+            "加密数据"
+          ],
+          "correctAnswer": 0,
+          "explanation": "外键用于建立和维护表之间的参照完整性约束，确保引用的数据存在。"
+        },
+        {
+          "question": "SQL语言的 `SELECT` 语句属于什么类型？",
+          "type": "single",
+          "options": [
+            "数据查询语言（DQL）",
+            "数据定义语言（DDL）",
+            "数据操纵语言（DML）",
+            "数据控制语言（DCL）"
+          ],
+          "correctAnswer": 0,
+          "explanation": "`SELECT` 属于数据查询语言（DQL）。DDL包括CREATE/DROP，DML包括INSERT/UPDATE/DELETE，DCL包括GRANT/REVOKE。"
+        },
+        {
+          "question": "以下哪些是数据定义语言（DDL）命令？",
+          "type": "multiple",
+          "options": [
+            "CREATE",
+            "ALTER",
+            "DROP",
+            "SELECT"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "DDL（数据定义语言）包括 CREATE（创建）、ALTER（修改）、DROP（删除）等用于定义数据库结构的命令。SELECT是DQL。"
+        },
+        {
+          "question": "SQL中，`WHERE` 子句和 `HAVING` 子句的区别是？",
+          "type": "single",
+          "options": [
+            "`WHERE` 用于过滤行，`HAVING` 用于过滤分组",
+            "`WHERE` 用于过滤分组，`HAVING` 用于过滤行",
+            "两者完全相同",
+            "`HAVING` 只能用于数值型数据"
+          ],
+          "correctAnswer": 0,
+          "explanation": "`WHERE` 在分组前过滤行，`HAVING` 在分组后过滤分组。`HAVING` 通常与 `GROUP BY` 配合使用。"
+        },
+        {
+          "question": "SQL中，以下哪个聚合函数计算平均值？",
+          "type": "single",
+          "options": [
+            "AVG()",
+            "SUM()",
+            "COUNT()",
+            "MAX()"
+          ],
+          "correctAnswer": 0,
+          "explanation": "常用聚合函数：AVG()平均值、SUM()求和、COUNT()计数、MAX()最大值、MIN()最小值。"
+        },
+        {
+          "question": "SQL中，`INNER JOIN` 返回什么结果？",
+          "type": "single",
+          "options": [
+            "两个表中匹配的记录",
+            "左表的所有记录",
+            "右表的所有记录",
+            "两个表的所有记录"
+          ],
+          "correctAnswer": 0,
+          "explanation": "`INNER JOIN` 返回两个表中满足连接条件的匹配记录。`LEFT JOIN` 返回左表所有记录，`RIGHT JOIN` 返回右表所有记录。"
+        },
+        {
+          "question": "`LEFT JOIN` 和 `INNER JOIN` 的区别是？",
+          "type": "single",
+          "options": [
+            "`LEFT JOIN` 会保留左表中不匹配的记录，`INNER JOIN` 只返回匹配的",
+            "`LEFT JOIN` 只返回匹配的记录，`INNER JOIN` 返回所有记录",
+            "两者完全相同",
+            "`LEFT JOIN` 速度更快"
+          ],
+          "correctAnswer": 0,
+          "explanation": "`LEFT JOIN`（左外连接）保留左表所有记录，右表不匹配的用NULL填充。`INNER JOIN`（内连接）只返回两表都匹配的记录。"
+        },
+        {
+          "question": "SQL中，`DISTINCT` 关键字的作用是？",
+          "type": "single",
+          "options": [
+            "去除重复记录",
+            "排序记录",
+            "限制返回的记录数",
+            "连接多个表"
+          ],
+          "correctAnswer": 0,
+          "explanation": "`DISTINCT` 用于去除查询结果中的重复记录，只返回唯一的值。"
+        },
+        {
+          "question": "SQL中，`ORDER BY` 子句用于？",
+          "type": "single",
+          "options": [
+            "对查询结果排序",
+            "过滤记录",
+            "分组记录",
+            "连接表"
+          ],
+          "correctAnswer": 0,
+          "explanation": "`ORDER BY` 用于对查询结果排序。`ASC` 升序（默认），`DESC` 降序。"
+        },
+        {
+          "question": "数据库事务的ACID特性包括？",
+          "type": "multiple",
+          "options": [
+            "原子性（Atomicity）",
+            "一致性（Consistency）",
+            "隔离性（Isolation）",
+            "持久性（Durability）"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "ACID是事务的四大特性：原子性（不可分割）、一致性（数据完整）、隔离性（并发控制）、持久性（永久保存）。"
+        },
+        {
+          "question": "事务的原子性（Atomicity）是指？",
+          "type": "single",
+          "options": [
+            "事务中的所有操作要么全部成功，要么全部失败",
+            "事务执行前后数据保持一致",
+            "多个事务并发执行互不干扰",
+            "事务提交后永久保存"
+          ],
+          "correctAnswer": 0,
+          "explanation": "原子性：事务是不可分割的最小工作单元，要么全做（commit），要么全不做（rollback）。"
+        },
+        {
+          "question": "事务的隔离级别从低到高排序正确的是？",
+          "type": "single",
+          "options": [
+            "读未提交 < 读已提交 < 可重复读 < 串行化",
+            "读已提交 < 读未提交 < 可重复读 < 串行化",
+            "串行化 < 可重复读 < 读已提交 < 读未提交",
+            "可重复读 < 读已提交 < 读未提交 < 串行化"
+          ],
+          "correctAnswer": 0,
+          "explanation": "四种隔离级别（由低到高）：读未提交（Read Uncommitted）< 读已提交（Read Committed）< 可重复读（Repeatable Read）< 串行化（Serializable）。"
+        },
+        {
+          "question": "脏读（Dirty Read）是指什么？",
+          "type": "single",
+          "options": [
+            "读取到其他事务未提交的数据",
+            "同一事务中两次读取结果不一致",
+            "两个事务同时修改同一数据",
+            "事务读取到不存在的数据"
+          ],
+          "correctAnswer": 0,
+          "explanation": "脏读：一个事务读取到另一个事务未提交的数据。可以通过「读已提交」或更高隔离级别避免。"
+        },
+        {
+          "question": "不可重复读（Non-repeatable Read）是指什么？",
+          "type": "single",
+          "options": [
+            "同一事务中，两次读取同一数据得到不同结果",
+            "读取到未提交的数据",
+            "查询结果集发生变化（新增或删除）",
+            "事务回滚"
+          ],
+          "correctAnswer": 0,
+          "explanation": "不可重复读：同一事务中，两次读取同一行数据，结果不同（因为其他事务修改并提交了）。可以通过「可重复读」或更高隔离级别避免。"
+        },
+        {
+          "question": "幻读（Phantom Read）是指什么？",
+          "type": "single",
+          "options": [
+            "同一事务中，两次范围查询得到不同的行数",
+            "读取到未提交的数据",
+            "两次读取同一行数据结果不同",
+            "事务死锁"
+          ],
+          "correctAnswer": 0,
+          "explanation": "幻读：同一事务中，两次范围查询，结果集的行数不同（因为其他事务插入或删除了记录）。只有「串行化」隔离级别可以完全避免。"
+        },
+        {
+          "question": "数据库索引的主要作用是？",
+          "type": "single",
+          "options": [
+            "加快数据查询速度",
+            "减少数据冗余",
+            "保证数据一致性",
+            "加密数据"
+          ],
+          "correctAnswer": 0,
+          "explanation": "索引是一种数据结构（如B+树），用于加快数据检索速度。代价是增加存储空间和降低写入性能。"
+        },
+        {
+          "question": "B+树索引相比B树的优势包括？",
+          "type": "multiple",
+          "options": [
+            "所有数据都在叶子节点，范围查询更高效",
+            "叶子节点通过指针连接，便于顺序访问",
+            "非叶子节点不存数据，每个节点能存更多键",
+            "树的高度更低，IO次数更少"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "B+树相比B树：1) 数据只在叶子节点；2) 叶子节点有指针连接；3) 内部节点存更多键；4) 树更矮，IO更少。所以更适合数据库索引。"
+        },
+        {
+          "question": "以下哪些情况会导致索引失效？",
+          "type": "multiple",
+          "options": [
+            "在索引列上使用函数",
+            "使用 `LIKE '%keyword'` 前导模糊查询",
+            "数据类型隐式转换",
+            "使用 `!=` 或 `<>` 操作符"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "索引失效的常见原因：函数操作、前导模糊查询、类型转换、不等于操作、OR条件（未建联合索引）等。"
+        },
+        {
+          "question": "数据库范式化（Normalization）的目的是？",
+          "type": "single",
+          "options": [
+            "减少数据冗余，避免更新异常",
+            "提高查询速度",
+            "增加数据安全性",
+            "简化SQL语句"
+          ],
+          "correctAnswer": 0,
+          "explanation": "范式化通过消除冗余和依赖来优化数据库结构，避免插入、删除、更新异常。但过度范式化可能降低查询性能。"
+        },
+        {
+          "question": "第一范式（1NF）要求？",
+          "type": "single",
+          "options": [
+            "所有属性都是原子的（不可再分）",
+            "非主属性完全依赖于主键",
+            "非主属性不传递依赖于主键",
+            "没有多值依赖"
+          ],
+          "correctAnswer": 0,
+          "explanation": "1NF：每个属性都是原子的，不可再分。例如「地址」应拆分为「省」、「市」、「街道」等。"
+        },
+        {
+          "question": "第二范式（2NF）要求？",
+          "type": "single",
+          "options": [
+            "满足1NF，且非主属性完全依赖于主键",
+            "所有属性都是原子的",
+            "非主属性不传递依赖于主键",
+            "消除所有冗余"
+          ],
+          "correctAnswer": 0,
+          "explanation": "2NF：满足1NF，且消除部分函数依赖。非主属性必须完全依赖于主键（不能只依赖主键的一部分）。"
+        },
+        {
+          "question": "第三范式（3NF）要求？",
+          "type": "single",
+          "options": [
+            "满足2NF，且非主属性不传递依赖于主键",
+            "满足1NF即可",
+            "所有属性都是主键",
+            "没有外键"
+          ],
+          "correctAnswer": 0,
+          "explanation": "3NF：满足2NF，且消除传递依赖。非主属性不能依赖于其他非主属性。"
+        },
+        {
+          "question": "反范式化（Denormalization）的主要目的是？",
+          "type": "single",
+          "options": [
+            "通过增加冗余来提高查询性能",
+            "减少数据冗余",
+            "简化数据库设计",
+            "提高数据安全性"
+          ],
+          "correctAnswer": 0,
+          "explanation": "反范式化通过适当增加冗余（如冗余字段、汇总表）来减少JOIN操作，提高查询性能。需要权衡读写性能。"
+        },
+        {
+          "question": "数据库锁的类型包括？",
+          "type": "multiple",
+          "options": [
+            "共享锁（Shared Lock，S锁）",
+            "排他锁（Exclusive Lock，X锁）",
+            "意向锁（Intent Lock）",
+            "乐观锁"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "数据库锁的类型：共享锁（读锁，多个事务可同时持有）、排他锁（写锁，独占）、意向锁（表级锁，辅助）。乐观锁是一种并发控制策略，不是真正的锁。"
+        },
+        {
+          "question": "悲观锁和乐观锁的区别是？",
+          "type": "single",
+          "options": [
+            "悲观锁假设会发生冲突，先加锁；乐观锁假设不会冲突，提交时检查",
+            "悲观锁用于读操作，乐观锁用于写操作",
+            "悲观锁速度快，乐观锁速度慢",
+            "两者完全相同"
+          ],
+          "correctAnswer": 0,
+          "explanation": "悲观锁（如SELECT FOR UPDATE）：假设会冲突，先加锁。乐观锁（如版本号机制）：假设不会冲突，提交时用版本号检查。"
+        },
+        {
+          "question": "死锁（Deadlock）是指什么？",
+          "type": "single",
+          "options": [
+            "两个或多个事务互相等待对方释放锁",
+            "事务执行时间过长",
+            "索引失效",
+            "磁盘空间不足"
+          ],
+          "correctAnswer": 0,
+          "explanation": "死锁：两个或多个事务相互持有对方需要的锁，形成循环等待。数据库通常通过超时或死锁检测来解决。"
+        },
+        {
+          "question": "SQL注入攻击的防御措施包括？",
+          "type": "multiple",
+          "options": [
+            "使用参数化查询（预编译语句）",
+            "对用户输入进行验证和过滤",
+            "使用ORM框架",
+            "不对用户输入做任何处理"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "防御SQL注入：1) 使用参数化查询/预编译语句（最有效）；2) 输入验证和转义；3) 使用ORM；4) 最小权限原则。绝不能直接拼接用户输入。"
+        }
+      ]
+    }
+  ]
+}
+

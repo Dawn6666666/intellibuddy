@@ -24,13 +24,37 @@
 
 <script setup lang="ts">
 import { useKnowledgeStore } from '@/stores/knowledge';
-import { useUserStore } from '@/stores/user'; // 引入 user store
+import { useUserStore } from '@/stores/user';
 import KnowledgeCard from '@/components/KnowledgeCard.vue';
+import { onActivated, onDeactivated, ref } from 'vue';
 
 const knowledgeStore = useKnowledgeStore();
-const userStore = useUserStore(); // 获取 user store 实例以使用其状态
+const userStore = useUserStore();
 
-// 不再需要 onMounted 和 fetchData，组件变得非常干净
+// 设置组件名称，用于 keep-alive 缓存识别
+defineOptions({
+  name: 'KnowledgeBaseView'
+});
+
+// 保存滚动位置
+const savedScrollPosition = ref(0);
+
+// 组件被停用时（离开页面），保存滚动位置
+onDeactivated(() => {
+  savedScrollPosition.value = window.scrollY || document.documentElement.scrollTop;
+  console.log('知识库页面被停用（缓存起来），保存滚动位置:', savedScrollPosition.value);
+});
+
+// 组件被激活时（返回页面），恢复滚动位置
+onActivated(() => {
+  console.log('知识库页面被激活（从缓存中恢复），恢复滚动位置:', savedScrollPosition.value);
+  // 由于知识库页面没有过渡动画，可以立即恢复滚动位置
+  // 使用 nextTick 确保 DOM 完全渲染
+  setTimeout(() => {
+    window.scrollTo(0, savedScrollPosition.value);
+    console.log('✅ 滚动位置已恢复到:', savedScrollPosition.value);
+  }, 0);
+});
 </script>
 
 <style scoped>

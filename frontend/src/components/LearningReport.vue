@@ -71,7 +71,7 @@ const generateReport = async () => {
   try {
     generating.value = true;
     loading.value = true;
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('authToken');
 
     const response = await axios.post(
       '/api/learning-report/generate',

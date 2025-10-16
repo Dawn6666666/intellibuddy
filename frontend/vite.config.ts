@@ -18,6 +18,11 @@ export default defineConfig({
         target: 'http://localhost:5001',
         changeOrigin: true,
         secure: false,
+      },
+      '/uploads': {
+        target: 'http://localhost:5001',
+        changeOrigin: true,
+        secure: false,
       }
     }
   },
@@ -37,6 +42,10 @@ export default defineConfig({
           // Markdown 相关
           'markdown': ['marked', 'marked-katex-extension', 'katex', 'highlight.js'],
         },
+        // 文件命名策略（带hash，便于缓存）
+        chunkFileNames: 'assets/js/[name]-[hash].js',
+        entryFileNames: 'assets/js/[name]-[hash].js',
+        assetFileNames: 'assets/[ext]/[name]-[hash].[ext]',
       },
     },
     // 压缩优化
@@ -49,6 +58,17 @@ export default defineConfig({
     outDir: 'dist',
     // 静态资源处理
     assetsInlineLimit: 4096, // 小于 4kb 的资源内联为 base64
+    // 启用 sourcemap（方便调试生产问题）
+    sourcemap: false, // 生产环境关闭以减小体积
+    // 构建目标（需要支持 top-level await）
+    target: 'es2020',
+    // 启用 CSS 压缩
+    cssMinify: true,
+  },
+
+  // esbuild 优化选项（移除 console 和 debugger）
+  esbuild: {
+    drop: ['console', 'debugger'],
   },
 
   // 优化依赖预构建

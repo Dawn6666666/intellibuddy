@@ -301,40 +301,6 @@ ${options.map((opt, idx) => `${String.fromCharCode(65 + idx)}. ${opt}`).join('\n
 }
 
 /**
- * 解释代码
- */
-export async function explainCode(code: string, language: string): Promise<string> {
-  const prompt = `请详细解释以下 ${language} 代码：
-
-\`\`\`${language}
-${code}
-\`\`\`
-
-请提供以下内容：
-
-1. **代码功能概述**：这段代码的主要功能是什么？
-2. **逐行解释**：对关键代码行进行详细解释
-3. **关键概念**：涉及的重要编程概念和技术
-4. **优化建议**：如果有可以改进的地方，请提出建议
-5. **常见错误**：使用这种代码模式时容易犯的错误
-
-请用 Markdown 格式输出，条理清晰，适合初学者理解。`;
-
-  const messages: ChatMessage[] = [
-    {
-      role: 'system',
-      content: '你是一位经验丰富的编程导师，擅长用通俗易懂的语言解释代码。',
-    },
-    {
-      role: 'user',
-      content: prompt,
-    },
-  ];
-
-  return await getChatCompletion(messages, { maxTokens: 3000 });
-}
-
-/**
  * AI 聊天（通用）
  */
 export async function chat(

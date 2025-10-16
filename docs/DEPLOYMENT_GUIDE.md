@@ -64,23 +64,33 @@ pnpm install
 
 ### 2.3 配置环境变量
 
+> 💡 **快速开始**：复制 `backend/env.example` 文件为 `backend/.env`，然后按说明填写配置。
+
 **后端环境变量** (`backend/.env`):
 ```env
-# MongoDB 连接字符串（必需）
+# ========== 基础配置 ==========
+NODE_ENV=development
+PORT=5001
+
+# ========== URL 配置 ==========
+FRONTEND_URL=http://localhost:5173
+BACKEND_URL=http://localhost:5001
+
+# ========== 数据库配置 ==========
+# MongoDB Atlas 连接字符串（必需）
 MONGO_URI=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/intellibuddy?retryWrites=true&w=majority
 
-# JWT 密钥（必需）
+# ========== 身份认证配置 ==========
+# JWT 密钥（必需，生产环境请使用强随机字符串）
+# 生成方法：node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 JWT_SECRET=your_jwt_secret_here_please_change_in_production
 
-# 前端 URL（用于 OAuth 回调）
-FRONTEND_URL=http://localhost:5173
-
-# AI 模型配置（至少配置一个）
+# ========== AI 模型配置 ==========
+# 至少配置一个 AI 模型，推荐配置多个以实现智能降级
 PRIMARY_AI_MODEL=kimi
 
-# Kimi API 配置（推荐）
+# Kimi API（推荐）
 KIMI_API_KEY=your_kimi_api_key_here
-KIMI_API_ENDPOINT=https://api.moonshot.cn/v1/chat/completions
 
 # 智谱 AI（可选）
 ZHIPU_API_KEY=your_zhipu_api_key_here
@@ -92,14 +102,17 @@ QIANWEN_API_KEY=your_qianwen_api_key_here
 ERNIE_API_KEY=your_ernie_api_key_here
 ERNIE_SECRET_KEY=your_ernie_secret_key_here
 
-# 是否启用 AI 缓存
+# 是否启用 AI 缓存（true 可节省成本）
 ENABLE_AI_CACHE=true
 
-# 服务器端口
-PORT=5001
+# ========== 第三方登录（可选）==========
+# GitHub OAuth
+GITHUB_CLIENT_ID=your_github_client_id
+GITHUB_CLIENT_SECRET=your_github_client_secret
 
-# 运行环境
-NODE_ENV=development
+# QQ OAuth
+QQ_APP_ID=your_qq_app_id
+QQ_APP_KEY=your_qq_app_key
 ```
 
 **前端环境变量** (`.env.local`，可选):
@@ -107,6 +120,8 @@ NODE_ENV=development
 # 如果后端不在 localhost:5001，需要配置
 VITE_API_BASE_URL=http://localhost:5001
 ```
+
+> 📖 **详细配置说明**：参见 `backend/env.example` 文件中的注释
 
 ### 2.4 启动开发服务器
 
@@ -199,28 +214,63 @@ git push origin main
 
 #### 步骤4：配置 Vercel 环境变量
 
-在 Vercel 项目设置 → Environment Variables 中添加：
+在 Vercel 项目设置 → Environment Variables 中添加以下变量：
 
-```
-MONGO_URI=<your_mongodb_atlas_connection_string>
-JWT_SECRET=<your_strong_jwt_secret>
-FRONTEND_URL=https://your-project.vercel.app
-PRIMARY_AI_MODEL=kimi
-KIMI_API_KEY=<your_kimi_api_key>
-KIMI_API_ENDPOINT=https://api.moonshot.cn/v1/chat/completions
-ENABLE_AI_CACHE=true
-NODE_ENV=production
-```
+**必需的环境变量**：
+| 变量名 | 值示例 | 说明 |
+|--------|--------|------|
+| `NODE_ENV` | `production` | 运行环境 |
+| `MONGO_URI` | `mongodb+srv://...` | MongoDB Atlas 连接串 |
+| `JWT_SECRET` | `强随机字符串` | JWT 签名密钥（32位以上） |
+| `FRONTEND_URL` | `https://your-project.vercel.app` | 前端域名（Vercel 自动分配或自定义域名） |
+| `BACKEND_URL` | `https://your-project.vercel.app` | 后端域名（与前端相同） |
+| `KIMI_API_KEY` | `sk-...` | Kimi AI 的 API Key |
 
-#### 步骤5：重新部署
+**推荐的可选变量**：
+| 变量名 | 值示例 | 说明 |
+|--------|--------|------|
+| `PRIMARY_AI_MODEL` | `kimi` | 主AI模型 (kimi/qianwen/zhipu/ernie) |
+| `ENABLE_AI_CACHE` | `true` | 开启AI缓存节省成本 |
+| `QIANWEN_API_KEY` | `sk-...` | 通义千问 API Key（降级备用） |
+| `ZHIPU_API_KEY` | `...` | 智谱 AI API Key（降级备用） |
+| `GITHUB_CLIENT_ID` | `...` | GitHub OAuth ID（启用GitHub登录） |
+| `GITHUB_CLIENT_SECRET` | `...` | GitHub OAuth Secret |
+| `TRUST_PROXY` | `true` | 信任代理（Vercel必需） |
 
-环境变量配置后，点击 "Redeploy" 使配置生效。
+> ⚠️ **重要提示**：
+> 1. 每个环境变量都要在 **Production**、**Preview** 和 **Development** 三个环境中配置
+> 2. `FRONTEND_URL` 和 `BACKEND_URL` 在生产环境应使用实际域名
+> 3. `JWT_SECRET` 必须使用强随机字符串，不要使用示例值
 
-#### 步骤6：自定义域名（可选）
+#### 步骤5：触发重新部署
+
+环境变量配置后，需要重新部署使配置生效：
+1. 在 Vercel 项目面板，点击 "Deployments" 标签
+2. 找到最新的部署，点击右侧 "..." 菜单
+3. 选择 "Redeploy"
+4. 等待部署完成（约1-3分钟）
+
+#### 步骤6：验证部署
+
+部署成功后，验证各项功能：
+1. 访问部署的 URL（如 `https://your-project.vercel.app`）
+2. 检查首页是否正常加载
+3. 尝试注册/登录功能
+4. 测试 AI 对话功能
+5. 检查浏览器控制台是否有错误
+
+#### 步骤7：自定义域名（可选）
 
 1. 在 Vercel 项目设置 → Domains
-2. 添加您的自定义域名
-3. 按照提示配置 DNS 记录
+2. 添加您的自定义域名（如 `intellibuddy.com`）
+3. 按照 Vercel 提示配置 DNS 记录：
+   - **A 记录**：指向 Vercel IP
+   - **CNAME 记录**：指向 `cname.vercel-dns.com`
+4. 等待 DNS 生效（5分钟-24小时）
+5. 更新环境变量 `FRONTEND_URL` 和 `BACKEND_URL` 为新域名
+6. 重新部署
+
+> 💡 **提示**：使用自定义域名后需要同步更新第三方OAuth回调URL（GitHub、QQ等）
 
 ---
 

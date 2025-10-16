@@ -1,0 +1,362 @@
+{
+  "题库说明": "本题库对应《软件工程基础 (cs203)》知识点，涵盖软件生命周期、需求分析、系统设计、测试、维护等内容。",
+  "题库": [
+    {
+      "pointId": "cs203",
+      "pointTitle": "软件工程基础",
+      "quiz": [
+        {
+          "question": "软件工程的三要素是？",
+          "type": "multiple",
+          "options": [
+            "方法（Methods）",
+            "工具（Tools）",
+            "过程（Process）",
+            "人员（People）"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "软件工程三要素：方法（技术手段）、工具（自动化支持）、过程（开发流程）。人员虽然重要，但通常不列为三要素之一。"
+        },
+        {
+          "question": "软件生命周期（SDLC）的主要阶段包括？",
+          "type": "multiple",
+          "options": [
+            "需求分析（Requirements）",
+            "设计（Design）",
+            "实现/编码（Implementation）",
+            "测试（Testing）",
+            "维护（Maintenance）"
+          ],
+          "correctAnswer": [0, 1, 2, 3, 4],
+          "explanation": "软件生命周期包括：需求分析→设计→实现→测试→部署→维护。维护阶段通常占软件生命周期成本的60-70%。"
+        },
+        {
+          "question": "瀑布模型（Waterfall Model）的特点是？",
+          "type": "single",
+          "options": [
+            "阶段顺序执行，前一阶段完成后才能进入下一阶段",
+            "快速迭代，频繁交付",
+            "需求可以随时变更",
+            "适合需求不明确的项目"
+          ],
+          "correctAnswer": 0,
+          "explanation": "瀑布模型：线性顺序开发，阶段明确、文档驱动。优点：简单易管理。缺点：不灵活、需求变更成本高、客户反馈晚。适合需求明确且稳定的项目。"
+        },
+        {
+          "question": "敏捷开发（Agile）的核心价值观包括？",
+          "type": "multiple",
+          "options": [
+            "个体和互动 胜过 流程和工具",
+            "工作的软件 胜过 详尽的文档",
+            "客户合作 胜过 合同谈判",
+            "响应变化 胜过 遵循计划"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "敏捷宣言四大价值观：重视人、可用软件、客户协作、拥抱变化。注意是\"胜过\"而非\"替代\"，右边的事项也有价值。"
+        },
+        {
+          "question": "Scrum框架的三个角色是？",
+          "type": "multiple",
+          "options": [
+            "产品负责人（Product Owner）",
+            "Scrum Master",
+            "开发团队（Development Team）",
+            "项目经理（Project Manager）"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "Scrum三角色：PO（定义需求、维护Product Backlog）、Scrum Master（促进者、移除障碍）、开发团队（自组织、跨职能）。Scrum中没有传统的项目经理角色。"
+        },
+        {
+          "question": "Sprint（冲刺）的典型周期是？",
+          "type": "single",
+          "options": [
+            "1-4周",
+            "1天",
+            "6个月",
+            "1年"
+          ],
+          "correctAnswer": 0,
+          "explanation": "Sprint：Scrum中的迭代周期，通常1-4周（最常见2周）。每个Sprint产出可工作的软件增量。固定时长有助于建立节奏。"
+        },
+        {
+          "question": "需求工程的主要活动包括？",
+          "type": "multiple",
+          "options": [
+            "需求获取（Elicitation）",
+            "需求分析（Analysis）",
+            "需求规格说明（Specification）",
+            "需求验证（Validation）"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "需求工程过程：获取（访谈、问卷、观察）→分析（建模、优先级）→规格说明（文档化）→验证（评审、原型）→管理（变更控制）。"
+        },
+        {
+          "question": "功能性需求（Functional Requirements）和非功能性需求（Non-Functional Requirements）的区别是？",
+          "type": "single",
+          "options": [
+            "功能性需求描述系统\"做什么\"，非功能性需求描述系统\"如何做\"",
+            "功能性需求描述性能，非功能性需求描述功能",
+            "两者完全相同",
+            "功能性需求不重要"
+          ],
+          "correctAnswer": 0,
+          "explanation": "功能性需求：系统功能（如用户登录、订单支付）。非功能性需求：质量属性（如性能、可靠性、安全性、可用性）。非功能性需求往往决定系统架构。"
+        },
+        {
+          "question": "用例图（Use Case Diagram）的主要元素包括？",
+          "type": "multiple",
+          "options": [
+            "参与者（Actor）",
+            "用例（Use Case）",
+            "关系（Association、Include、Extend）",
+            "类（Class）"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "用例图（UML）：展示系统功能和外部参与者的交互。元素：参与者（用户、外部系统）、用例（系统功能）、关系（关联、包含、扩展、泛化）。类属于类图，不属于用例图。"
+        },
+        {
+          "question": "软件架构风格包括哪些？",
+          "type": "multiple",
+          "options": [
+            "分层架构（Layered）",
+            "客户端-服务器（Client-Server）",
+            "微服务（Microservices）",
+            "事件驱动（Event-Driven）"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "常见架构风格：分层（如MVC）、C/S、微服务、事件驱动、管道-过滤器、发布-订阅、点对点等。不同风格适用于不同场景。"
+        },
+        {
+          "question": "MVC设计模式的三个组件是？",
+          "type": "multiple",
+          "options": [
+            "模型（Model）- 业务逻辑和数据",
+            "视图（View）- 用户界面",
+            "控制器（Controller）- 处理输入和协调",
+            "路由器（Router）"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "MVC架构模式：Model（数据和业务逻辑）、View（展示）、Controller（接收输入、调用Model、选择View）。优点：关注点分离、易维护。"
+        },
+        {
+          "question": "设计原则SOLID中的S代表什么？",
+          "type": "single",
+          "options": [
+            "单一职责原则（Single Responsibility Principle）",
+            "简单原则（Simplicity Principle）",
+            "安全原则（Security Principle）",
+            "可扩展原则（Scalability Principle）"
+          ],
+          "correctAnswer": 0,
+          "explanation": "SOLID设计原则：S-单一职责、O-开闭原则、L-里氏替换、I-接口隔离、D-依赖倒置。是面向对象设计的核心原则。"
+        },
+        {
+          "question": "代码审查（Code Review）的主要目的是？",
+          "type": "multiple",
+          "options": [
+            "发现Bug和潜在问题",
+            "提高代码质量",
+            "知识共享",
+            "延长开发时间"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "代码审查的好处：发现缺陷（早期发现成本低）、提高质量（可读性、可维护性）、知识传播、统一编码风格。虽然短期耗时，但长期降低维护成本。"
+        },
+        {
+          "question": "单元测试（Unit Testing）的特点是？",
+          "type": "single",
+          "options": [
+            "测试单个函数或类，隔离外部依赖",
+            "测试整个系统",
+            "由用户执行的测试",
+            "性能测试"
+          ],
+          "correctAnswer": 0,
+          "explanation": "单元测试：测试最小可测试单元（函数、方法、类），使用Mock/Stub隔离依赖。特点：快速、自动化、可重复。是测试金字塔的基础。"
+        },
+        {
+          "question": "测试驱动开发（TDD）的流程是？",
+          "type": "single",
+          "options": [
+            "红（写失败的测试）→ 绿（写代码使测试通过）→ 重构",
+            "写代码 → 写测试",
+            "先设计 → 再编码",
+            "先测试性能 → 再测试功能"
+          ],
+          "correctAnswer": 0,
+          "explanation": "TDD循环：1) Red-写测试（测试失败）；2) Green-写最简代码使测试通过；3) Refactor-重构改进。优点：设计改进、高测试覆盖率、快速反馈。"
+        },
+        {
+          "question": "集成测试（Integration Testing）和单元测试的区别是？",
+          "type": "single",
+          "options": [
+            "集成测试验证多个模块间的交互，单元测试验证单个模块",
+            "集成测试比单元测试简单",
+            "集成测试不需要准备数据",
+            "两者完全相同"
+          ],
+          "correctAnswer": 0,
+          "explanation": "单元测试：隔离测试单个单元。集成测试：测试模块间接口和交互（如API+数据库）。系统测试：端到端测试整个系统。验收测试：用户验证是否满足需求。"
+        },
+        {
+          "question": "白盒测试和黑盒测试的区别是？",
+          "type": "single",
+          "options": [
+            "白盒测试关注内部结构，黑盒测试关注输入输出",
+            "白盒测试由用户执行",
+            "黑盒测试需要看源代码",
+            "白盒测试不需要测试用例"
+          ],
+          "correctAnswer": 0,
+          "explanation": "白盒测试（结构测试）：基于代码内部逻辑，关注语句覆盖、分支覆盖、路径覆盖。黑盒测试（功能测试）：不看代码，基于需求规格，关注输入输出和功能。"
+        },
+        {
+          "question": "持续集成（CI）的核心实践包括？",
+          "type": "multiple",
+          "options": [
+            "频繁提交代码到主干",
+            "每次提交自动构建和测试",
+            "快速反馈",
+            "每月集成一次"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "持续集成（Continuous Integration）：开发者频繁（每天多次）将代码集成到主干，每次集成通过自动化构建和测试验证。目的：快速发现集成问题。"
+        },
+        {
+          "question": "持续交付（CD）和持续部署的区别是？",
+          "type": "single",
+          "options": [
+            "持续交付需要手动批准部署，持续部署自动部署到生产",
+            "持续交付更快",
+            "持续部署不需要测试",
+            "两者完全相同"
+          ],
+          "correctAnswer": 0,
+          "explanation": "持续交付（Continuous Delivery）：代码随时可部署，需人工决定发布时间。持续部署（Continuous Deployment）：自动部署到生产（通过所有测试后）。CD通常指持续交付。"
+        },
+        {
+          "question": "版本控制系统（VCS）的主要作用是？",
+          "type": "multiple",
+          "options": [
+            "跟踪代码变更历史",
+            "支持多人协作",
+            "支持分支和合并",
+            "替代备份"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "VCS的作用：历史记录（谁、何时、改了什么）、协作（并行开发、冲突解决）、分支管理（特性分支、发布分支）、回滚。但不能替代备份（需异地备份）。"
+        },
+        {
+          "question": "Git的分支策略Git Flow包括哪些分支？",
+          "type": "multiple",
+          "options": [
+            "master/main（生产）",
+            "develop（开发）",
+            "feature（特性）",
+            "release（发布）",
+            "hotfix（热修复）"
+          ],
+          "correctAnswer": [0, 1, 2, 3, 4],
+          "explanation": "Git Flow：master（稳定生产）、develop（最新开发）、feature/*（新功能）、release/*（发布准备）、hotfix/*（紧急修复）。适合定期发布的项目。"
+        },
+        {
+          "question": "技术债（Technical Debt）是指？",
+          "type": "single",
+          "options": [
+            "为快速交付而采取的短期方案，导致未来需要额外工作",
+            "公司的财务债务",
+            "技术人员的工资",
+            "软件许可费用"
+          ],
+          "correctAnswer": 0,
+          "explanation": "技术债：为了短期利益（如快速上线）牺牲长期代码质量，导致未来需要\"还债\"（重构、修复）。来源：赶工、设计不当、技术选型失误等。需要平衡和管理。"
+        },
+        {
+          "question": "代码重构（Refactoring）的定义是？",
+          "type": "single",
+          "options": [
+            "改进代码内部结构，不改变外部行为",
+            "重写整个系统",
+            "添加新功能",
+            "修复Bug"
+          ],
+          "correctAnswer": 0,
+          "explanation": "重构：在不改变软件可观察行为的前提下，改进代码内部结构，使其更易理解和修改。目的：提高可维护性、消除重复、简化设计。需要有测试保护。"
+        },
+        {
+          "question": "软件质量属性包括？",
+          "type": "multiple",
+          "options": [
+            "可靠性（Reliability）",
+            "可用性（Availability）",
+            "可维护性（Maintainability）",
+            "性能（Performance）"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "软件质量属性（非功能性需求）：可靠性（无故障时间）、可用性（易用性）、可维护性（易修改）、性能、安全性、可扩展性、可移植性等。ISO 25010定义了质量模型。"
+        },
+        {
+          "question": "结对编程（Pair Programming）的两个角色是？",
+          "type": "multiple",
+          "options": [
+            "驾驶员（Driver）- 编写代码",
+            "导航员（Navigator）- 审查和思考",
+            "经理（Manager）",
+            "测试员（Tester）"
+          ],
+          "correctAnswer": [0, 1],
+          "explanation": "结对编程（XP实践）：两人共用一台电脑，Driver写代码，Navigator审查和考虑更高层面（设计、潜在问题）。定期交换角色。优点：代码质量高、知识共享。"
+        },
+        {
+          "question": "软件配置管理（SCM）包括哪些活动？",
+          "type": "multiple",
+          "options": [
+            "版本控制",
+            "变更控制",
+            "构建管理",
+            "发布管理"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "软件配置管理：管理软件的变更。包括：版本控制（Git）、变更管理（评审、批准）、构建管理（自动化构建）、发布管理（打包、部署）、配置审计。"
+        },
+        {
+          "question": "软件度量（Software Metrics）的常见指标包括？",
+          "type": "multiple",
+          "options": [
+            "代码行数（LOC）",
+            "圈复杂度（Cyclomatic Complexity）",
+            "代码覆盖率（Code Coverage）",
+            "缺陷密度（Defect Density）"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "软件度量：量化评估软件质量和过程。指标：LOC（规模）、圈复杂度（复杂性）、覆盖率（测试充分性）、缺陷密度（质量）、技术债务等。需谨慎使用，避免误导。"
+        },
+        {
+          "question": "DevOps的核心理念是？",
+          "type": "single",
+          "options": [
+            "开发（Dev）和运维（Ops）紧密协作，实现快速交付",
+            "开发和运维完全分离",
+            "只关注开发",
+            "只关注运维"
+          ],
+          "correctAnswer": 0,
+          "explanation": "DevOps：打破Dev和Ops的墙，通过自动化（CI/CD）、协作、监控实现快速、可靠的软件交付。文化：共担责任、快速反馈、持续改进。"
+        },
+        {
+          "question": "敏捷估算方法包括？",
+          "type": "multiple",
+          "options": [
+            "故事点（Story Points）",
+            "计划扑克（Planning Poker）",
+            "理想天数（Ideal Days）",
+            "精确小时估算"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "敏捷估算：相对估算（而非绝对时间）。故事点（抽象单位，考虑复杂度、工作量、风险）、计划扑克（团队共识）、理想天数。避免过早精确估算，拥抱不确定性。"
+        }
+      ]
+    }
+  ]
+}
+

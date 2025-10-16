@@ -158,14 +158,15 @@ router.post('/:id/analyze', authMiddleware, async (req: Request, res: Response) 
     try {
         const userId = req.user?._id;
         const { id } = req.params;
+        const { regenerate } = req.body; // 是否强制重新生成
 
         const wrongQuestion = await WrongQuestion.findOne({ _id: id, userId });
         if (!wrongQuestion) {
             return res.status(404).json({ message: '错题不存在' });
         }
 
-        // 如果已有 AI 解析，直接返回
-        if (wrongQuestion.aiAnalysis) {
+        // 如果已有 AI 解析且不是重新生成，直接返回
+        if (wrongQuestion.aiAnalysis && !regenerate) {
             return res.json({ aiAnalysis: wrongQuestion.aiAnalysis });
         }
 

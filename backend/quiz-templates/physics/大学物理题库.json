@@ -1,0 +1,360 @@
+{
+  "题库说明": "本题库对应《大学物理 (phys101)》知识点，涵盖力学、热学、电磁学、光学、近代物理等内容。",
+  "题库": [
+    {
+      "pointId": "phys101",
+      "pointTitle": "大学物理",
+      "quiz": [
+        {
+          "question": "牛顿第二定律的表达式是？",
+          "type": "single",
+          "options": [
+            "$\\\\vec{F} = m\\\\vec{a}$",
+            "$\\\\vec{F} = m\\\\vec{v}$",
+            "$E = mc^2$",
+            "$F = kx$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "牛顿第二定律：物体的加速度与作用力成正比，与质量成反比。$\\\\vec{F} = m\\\\vec{a}$或$\\\\vec{F} = \\\\frac{d\\\\vec{p}}{dt}$（动量形式）。是经典力学的核心。"
+        },
+        {
+          "question": "动量守恒定律成立的条件是？",
+          "type": "single",
+          "options": [
+            "系统不受外力或外力之和为零",
+            "系统内无摩擦力",
+            "系统处于真空",
+            "系统只有两个物体"
+          ],
+          "correctAnswer": 0,
+          "explanation": "动量守恒：$\\\\sum \\\\vec{F}_{\\\\text{外}} = 0$时，$\\\\vec{p}_1 + \\\\vec{p}_2 + ... = \\\\text{常量}$。适用于碰撞、爆炸等问题。即使有内力（如弹簧、碰撞），只要外力为零即守恒。"
+        },
+        {
+          "question": "机械能守恒的条件是？",
+          "type": "single",
+          "options": [
+            "只有保守力做功（如重力、弹性力），无非保守力做功",
+            "没有任何力",
+            "速度恒定",
+            "加速度为零"
+          ],
+          "correctAnswer": 0,
+          "explanation": "机械能守恒：$E_k + E_p = \\\\text{常量}$。条件：只有保守力做功（重力、弹性力、电场力）。非保守力（摩擦力、空气阻力）做功时机械能不守恒，但能量总守恒。"
+        },
+        {
+          "question": "角动量守恒定律的条件是？",
+          "type": "single",
+          "options": [
+            "对某点的合外力矩为零",
+            "物体静止",
+            "物体做匀速运动",
+            "没有摩擦力"
+          ],
+          "correctAnswer": 0,
+          "explanation": "角动量守恒：$\\\\sum \\\\vec{\\\\tau}_{\\\\text{外}} = 0$时，$\\\\vec{L} = \\\\vec{r} \\\\times \\\\vec{p} = I\\\\vec{\\\\omega} = \\\\text{常量}$。应用：花样滑冰（缩小半径加快转速）、陀螺、行星运动（开普勒第二定律）。"
+        },
+        {
+          "question": "简谐振动的特征方程是？",
+          "type": "single",
+          "options": [
+            "$\\\\frac{d^2x}{dt^2} + \\\\omega^2 x = 0$，解为$x = A\\\\cos(\\\\omega t + \\\\varphi)$",
+            "$x = vt$",
+            "$x = \\\\frac{1}{2}at^2$",
+            "$F = ma$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "简谐振动：回复力$F = -kx$，运动方程$\\\\frac{d^2x}{dt^2} + \\\\omega^2 x = 0$（$\\\\omega = \\\\sqrt{k/m}$）。通解：$x = A\\\\cos(\\\\omega t + \\\\varphi)$。振幅$A$、角频率$\\\\omega$、初相$\\\\varphi$。"
+        },
+        {
+          "question": "理想气体状态方程是？",
+          "type": "single",
+          "options": [
+            "$PV = nRT$",
+            "$PV = \\\\text{常量}$",
+            "$E = mc^2$",
+            "$F = ma$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "理想气体状态方程：$PV = nRT$（$P$压强、$V$体积、$n$摩尔数、$R$气体常数8.314 J/(mol·K)、$T$绝对温度）。或$PV = Nk_BT$（$N$分子数、$k_B$玻尔兹曼常数）。"
+        },
+        {
+          "question": "热力学第一定律的表达式是？",
+          "type": "single",
+          "options": [
+            "$\\\\Delta U = Q - W$（内能增量=吸热-对外做功）",
+            "$\\\\Delta S \\\\geq 0$",
+            "$PV = nRT$",
+            "$E = mc^2$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "热力学第一定律（能量守恒）：$\\\\Delta U = Q - W$。$Q>0$吸热，$W>0$对外做功。绝热过程$Q=0$，$\\\\Delta U = -W$。等容过程$W=0$，$\\\\Delta U = Q$。"
+        },
+        {
+          "question": "热力学第二定律的克劳修斯表述是？",
+          "type": "single",
+          "options": [
+            "热量不能自发地从低温物体传到高温物体",
+            "能量守恒",
+            "熵减小",
+            "温度恒定"
+          ],
+          "correctAnswer": 0,
+          "explanation": "热力学第二定律表述：1) 克劳修斯：热量不自发从冷到热；2) 开尔文：不可能从单一热源吸热全部转化为功（第二类永动机不可能）；3) 熵增：孤立系统熵不减$\\\\Delta S \\\\geq 0$。"
+        },
+        {
+          "question": "卡诺循环的效率公式是？",
+          "type": "single",
+          "options": [
+            "$\\\\eta = 1 - \\\\frac{T_2}{T_1}$（$T_1$高温热源，$T_2$低温热源）",
+            "$\\\\eta = \\\\frac{W}{Q}$",
+            "$\\\\eta = 100\\\\%$",
+            "$\\\\eta = \\\\frac{T_1}{T_2}$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "卡诺循环：理想可逆循环（两个等温+两个绝热）。效率$\\\\eta = 1 - \\\\frac{T_2}{T_1}$，只与温度有关，是理论最高效率。实际热机效率低于卡诺效率。"
+        },
+        {
+          "question": "库仑定律的表达式是？",
+          "type": "single",
+          "options": [
+            "$F = k\\\\frac{q_1 q_2}{r^2}$（$k = \\\\frac{1}{4\\\\pi\\\\varepsilon_0}$）",
+            "$F = qE$",
+            "$F = BIL$",
+            "$F = ma$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "库仑定律：真空中两点电荷间的作用力，$F = k\\\\frac{|q_1 q_2|}{r^2}$，$k = 9.0 \\\\times 10^9 \\\\, \\\\text{N·m}^2/\\\\text{C}^2$。同号相斥，异号相吸。遵循平方反比定律。"
+        },
+        {
+          "question": "电场强度的定义是？",
+          "type": "single",
+          "options": [
+            "$\\\\vec{E} = \\\\frac{\\\\vec{F}}{q_0}$（单位正电荷受力）",
+            "$\\\\vec{E} = \\\\frac{V}{d}$",
+            "$\\\\vec{E} = \\\\frac{Q}{r^2}$",
+            "$\\\\vec{E} = qV$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "电场强度：$\\\\vec{E} = \\\\frac{\\\\vec{F}}{q_0}$（$q_0$为试探电荷）。点电荷产生的电场：$\\\\vec{E} = k\\\\frac{Q}{r^2}\\\\hat{r}$。单位：N/C或V/m。电场线密度表示场强大小。"
+        },
+        {
+          "question": "高斯定律的表达式是？",
+          "type": "single",
+          "options": [
+            "$\\\\oint \\\\vec{E} \\\\cdot d\\\\vec{A} = \\\\frac{Q_{\\\\text{内}}}{\\\\varepsilon_0}$",
+            "$\\\\oint \\\\vec{B} \\\\cdot d\\\\vec{l} = \\\\mu_0 I$",
+            "$\\\\oint E \\\\, dl = 0$",
+            "$F = qE$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "高斯定律（电场）：通过闭合曲面的电通量等于内部电荷除以$\\\\varepsilon_0$。$\\\\oint \\\\vec{E} \\\\cdot d\\\\vec{A} = \\\\frac{Q_{\\\\text{内}}}{\\\\varepsilon_0}$。用于计算对称电场（球对称、柱对称、平面对称）。"
+        },
+        {
+          "question": "电容的定义式是？",
+          "type": "single",
+          "options": [
+            "$C = \\\\frac{Q}{U}$",
+            "$C = \\\\frac{U}{Q}$",
+            "$C = QU$",
+            "$C = \\\\frac{1}{2}QU$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "电容：$C = \\\\frac{Q}{U}$，单位法拉（F）。平行板电容器：$C = \\\\frac{\\\\varepsilon_0 \\\\varepsilon_r A}{d}$。储能：$W = \\\\frac{1}{2}QU = \\\\frac{1}{2}CU^2 = \\\\frac{Q^2}{2C}$。"
+        },
+        {
+          "question": "安培定律（磁场环路定律）的表达式是？",
+          "type": "single",
+          "options": [
+            "$\\\\oint \\\\vec{B} \\\\cdot d\\\\vec{l} = \\\\mu_0 I_{\\\\text{内}}$",
+            "$\\\\oint \\\\vec{E} \\\\cdot d\\\\vec{A} = \\\\frac{Q}{\\\\varepsilon_0}$",
+            "$F = BIL$",
+            "$F = qvB$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "安培定律：磁场沿闭合回路的环流等于穿过回路的电流乘以$\\\\mu_0$。$\\\\oint \\\\vec{B} \\\\cdot d\\\\vec{l} = \\\\mu_0 I_{\\\\text{内}}$。用于计算对称磁场（无限长直导线、螺线管、环形线圈）。"
+        },
+        {
+          "question": "洛伦兹力的表达式是？",
+          "type": "single",
+          "options": [
+            "$\\\\vec{F} = q\\\\vec{v} \\\\times \\\\vec{B}$",
+            "$\\\\vec{F} = q\\\\vec{E}$",
+            "$\\\\vec{F} = BI\\\\vec{L}$",
+            "$\\\\vec{F} = ma$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "洛伦兹力：运动电荷在磁场中受力，$\\\\vec{F} = q\\\\vec{v} \\\\times \\\\vec{B}$。方向由右手定则确定（$v \\\\perp B$时最大）。洛伦兹力不做功（$F \\\\perp v$），只改变运动方向（圆周运动）。"
+        },
+        {
+          "question": "法拉第电磁感应定律的表达式是？",
+          "type": "single",
+          "options": [
+            "$\\\\mathcal{E} = -\\\\frac{d\\\\Phi_B}{dt}$（感应电动势与磁通量变化率成正比）",
+            "$\\\\mathcal{E} = BLv$",
+            "$\\\\mathcal{E} = IR$",
+            "$\\\\mathcal{E} = \\\\frac{Q}{C}$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "法拉第定律：$\\\\mathcal{E} = -\\\\frac{d\\\\Phi_B}{dt} = -\\\\frac{d(BA\\\\cos\\\\theta)}{dt}$。负号表示楞次定律（感应电流产生的磁场阻碍原磁通量变化）。应用：发电机、变压器。"
+        },
+        {
+          "question": "麦克斯韦方程组包括哪些定律？",
+          "type": "multiple",
+          "options": [
+            "高斯定律（电场）",
+            "高斯定律（磁场，磁单极不存在）",
+            "法拉第电磁感应定律",
+            "安培-麦克斯韦定律（位移电流）"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "麦克斯韦方程组：统一电磁理论。1) $\\\\nabla \\\\cdot \\\\vec{E} = \\\\rho/\\\\varepsilon_0$；2) $\\\\nabla \\\\cdot \\\\vec{B} = 0$；3) $\\\\nabla \\\\times \\\\vec{E} = -\\\\frac{\\\\partial \\\\vec{B}}{\\\\partial t}$；4) $\\\\nabla \\\\times \\\\vec{B} = \\\\mu_0 \\\\vec{J} + \\\\mu_0\\\\varepsilon_0 \\\\frac{\\\\partial \\\\vec{E}}{\\\\partial t}$。预言电磁波。"
+        },
+        {
+          "question": "电磁波在真空中的传播速度是？",
+          "type": "single",
+          "options": [
+            "$c = \\\\frac{1}{\\\\sqrt{\\\\mu_0\\\\varepsilon_0}} \\\\approx 3.0 \\\\times 10^8 \\\\, \\\\text{m/s}$（光速）",
+            "$3.0 \\\\times 10^5 \\\\, \\\\text{m/s}$",
+            "$3.0 \\\\times 10^{10} \\\\, \\\\text{m/s}$",
+            "无限大"
+          ],
+          "correctAnswer": 0,
+          "explanation": "电磁波速度：$c = \\\\frac{1}{\\\\sqrt{\\\\mu_0\\\\varepsilon_0}} = 3.0 \\\\times 10^8 \\\\, \\\\text{m/s}$。光是电磁波，频率不同（可见光400-700nm）。电磁波谱：无线电波、微波、红外、可见光、紫外、X射线、伽马射线。"
+        },
+        {
+          "question": "光的双缝干涉明纹条件是？",
+          "type": "single",
+          "options": [
+            "$\\\\delta = d\\\\sin\\\\theta = k\\\\lambda$（$k=0,\\\\pm1,\\\\pm2,...$）",
+            "$\\\\delta = (k+\\\\frac{1}{2})\\\\lambda$",
+            "$\\\\delta = 2k\\\\lambda$",
+            "$\\\\delta = 0$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "杨氏双缝干涉：光程差$\\\\delta = d\\\\sin\\\\theta$。明纹（相长干涉）：$\\\\delta = k\\\\lambda$；暗纹（相消干涉）：$\\\\delta = (k+\\\\frac{1}{2})\\\\lambda$。条纹间距$\\\\Delta y = \\\\frac{\\\\lambda D}{d}$（$D$屏距、$d$缝距）。"
+        },
+        {
+          "question": "薄膜干涉中，等厚干涉的代表实验是？",
+          "type": "single",
+          "options": [
+            "牛顿环",
+            "双缝干涉",
+            "单缝衍射",
+            "偏振"
+          ],
+          "correctAnswer": 0,
+          "explanation": "薄膜干涉：光在薄膜上下表面反射形成干涉。等厚干涉（牛顿环、劈尖）：厚度相同处亮度相同。注意半波损失（光疏→光密反射有$\\\\lambda/2$附加光程差）。"
+        },
+        {
+          "question": "单缝衍射的第一暗纹条件是？",
+          "type": "single",
+          "options": [
+            "$a\\\\sin\\\\theta = \\\\lambda$（$a$缝宽）",
+            "$a\\\\sin\\\\theta = 2\\\\lambda$",
+            "$a\\\\sin\\\\theta = \\\\frac{\\\\lambda}{2}$",
+            "$a\\\\sin\\\\theta = 0$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "单缝衍射：菲涅耳半波带法。暗纹：$a\\\\sin\\\\theta = k\\\\lambda$（$k=\\\\pm1,\\\\pm2,...$）。中央明纹宽度$2\\\\lambda D/a$（比其他亮纹宽一倍）。缝越小，衍射越明显。"
+        },
+        {
+          "question": "光电效应的爱因斯坦方程是？",
+          "type": "single",
+          "options": [
+            "$E_k = h\\\\nu - W_0$（$h\\\\nu$光子能量，$W_0$逸出功）",
+            "$E = mc^2$",
+            "$E = \\\\frac{1}{2}mv^2$",
+            "$E = h\\\\nu$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "光电效应（爱因斯坦1905）：光子能量$h\\\\nu$（$h$普朗克常数$6.63\\\\times10^{-34}$ J·s）克服逸出功$W_0$后，剩余转为电子动能。$E_k = h\\\\nu - W_0$。支持光的粒子性。截止频率$\\\\nu_0 = W_0/h$。"
+        },
+        {
+          "question": "康普顿散射说明了光的什么性质？",
+          "type": "single",
+          "options": [
+            "粒子性（动量和能量）",
+            "波动性",
+            "偏振性",
+            "干涉性"
+          ],
+          "correctAnswer": 0,
+          "explanation": "康普顿散射（1923）：X射线光子与电子碰撞，波长增加。$\\\\Delta\\\\lambda = \\\\frac{h}{m_e c}(1-\\\\cos\\\\theta)$。证明光子有动量$p=h/\\\\lambda$，支持光的粒子性。光具有波粒二象性。"
+        },
+        {
+          "question": "德布罗意波长公式是？",
+          "type": "single",
+          "options": [
+            "$\\\\lambda = \\\\frac{h}{p}$（粒子波长与动量成反比）",
+            "$\\\\lambda = \\\\frac{c}{\\\\nu}$",
+            "$\\\\lambda = h\\\\nu$",
+            "$\\\\lambda = mc^2$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "德布罗意波（1924）：实物粒子具有波动性，$\\\\lambda = \\\\frac{h}{p} = \\\\frac{h}{mv}$。电子衍射实验（Davisson-Germer）验证。微观粒子的波粒二象性。宏观物体波长极小，波动性不明显。"
+        },
+        {
+          "question": "海森堡不确定性原理的表达式是？",
+          "type": "single",
+          "options": [
+            "$\\\\Delta x \\\\cdot \\\\Delta p \\\\geq \\\\frac{\\\\hbar}{2}$（位置和动量不能同时精确测量）",
+            "$\\\\Delta x \\\\cdot \\\\Delta p = 0$",
+            "$\\\\Delta E \\\\cdot \\\\Delta x \\\\geq \\\\hbar$",
+            "$E = mc^2$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "不确定性原理（1927）：$\\\\Delta x \\\\cdot \\\\Delta p \\\\geq \\\\frac{\\\\hbar}{2}$（$\\\\hbar = h/2\\\\pi$），$\\\\Delta E \\\\cdot \\\\Delta t \\\\geq \\\\frac{\\\\hbar}{2}$。量子力学的基本原理，反映波粒二象性，非测量技术限制而是本质。"
+        },
+        {
+          "question": "薛定谔方程描述的是什么？",
+          "type": "single",
+          "options": [
+            "微观粒子的波函数随时间演化",
+            "光的传播",
+            "牛顿力学",
+            "热力学过程"
+          ],
+          "correctAnswer": 0,
+          "explanation": "薛定谔方程（1926）：量子力学基本方程。时间相关：$i\\\\hbar\\\\frac{\\\\partial\\\\psi}{\\\\partial t} = \\\\hat{H}\\\\psi$。波函数$\\\\psi$的模平方$|\\\\psi|^2$表示粒子出现的概率密度。定态问题用时间无关形式。"
+        },
+        {
+          "question": "玻尔原子模型的量子化条件是？",
+          "type": "single",
+          "options": [
+            "角动量量子化：$L = n\\\\hbar$（$n=1,2,3,...$）",
+            "能量连续",
+            "电子轨道任意",
+            "不辐射电磁波"
+          ],
+          "correctAnswer": 0,
+          "explanation": "玻尔模型（1913）：1) 角动量量子化$L=n\\\\hbar$；2) 定态不辐射；3) 跃迁辐射$h\\\\nu = E_m - E_n$。氢原子能级$E_n = -\\\\frac{13.6 \\\\, \\\\text{eV}}{n^2}$。局限：只适用氢原子，被薛定谔方程取代。"
+        },
+        {
+          "question": "狭义相对论的两个基本假设是？",
+          "type": "multiple",
+          "options": [
+            "光速不变原理（真空中光速恒为$c$）",
+            "相对性原理（物理定律在所有惯性系相同）",
+            "时间绝对",
+            "质量不变"
+          ],
+          "correctAnswer": [0, 1],
+          "explanation": "狭义相对论（爱因斯坦1905）：1) 光速不变（$c$是极限速度）；2) 相对性原理。推论：时间膨胀、长度收缩、质量-能量等价$E=mc^2$、速度叠加非线性。革命性颠覆绝对时空观。"
+        },
+        {
+          "question": "质能方程$E = mc^2$的意义是？",
+          "type": "single",
+          "options": [
+            "质量和能量可以相互转化，质量是能量的一种形式",
+            "质量守恒",
+            "能量守恒",
+            "动量守恒"
+          ],
+          "correctAnswer": 0,
+          "explanation": "质能方程（1905）：质量$m$对应能量$E=mc^2$。静止质量也有能量（静能）。核反应中质量亏损转化为能量（$\\\\Delta E = \\\\Delta m c^2$，如核裂变、核聚变）。相对论动能$E_k = (\\\\gamma -1)mc^2$。"
+        }
+      ]
+    }
+  ]
+}
+

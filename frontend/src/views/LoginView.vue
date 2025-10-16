@@ -118,7 +118,7 @@ const handleRegister = async (formEl: FormInstance | undefined) => {
             <el-form-item prop="password">
               <el-input v-model="loginForm.password" type="password" placeholder="密码" show-password/>
             </el-form-item>
-            <a href="#">忘记密码？</a>
+            <router-link to="/forgot-password" class="forgot-password-link">忘记密码？</router-link>
             <el-form-item>
               <el-button type="primary" native-type="submit" :loading="isLoading">登录</el-button>
             </el-form-item>

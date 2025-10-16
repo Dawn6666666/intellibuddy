@@ -1,0 +1,357 @@
+{
+  "题库说明": "本题库对应《微积分 II (math102)》知识点，涵盖多元函数微积分、重积分、曲线曲面积分、级数等内容。",
+  "题库": [
+    {
+      "pointId": "math102",
+      "pointTitle": "微积分 II",
+      "quiz": [
+        {
+          "question": "二元函数 $f(x, y) = x^2 + y^2$ 的偏导数 $\\frac{\\partial f}{\\partial x}$ 是？",
+          "type": "single",
+          "options": [
+            "$2x$",
+            "$2y$",
+            "$x + y$",
+            "$2x + 2y$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "对 $x$ 求偏导时，将 $y$ 视为常数：$\\frac{\\partial f}{\\partial x} = \\frac{\\partial}{\\partial x}(x^2 + y^2) = 2x$。"
+        },
+        {
+          "question": "复合函数 $z = f(u, v)$，其中 $u = x + y$，$v = x - y$，则 $\\frac{\\partial z}{\\partial x}$ 用链式法则表示为？",
+          "type": "single",
+          "options": [
+            "$\\frac{\\partial f}{\\partial u} + \\frac{\\partial f}{\\partial v}$",
+            "$\\frac{\\partial f}{\\partial u} - \\frac{\\partial f}{\\partial v}$",
+            "$\\frac{\\partial f}{\\partial u} \\cdot \\frac{\\partial f}{\\partial v}$",
+            "$\\frac{\\partial f}{\\partial u} / \\frac{\\partial f}{\\partial v}$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "多元复合函数链式法则：$\\frac{\\partial z}{\\partial x} = \\frac{\\partial f}{\\partial u}\\frac{\\partial u}{\\partial x} + \\frac{\\partial f}{\\partial v}\\frac{\\partial v}{\\partial x} = \\frac{\\partial f}{\\partial u} \\cdot 1 + \\frac{\\partial f}{\\partial v} \\cdot 1$。"
+        },
+        {
+          "question": "函数 $f(x, y) = xy$ 在点 $(1, 2)$ 处沿方向 $(1, 1)$ 的方向导数是？",
+          "type": "single",
+          "options": [
+            "$\\frac{3\\sqrt{2}}{2}$",
+            "$3$",
+            "$\\frac{3}{2}$",
+            "$\\sqrt{2}$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "梯度 $\\nabla f = (y, x) = (2, 1)$，单位方向向量 $\\vec{e} = (\\frac{1}{\\sqrt{2}}, \\frac{1}{\\sqrt{2}})$。方向导数 $= \\nabla f \\cdot \\vec{e} = 2 \\cdot \\frac{1}{\\sqrt{2}} + 1 \\cdot \\frac{1}{\\sqrt{2}} = \\frac{3\\sqrt{2}}{2}$。"
+        },
+        {
+          "question": "二元函数的极值点必满足什么条件？",
+          "type": "multiple",
+          "options": [
+            "一阶偏导数都等于0",
+            "二阶偏导数存在",
+            "海塞矩阵（Hessian）判别式大于0",
+            "在边界上"
+          ],
+          "correctAnswer": [0, 1],
+          "explanation": "极值点的必要条件是一阶偏导数为0（驻点）。充分条件需要用二阶偏导数（海塞矩阵）判别。但不一定在边界上。"
+        },
+        {
+          "question": "二重积分 $\\iint_D 1 dA$ 的几何意义是？",
+          "type": "single",
+          "options": [
+            "区域 $D$ 的面积",
+            "区域 $D$ 的周长",
+            "区域 $D$ 的体积",
+            "恒等于1"
+          ],
+          "correctAnswer": 0,
+          "explanation": "$\\iint_D 1 dA$ 表示区域 $D$ 的面积。当被积函数为1时，积分值就是积分区域的面积。"
+        },
+        {
+          "question": "二重积分 $\\iint_D f(x, y) dA$ 在直角坐标系中可以表示为？",
+          "type": "multiple",
+          "options": [
+            "$\\int_a^b dx \\int_{y_1(x)}^{y_2(x)} f(x, y) dy$ (先y后x)",
+            "$\\int_c^d dy \\int_{x_1(y)}^{x_2(y)} f(x, y) dx$ (先x后y)",
+            "$\\int_a^b \\int_c^d f(x, y) dx dy$ (矩形区域)",
+            "$\\int_0^{2\\pi} \\int_0^r f(r, \\theta) r dr d\\theta$ (极坐标)"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "二重积分可以用直角坐标的两种积分次序（先y后x或先x后y），矩形区域可以直接写成累次积分。第四个是极坐标形式。"
+        },
+        {
+          "question": "极坐标下的二重积分 $\\iint_D f(x, y) dA$ 转换为？",
+          "type": "single",
+          "options": [
+            "$\\iint_D f(r\\cos\\theta, r\\sin\\theta) r dr d\\theta$",
+            "$\\iint_D f(r\\cos\\theta, r\\sin\\theta) dr d\\theta$",
+            "$\\iint_D f(r, \\theta) dr d\\theta$",
+            "$\\iint_D f(r\\cos\\theta, r\\sin\\theta) r^2 dr d\\theta$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "极坐标变换：$x = r\\cos\\theta$，$y = r\\sin\\theta$，雅可比行列式 $|J| = r$。所以 $dA = dx dy = r dr d\\theta$。"
+        },
+        {
+          "question": "计算二重积分 $\\iint_D x dA$，其中 $D$ 是单位圆 $x^2 + y^2 \\leq 1$，结果是？",
+          "type": "single",
+          "options": [
+            "0",
+            "$\\pi$",
+            "1",
+            "$\\frac{\\pi}{2}$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "由于 $D$ 关于 $y$ 轴对称，而 $f(x, y) = x$ 是关于 $x$ 的奇函数，所以积分值为0。"
+        },
+        {
+          "question": "三重积分 $\\iiint_V dV$ 的几何意义是？",
+          "type": "single",
+          "options": [
+            "区域 $V$ 的体积",
+            "区域 $V$ 的表面积",
+            "区域 $V$ 的质量",
+            "区域 $V$ 的密度"
+          ],
+          "correctAnswer": 0,
+          "explanation": "$\\iiint_V 1 dV$ 表示区域 $V$ 的体积。当被积函数为1时，三重积分就是体积。"
+        },
+        {
+          "question": "柱坐标系 $(r, \\theta, z)$ 与直角坐标系的转换关系是？",
+          "type": "multiple",
+          "options": [
+            "$x = r\\cos\\theta$",
+            "$y = r\\sin\\theta$",
+            "$z = z$",
+            "$dV = r dr d\\theta dz$"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "柱坐标：$x = r\\cos\\theta$，$y = r\\sin\\theta$，$z = z$。体积元素 $dV = r dr d\\theta dz$（注意有 $r$）。"
+        },
+        {
+          "question": "球坐标系 $(\\rho, \\theta, \\phi)$ 的体积元素是？",
+          "type": "single",
+          "options": [
+            "$\\rho^2 \\sin\\phi d\\rho d\\theta d\\phi$",
+            "$\\rho d\\rho d\\theta d\\phi$",
+            "$\\rho^2 d\\rho d\\theta d\\phi$",
+            "$\\sin\\phi d\\rho d\\theta d\\phi$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "球坐标系的雅可比行列式 $|J| = \\rho^2 \\sin\\phi$，所以 $dV = \\rho^2 \\sin\\phi d\\rho d\\theta d\\phi$。"
+        },
+        {
+          "question": "第一类曲线积分 $\\int_L f(x, y) ds$ 的几何意义是？",
+          "type": "single",
+          "options": [
+            "密度为 $f(x, y)$ 的曲线质量",
+            "沿曲线的路径长度",
+            "沿曲线的做功",
+            "曲线的切向量"
+          ],
+          "correctAnswer": 0,
+          "explanation": "第一类曲线积分（对弧长的积分）的物理意义是：密度为 $f(x, y)$ 的曲线的总质量。"
+        },
+        {
+          "question": "第二类曲线积分 $\\int_L P dx + Q dy$ 的物理意义是？",
+          "type": "single",
+          "options": [
+            "力场 $(P, Q)$ 沿曲线 $L$ 做的功",
+            "曲线 $L$ 的长度",
+            "曲线 $L$ 的质量",
+            "曲线 $L$ 的面积"
+          ],
+          "correctAnswer": 0,
+          "explanation": "第二类曲线积分（对坐标的积分）的物理意义是：变力沿曲线做的功。与路径和方向有关。"
+        },
+        {
+          "question": "格林公式将闭合曲线积分转换为什么？",
+          "type": "single",
+          "options": [
+            "二重积分",
+            "一重积分",
+            "三重积分",
+            "曲面积分"
+          ],
+          "correctAnswer": 0,
+          "explanation": "格林公式：$\\oint_L P dx + Q dy = \\iint_D (\\frac{\\partial Q}{\\partial x} - \\frac{\\partial P}{\\partial y}) dA$，将闭合曲线积分转换为二重积分。"
+        },
+        {
+          "question": "格林公式成立的条件包括？",
+          "type": "multiple",
+          "options": [
+            "$L$ 是平面上的简单闭曲线",
+            "$P$, $Q$ 在 $D$ 上具有连续偏导数",
+            "$L$ 取正向（逆时针）",
+            "$D$ 是 $L$ 所围成的区域"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "格林公式的条件：$L$ 是简单闭曲线（正向），$D$ 是其围成的区域，$P$、$Q$ 在 $D$ 上有连续偏导数。"
+        },
+        {
+          "question": "曲线积分与路径无关的充要条件是？",
+          "type": "single",
+          "options": [
+            "$\\frac{\\partial Q}{\\partial x} = \\frac{\\partial P}{\\partial y}$",
+            "$\\frac{\\partial Q}{\\partial x} = -\\frac{\\partial P}{\\partial y}$",
+            "$P = Q$",
+            "$P + Q = 0$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "在单连通区域内，$\\int_L P dx + Q dy$ 与路径无关的充要条件是 $\\frac{\\partial Q}{\\partial x} = \\frac{\\partial P}{\\partial y}$（即存在原函数）。"
+        },
+        {
+          "question": "第一类曲面积分 $\\iint_S f(x, y, z) dS$ 的物理意义是？",
+          "type": "single",
+          "options": [
+            "密度为 $f$ 的曲面质量",
+            "通过曲面的流量",
+            "曲面的面积",
+            "曲面的体积"
+          ],
+          "correctAnswer": 0,
+          "explanation": "第一类曲面积分（对面积的积分）表示：密度为 $f(x, y, z)$ 的曲面的总质量。"
+        },
+        {
+          "question": "第二类曲面积分 $\\iint_S P dy dz + Q dz dx + R dx dy$ 的物理意义是？",
+          "type": "single",
+          "options": [
+            "向量场 $(P, Q, R)$ 通过曲面 $S$ 的通量",
+            "曲面 $S$ 的面积",
+            "曲面 $S$ 的质量",
+            "沿曲面的做功"
+          ],
+          "correctAnswer": 0,
+          "explanation": "第二类曲面积分表示向量场通过有向曲面的通量（流量），与曲面的定向有关。"
+        },
+        {
+          "question": "高斯公式将闭合曲面积分转换为什么？",
+          "type": "single",
+          "options": [
+            "三重积分",
+            "二重积分",
+            "一重积分",
+            "曲线积分"
+          ],
+          "correctAnswer": 0,
+          "explanation": "高斯公式（散度定理）：$\\oiint_S \\vec{F} \\cdot d\\vec{S} = \\iiint_V \\nabla \\cdot \\vec{F} dV$，将闭合曲面积分转换为三重积分。"
+        },
+        {
+          "question": "斯托克斯公式将闭合曲线积分转换为什么？",
+          "type": "single",
+          "options": [
+            "曲面积分",
+            "二重积分",
+            "三重积分",
+            "一重积分"
+          ],
+          "correctAnswer": 0,
+          "explanation": "斯托克斯公式（旋度定理）：$\\oint_L \\vec{F} \\cdot d\\vec{r} = \\iint_S (\\nabla \\times \\vec{F}) \\cdot d\\vec{S}$，将空间闭合曲线积分转换为曲面积分。"
+        },
+        {
+          "question": "数项级数 $\\sum_{n=1}^{\\infty} \\frac{1}{n}$ 是否收敛？",
+          "type": "boolean",
+          "options": ["正确", "错误"],
+          "correctAnswer": 1,
+          "explanation": "调和级数 $\\sum_{n=1}^{\\infty} \\frac{1}{n}$ 发散。虽然通项趋于0，但级数仍然发散（可用积分判别法证明）。"
+        },
+        {
+          "question": "几何级数 $\\sum_{n=0}^{\\infty} r^n$ 收敛的条件是？",
+          "type": "single",
+          "options": [
+            "$|r| < 1$",
+            "$r < 1$",
+            "$r > 1$",
+            "$r \\neq 0$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "几何级数 $\\sum_{n=0}^{\\infty} r^n$ 当且仅当 $|r| < 1$ 时收敛，其和为 $\\frac{1}{1-r}$。"
+        },
+        {
+          "question": "判别正项级数 $\\sum_{n=1}^{\\infty} \\frac{1}{n^2}$ 是否收敛？",
+          "type": "boolean",
+          "options": ["正确", "错误"],
+          "correctAnswer": 0,
+          "explanation": "收敛。$p$-级数 $\\sum_{n=1}^{\\infty} \\frac{1}{n^p}$ 当 $p > 1$ 时收敛，当 $p \\leq 1$ 时发散。此处 $p = 2 > 1$，所以收敛。"
+        },
+        {
+          "question": "交错级数 $\\sum_{n=1}^{\\infty} \\frac{(-1)^{n+1}}{n}$ 是否收敛？",
+          "type": "boolean",
+          "options": ["正确", "错误"],
+          "correctAnswer": 0,
+          "explanation": "收敛。这是交错调和级数，满足莱布尼茨判别法：$|u_n|$ 单调递减且趋于0，所以级数收敛（条件收敛）。"
+        },
+        {
+          "question": "幂级数 $\\sum_{n=0}^{\\infty} a_n x^n$ 的收敛半径 $R$ 由什么确定？",
+          "type": "single",
+          "options": [
+            "$\\frac{1}{R} = \\lim_{n \\to \\infty} |\\frac{a_{n+1}}{a_n}|$ 或 $\\frac{1}{R} = \\lim_{n \\to \\infty} \\sqrt[n]{|a_n|}$",
+            "$R = \\lim_{n \\to \\infty} |a_n|$",
+            "$R = \\lim_{n \\to \\infty} n|a_n|$",
+            "$R = \\sum_{n=0}^{\\infty} |a_n|$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "收敛半径公式：$\\frac{1}{R} = \\lim_{n \\to \\infty} |\\frac{a_{n+1}}{a_n}|$（比值法）或 $\\frac{1}{R} = \\lim_{n \\to \\infty} \\sqrt[n]{|a_n|}$（根值法）。"
+        },
+        {
+          "question": "函数 $f(x) = \\sin x$ 的麦克劳林级数展开是？",
+          "type": "single",
+          "options": [
+            "$\\sum_{n=0}^{\\infty} \\frac{(-1)^n x^{2n+1}}{(2n+1)!} = x - \\frac{x^3}{3!} + \\frac{x^5}{5!} - \\cdots$",
+            "$\\sum_{n=0}^{\\infty} \\frac{x^{2n+1}}{(2n+1)!} = x + \\frac{x^3}{3!} + \\frac{x^5}{5!} + \\cdots$",
+            "$\\sum_{n=0}^{\\infty} \\frac{(-1)^n x^{2n}}{(2n)!} = 1 - \\frac{x^2}{2!} + \\frac{x^4}{4!} - \\cdots$",
+            "$\\sum_{n=0}^{\\infty} \\frac{x^n}{n!}$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "$\\sin x$ 的泰勒展开（麦克劳林级数）：$\\sin x = \\sum_{n=0}^{\\infty} \\frac{(-1)^n x^{2n+1}}{(2n+1)!} = x - \\frac{x^3}{3!} + \\frac{x^5}{5!} - \\cdots$"
+        },
+        {
+          "question": "函数 $f(x) = \\cos x$ 的麦克劳林级数展开是？",
+          "type": "single",
+          "options": [
+            "$\\sum_{n=0}^{\\infty} \\frac{(-1)^n x^{2n}}{(2n)!} = 1 - \\frac{x^2}{2!} + \\frac{x^4}{4!} - \\cdots$",
+            "$\\sum_{n=0}^{\\infty} \\frac{x^{2n}}{(2n)!} = 1 + \\frac{x^2}{2!} + \\frac{x^4}{4!} + \\cdots$",
+            "$\\sum_{n=0}^{\\infty} \\frac{(-1)^n x^{2n+1}}{(2n+1)!}$",
+            "$\\sum_{n=0}^{\\infty} \\frac{x^n}{n!}$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "$\\cos x$ 的泰勒展开：$\\cos x = \\sum_{n=0}^{\\infty} \\frac{(-1)^n x^{2n}}{(2n)!} = 1 - \\frac{x^2}{2!} + \\frac{x^4}{4!} - \\cdots$"
+        },
+        {
+          "question": "傅里叶级数可以将周期函数展开为什么形式？",
+          "type": "single",
+          "options": [
+            "三角函数级数",
+            "幂级数",
+            "指数级数",
+            "对数级数"
+          ],
+          "correctAnswer": 0,
+          "explanation": "傅里叶级数将周期函数展开为三角函数（正弦和余弦）的级数：$f(x) = a_0 + \\sum_{n=1}^{\\infty} (a_n \\cos nx + b_n \\sin nx)$。"
+        },
+        {
+          "question": "以下哪些积分可以用来判别级数的收敛性？",
+          "type": "multiple",
+          "options": [
+            "积分判别法",
+            "比值判别法",
+            "根值判别法",
+            "比较判别法"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "常用的级数收敛性判别法包括：积分判别法、比值判别法（达朗贝尔）、根值判别法（柯西）、比较判别法等。"
+        },
+        {
+          "question": "向量场的散度 $\\nabla \\cdot \\vec{F}$ 表示什么？",
+          "type": "single",
+          "options": [
+            "向量场在某点的\"源\"或\"汇\"的强度",
+            "向量场的旋转程度",
+            "向量场的梯度",
+            "向量场的方向"
+          ],
+          "correctAnswer": 0,
+          "explanation": "散度 $\\nabla \\cdot \\vec{F} = \\frac{\\partial P}{\\partial x} + \\frac{\\partial Q}{\\partial y} + \\frac{\\partial R}{\\partial z}$ 表示向量场在某点的\"通量密度\"，即源或汇的强度。"
+        }
+      ]
+    }
+  ]
+}
+

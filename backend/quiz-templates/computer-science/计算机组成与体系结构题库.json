@@ -1,0 +1,360 @@
+{
+  "题库说明": "本题库对应《计算机组成与体系结构 (cs201)》知识点，涵盖数字逻辑、指令系统、CPU、存储系统、I/O系统等内容。",
+  "题库": [
+    {
+      "pointId": "cs201",
+      "pointTitle": "计算机组成与体系结构",
+      "quiz": [
+        {
+          "question": "冯·诺依曼体系结构的核心思想是？",
+          "type": "single",
+          "options": [
+            "存储程序、程序控制",
+            "并行计算",
+            "分布式存储",
+            "云计算"
+          ],
+          "correctAnswer": 0,
+          "explanation": "冯·诺依曼体系结构：存储程序（程序和数据存储在同一存储器）、程序控制（自动执行指令）、顺序执行。五大部件：运算器、控制器、存储器、输入、输出。"
+        },
+        {
+          "question": "计算机的五大基本部件包括？",
+          "type": "multiple",
+          "options": [
+            "运算器（ALU）",
+            "控制器（CU）",
+            "存储器（Memory）",
+            "输入/输出设备（I/O）"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "五大部件：运算器（算术逻辑运算）、控制器（指令执行）、存储器（数据和程序）、输入设备、输出设备。现代CPU集成了运算器和控制器。"
+        },
+        {
+          "question": "CPU的主要组成部分包括？",
+          "type": "multiple",
+          "options": [
+            "运算器（ALU）",
+            "控制器（CU）",
+            "寄存器（Registers）",
+            "Cache"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "CPU组成：ALU（算术逻辑单元）、CU（控制单元）、寄存器组（PC、IR、通用寄存器等）、Cache（高速缓存）。"
+        },
+        {
+          "question": "程序计数器（PC）的作用是？",
+          "type": "single",
+          "options": [
+            "存储下一条要执行的指令地址",
+            "存储当前正在执行的指令",
+            "存储运算结果",
+            "控制I/O设备"
+          ],
+          "correctAnswer": 0,
+          "explanation": "PC（Program Counter）：保存下一条要执行指令的地址。CPU通过PC取指令，执行后PC自动加1（或根据跳转指令修改）。"
+        },
+        {
+          "question": "指令寄存器（IR）的作用是？",
+          "type": "single",
+          "options": [
+            "存储当前正在执行的指令",
+            "存储下一条指令的地址",
+            "存储运算结果",
+            "指向栈顶"
+          ],
+          "correctAnswer": 0,
+          "explanation": "IR（Instruction Register）：保存当前正在执行的指令。控制器从IR中解析操作码和操作数，生成控制信号。"
+        },
+        {
+          "question": "指令周期的基本阶段包括？",
+          "type": "multiple",
+          "options": [
+            "取指（Fetch）",
+            "译码（Decode）",
+            "执行（Execute）",
+            "写回（Write Back）"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "指令周期（Instruction Cycle）：取指（从内存读指令）→ 译码（解析指令）→ 执行（完成操作）→ 写回（结果写回寄存器）。不同指令周期长度可能不同。"
+        },
+        {
+          "question": "RISC和CISC的主要区别是？",
+          "type": "single",
+          "options": [
+            "RISC指令简单固定长度，CISC指令复杂可变长度",
+            "RISC指令复杂，CISC指令简单",
+            "RISC用于服务器，CISC用于个人电脑",
+            "两者完全相同"
+          ],
+          "correctAnswer": 0,
+          "explanation": "RISC（精简指令集）：指令简单、固定长度、硬件实现、流水线友好（如ARM、MIPS）。CISC（复杂指令集）：指令复杂、可变长度、微程序实现（如x86）。"
+        },
+        {
+          "question": "流水线（Pipeline）技术的目的是？",
+          "type": "single",
+          "options": [
+            "提高指令吞吐率（并行执行多条指令）",
+            "减少指令数量",
+            "简化硬件设计",
+            "降低功耗"
+          ],
+          "correctAnswer": 0,
+          "explanation": "流水线：将指令执行分为多个阶段（取指、译码、执行、访存、写回），不同指令的不同阶段可并行。提高吞吐率但单条指令延迟不变。"
+        },
+        {
+          "question": "流水线冒险（Hazard）的类型包括？",
+          "type": "multiple",
+          "options": [
+            "结构冒险（硬件资源冲突）",
+            "数据冒险（数据依赖）",
+            "控制冒险（分支跳转）",
+            "存储冒险"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "流水线冒险：1) 结构冒险（资源冲突，如同时访问内存）；2) 数据冒险（数据依赖，如RAW、WAR、WAW）；3) 控制冒险（分支指令导致PC不确定）。解决方法：暂停、转发、分支预测。"
+        },
+        {
+          "question": "数据冒险的类型包括？",
+          "type": "multiple",
+          "options": [
+            "RAW（Read After Write，真依赖）",
+            "WAR（Write After Read，反依赖）",
+            "WAW（Write After Write，输出依赖）",
+            "RAR（Read After Read）"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "数据冒险：RAW（真依赖，最常见）、WAR（反依赖）、WAW（输出依赖）。RAR不是冒险（读不改变数据）。解决：数据转发、流水线暂停。"
+        },
+        {
+          "question": "分支预测（Branch Prediction）的作用是？",
+          "type": "single",
+          "options": [
+            "减少控制冒险导致的流水线停顿",
+            "提高内存访问速度",
+            "减少功耗",
+            "简化指令译码"
+          ],
+          "correctAnswer": 0,
+          "explanation": "分支预测：预测分支指令的跳转方向，提前取指令。预测正确可避免流水线暂停，预测错误需要清空流水线（惩罚）。方法：静态预测、动态预测（如两位饱和计数器）。"
+        },
+        {
+          "question": "存储器层次结构从快到慢的顺序是？",
+          "type": "single",
+          "options": [
+            "寄存器 > Cache > 主存 > 磁盘",
+            "磁盘 > 主存 > Cache > 寄存器",
+            "主存 > Cache > 寄存器 > 磁盘",
+            "Cache > 主存 > 寄存器 > 磁盘"
+          ],
+          "correctAnswer": 0,
+          "explanation": "存储层次（速度从快到慢，容量从小到大）：寄存器（ns级）> Cache（ns级）> 主存/RAM（几十ns）> 固态硬盘SSD（μs级）> 机械硬盘HDD（ms级）。"
+        },
+        {
+          "question": "Cache的作用是什么？",
+          "type": "single",
+          "options": [
+            "缓解CPU和主存之间的速度差异",
+            "增加主存容量",
+            "替代主存",
+            "存储操作系统"
+          ],
+          "correctAnswer": 0,
+          "explanation": "Cache（高速缓存）：位于CPU和主存之间，存储常用数据和指令，利用局部性原理（时间局部性、空间局部性）提高访问速度。"
+        },
+        {
+          "question": "局部性原理包括哪些？",
+          "type": "multiple",
+          "options": [
+            "时间局部性（最近访问的数据可能再次访问）",
+            "空间局部性（相邻地址的数据可能被访问）",
+            "顺序局部性",
+            "随机局部性"
+          ],
+          "correctAnswer": [0, 1],
+          "explanation": "局部性原理：1) 时间局部性（循环、递归）；2) 空间局部性（数组、顺序执行）。Cache利用局部性提高命中率。"
+        },
+        {
+          "question": "Cache映射方式包括？",
+          "type": "multiple",
+          "options": [
+            "直接映射（Direct Mapped）",
+            "全相联映射（Fully Associative）",
+            "组相联映射（Set Associative）",
+            "随机映射"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "Cache映射：1) 直接映射（简单但冲突多）；2) 全相联（灵活但硬件复杂）；3) N路组相联（折中，常用）。"
+        },
+        {
+          "question": "Cache替换算法包括？",
+          "type": "multiple",
+          "options": [
+            "LRU（Least Recently Used）",
+            "FIFO（First In First Out）",
+            "随机替换（Random）",
+            "LFU（Least Frequently Used）"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "Cache替换算法：LRU（性能好但实现复杂）、FIFO（简单但可能异常）、随机（简单）、LFU（考虑访问频率）。"
+        },
+        {
+          "question": "Cache的写策略包括？",
+          "type": "multiple",
+          "options": [
+            "写直达（Write Through）",
+            "写回（Write Back）",
+            "写分配（Write Allocate）",
+            "不写分配（No Write Allocate）"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "写策略：命中时→写直达（同时写Cache和主存，简单但慢）vs写回（只写Cache，用脏位标记，快但复杂）；未命中时→写分配（先调入Cache再写）vs不写分配（直接写主存）。"
+        },
+        {
+          "question": "虚拟内存（Virtual Memory）的主要作用是？",
+          "type": "multiple",
+          "options": [
+            "使程序可使用的地址空间大于物理内存",
+            "提供内存保护",
+            "支持多道程序",
+            "简化内存管理"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "虚拟内存的优点：扩大地址空间（可大于物理内存）、内存保护（进程隔离）、支持多道程序、简化编程（连续逻辑地址）。代价：地址转换开销、缺页中断。"
+        },
+        {
+          "question": "页表（Page Table）的作用是？",
+          "type": "single",
+          "options": [
+            "将虚拟页号映射到物理页框号",
+            "存储程序代码",
+            "缓存数据",
+            "控制I/O"
+          ],
+          "correctAnswer": 0,
+          "explanation": "页表：记录虚拟页号→物理页框号的映射关系。每个进程有自己的页表。为加速转换，使用TLB（快表）缓存常用页表项。"
+        },
+        {
+          "question": "TLB（Translation Lookaside Buffer）是什么？",
+          "type": "single",
+          "options": [
+            "用于加速地址转换的高速缓存",
+            "用于存储程序的内存",
+            "磁盘缓存",
+            "指令缓存"
+          ],
+          "correctAnswer": 0,
+          "explanation": "TLB（快表、页表缓存）：缓存常用的页表项，加速虚拟地址→物理地址转换。TLB命中可避免访问内存中的页表（节省一次内存访问）。"
+        },
+        {
+          "question": "总线（Bus）的作用是？",
+          "type": "single",
+          "options": [
+            "连接计算机各部件，传输数据、地址和控制信号",
+            "存储数据",
+            "执行运算",
+            "控制电源"
+          ],
+          "correctAnswer": 0,
+          "explanation": "总线：连接CPU、内存、I/O设备的公共通路。分为：数据总线（传输数据）、地址总线（指定地址）、控制总线（传输控制信号）。"
+        },
+        {
+          "question": "总线的分类包括？",
+          "type": "multiple",
+          "options": [
+            "数据总线（Data Bus）",
+            "地址总线（Address Bus）",
+            "控制总线（Control Bus）",
+            "电源总线"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "总线分类：1) 数据总线（传输数据，宽度决定一次传输的数据量）；2) 地址总线（指定地址，宽度决定寻址空间）；3) 控制总线（传输控制信号，如读/写）。"
+        },
+        {
+          "question": "I/O控制方式包括？",
+          "type": "multiple",
+          "options": [
+            "程序查询（Polling）",
+            "中断（Interrupt）",
+            "DMA（Direct Memory Access）",
+            "I/O通道"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "I/O控制方式（从简单到复杂）：1) 程序查询（CPU主动轮询，浪费CPU）；2) 中断（设备完成后通知CPU）；3) DMA（数据传输不占用CPU）；4) I/O通道/处理器（独立处理I/O）。"
+        },
+        {
+          "question": "中断（Interrupt）的作用是？",
+          "type": "single",
+          "options": [
+            "让CPU及时响应外部事件，提高效率",
+            "加快程序执行速度",
+            "增加内存容量",
+            "简化编程"
+          ],
+          "correctAnswer": 0,
+          "explanation": "中断：打断CPU正常执行流程，转去处理紧急事件（I/O完成、硬件故障、定时器等），处理完后返回。比轮询高效。"
+        },
+        {
+          "question": "中断的处理过程包括？",
+          "type": "multiple",
+          "options": [
+            "中断请求",
+            "中断响应（保存断点）",
+            "中断处理（执行中断服务程序ISR）",
+            "中断返回（恢复现场）"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "中断处理流程：1) 设备发出中断请求；2) CPU响应（保存PC、PSW等）；3) 执行中断服务程序；4) 中断返回（恢复寄存器，继续原程序）。"
+        },
+        {
+          "question": "DMA（直接内存访问）相比程序控制I/O的优势是？",
+          "type": "single",
+          "options": [
+            "数据传输不需要CPU干预，解放CPU",
+            "速度更慢",
+            "需要更多硬件",
+            "只能传输文本数据"
+          ],
+          "correctAnswer": 0,
+          "explanation": "DMA：外设直接与内存交换数据，无需CPU逐字节传输。优点：解放CPU、传输速度快。适用于大块数据传输（磁盘、网卡等）。"
+        },
+        {
+          "question": "字节序（Endianness）分为哪两种？",
+          "type": "multiple",
+          "options": [
+            "大端序（Big-Endian）",
+            "小端序（Little-Endian）",
+            "中端序",
+            "混合端序"
+          ],
+          "correctAnswer": [0, 1],
+          "explanation": "字节序：多字节数据在内存中的存储顺序。大端（高字节在低地址，符合阅读习惯，网络序）、小端（低字节在低地址，x86架构）。"
+        },
+        {
+          "question": "奇偶校验（Parity Check）的作用是？",
+          "type": "single",
+          "options": [
+            "检测数据传输中的单比特错误",
+            "纠正所有错误",
+            "加密数据",
+            "压缩数据"
+          ],
+          "correctAnswer": 0,
+          "explanation": "奇偶校验：增加一位校验位，使1的个数为奇数（奇校验）或偶数（偶校验）。只能检测单比特错误，不能纠错。海明码可以纠错。"
+        },
+        {
+          "question": "超标量（Superscalar）处理器的特点是？",
+          "type": "single",
+          "options": [
+            "每个时钟周期可执行多条指令",
+            "每个时钟周期只执行一条指令",
+            "不使用流水线",
+            "只能执行简单指令"
+          ],
+          "correctAnswer": 0,
+          "explanation": "超标量：通过多个执行单元（如多个ALU）和指令级并行（ILP），每周期发射和执行多条指令。比单发射流水线性能更高。"
+        }
+      ]
+    }
+  ]
+}
+

@@ -1,0 +1,362 @@
+{
+  "题库说明": "本题库对应《线性代数 (math201)》知识点，涵盖矩阵运算、行列式、线性方程组、向量空间、特征值与特征向量等内容。",
+  "题库": [
+    {
+      "pointId": "math201",
+      "pointTitle": "线性代数",
+      "quiz": [
+        {
+          "question": "矩阵乘法满足结合律吗？",
+          "type": "boolean",
+          "options": ["正确", "错误"],
+          "correctAnswer": 0,
+          "explanation": "矩阵乘法满足结合律：$(AB)C = A(BC)$。但不满足交换律：$AB \\neq BA$（一般情况）。"
+        },
+        {
+          "question": "矩阵乘法满足交换律吗？",
+          "type": "boolean",
+          "options": ["正确", "错误"],
+          "correctAnswer": 1,
+          "explanation": "矩阵乘法一般不满足交换律：$AB \\neq BA$。只有在特殊情况下（如对角矩阵、单位矩阵等）才满足交换律。"
+        },
+        {
+          "question": "单位矩阵 $I$ 的性质包括？",
+          "type": "multiple",
+          "options": [
+            "$AI = IA = A$",
+            "$I^n = I$ (任意正整数n)",
+            "$|I| = 1$ (行列式为1)",
+            "$I^{-1} = I$ (逆矩阵是自身)"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "单位矩阵 $I$ 的所有选项都正确：与任意矩阵相乘不变、任意次幂等于自身、行列式为1、逆矩阵是自身。"
+        },
+        {
+          "question": "矩阵的转置满足 $(AB)^T = ?$",
+          "type": "single",
+          "options": [
+            "$B^T A^T$",
+            "$A^T B^T$",
+            "$AB$",
+            "$(BA)^T$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "矩阵转置的性质：$(AB)^T = B^T A^T$。注意顺序颠倒。"
+        },
+        {
+          "question": "二阶行列式 $\\begin{vmatrix} a & b \\\\\\\\ c & d \\end{vmatrix}$ 的值是？",
+          "type": "single",
+          "options": [
+            "$ad - bc$",
+            "$ac - bd$",
+            "$ab - cd$",
+            "$ad + bc$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "二阶行列式的计算：$\\begin{vmatrix} a & b \\\\\\\\ c & d \\end{vmatrix} = ad - bc$（主对角线乘积减副对角线乘积）。"
+        },
+        {
+          "question": "三阶行列式可以用什么方法计算？",
+          "type": "multiple",
+          "options": [
+            "萨吕斯（Sarrus）法则",
+            "按行展开（拉普拉斯展开）",
+            "按列展开",
+            "化为上三角矩阵"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "三阶行列式的计算方法包括：萨吕斯法则（对角线法则）、拉普拉斯展开（按行或列）、化为三角矩阵等。"
+        },
+        {
+          "question": "行列式的性质：交换两行，行列式如何变化？",
+          "type": "single",
+          "options": [
+            "变号",
+            "不变",
+            "变为0",
+            "变为相反数的两倍"
+          ],
+          "correctAnswer": 0,
+          "explanation": "交换行列式的任意两行（或两列），行列式变号。这是行列式的重要性质。"
+        },
+        {
+          "question": "若矩阵 $A$ 的某一行全为0，则 $|A| = ?$",
+          "type": "single",
+          "options": [
+            "0",
+            "1",
+            "不确定",
+            "-1"
+          ],
+          "correctAnswer": 0,
+          "explanation": "若行列式的某一行（或某一列）全为0，则行列式的值为0。"
+        },
+        {
+          "question": "矩阵 $A$ 可逆的充要条件是？",
+          "type": "single",
+          "options": [
+            "$|A| \\neq 0$",
+            "$|A| = 1$",
+            "$A = I$",
+            "$A^T = A$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "矩阵 $A$ 可逆（非奇异）的充要条件是其行列式不为0：$|A| \\neq 0$。"
+        },
+        {
+          "question": "逆矩阵的性质包括？",
+          "type": "multiple",
+          "options": [
+            "$(A^{-1})^{-1} = A$",
+            "$(AB)^{-1} = B^{-1}A^{-1}$",
+            "$(A^T)^{-1} = (A^{-1})^T$",
+            "$|A^{-1}| = |A|^{-1}$"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "逆矩阵的所有性质都正确。注意 $(AB)^{-1} = B^{-1}A^{-1}$ 的顺序颠倒。"
+        },
+        {
+          "question": "线性方程组 $AX = B$ 有唯一解的充要条件是？",
+          "type": "single",
+          "options": [
+            "$A$ 可逆（$|A| \\neq 0$）",
+            "$B = 0$",
+            "$A$ 是对角矩阵",
+            "$A$ 是对称矩阵"
+          ],
+          "correctAnswer": 0,
+          "explanation": "线性方程组 $AX = B$ 有唯一解的充要条件是系数矩阵 $A$ 可逆，即 $|A| \\neq 0$。此时解为 $X = A^{-1}B$。"
+        },
+        {
+          "question": "齐次线性方程组 $AX = 0$ 只有零解的充要条件是？",
+          "type": "single",
+          "options": [
+            "$|A| \\neq 0$",
+            "$|A| = 0$",
+            "$A = 0$",
+            "$A = I$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "齐次线性方程组 $AX = 0$ 只有零解的充要条件是 $|A| \\neq 0$。若 $|A| = 0$，则有非零解。"
+        },
+        {
+          "question": "矩阵的秩 $r(A)$ 表示什么？",
+          "type": "single",
+          "options": [
+            "矩阵中线性无关的行（列）向量的最大个数",
+            "矩阵的行数",
+            "矩阵的列数",
+            "矩阵的行列式"
+          ],
+          "correctAnswer": 0,
+          "explanation": "矩阵的秩 $r(A)$ 是矩阵中线性无关的行（列）向量的最大个数，也等于非零子式的最高阶数。"
+        },
+        {
+          "question": "对于 $m \\times n$ 矩阵 $A$，其秩的范围是？",
+          "type": "single",
+          "options": [
+            "$0 \\leq r(A) \\leq \\min(m, n)$",
+            "$0 \\leq r(A) \\leq \\max(m, n)$",
+            "$0 \\leq r(A) \\leq m + n$",
+            "$1 \\leq r(A) \\leq mn$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "矩阵的秩不超过其行数和列数中的较小者：$r(A) \\leq \\min(m, n)$。"
+        },
+        {
+          "question": "向量组 $\\{\\vec{v}_1, \\vec{v}_2, \\vec{v}_3\\}$ 线性相关的充要条件是？",
+          "type": "single",
+          "options": [
+            "至少有一个向量可以表示为其他向量的线性组合",
+            "所有向量都相等",
+            "向量个数大于维数",
+            "所有向量都是零向量"
+          ],
+          "correctAnswer": 0,
+          "explanation": "向量组线性相关的充要条件是：至少有一个向量可以表示为其他向量的线性组合（存在非平凡的线性关系）。"
+        },
+        {
+          "question": "向量空间的基需要满足什么条件？",
+          "type": "multiple",
+          "options": [
+            "线性无关",
+            "可以线性表示空间中的任意向量",
+            "个数等于空间的维数",
+            "都是单位向量"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "向量空间的基需要满足：1) 线性无关；2) 可以线性表示空间中任意向量（极大线性无关组）；3) 个数等于维数。不要求是单位向量。"
+        },
+        {
+          "question": "$n$ 维向量空间 $\\mathbb{R}^n$ 的标准基是？",
+          "type": "single",
+          "options": [
+            "$\\{\\vec{e}_1, \\vec{e}_2, \\ldots, \\vec{e}_n\\}$，其中 $\\vec{e}_i$ 第 $i$ 个分量为1，其余为0",
+            "$\\{\\vec{1}, \\vec{2}, \\ldots, \\vec{n}\\}$",
+            "$\\{\\vec{0}, \\vec{1}, \\ldots, \\vec{n-1}\\}$",
+            "任意 $n$ 个向量"
+          ],
+          "correctAnswer": 0,
+          "explanation": "$\\mathbb{R}^n$ 的标准基（自然基）是 $\\{\\vec{e}_1, \\vec{e}_2, \\ldots, \\vec{e}_n\\}$，其中 $\\vec{e}_i = (0, \\ldots, 0, 1, 0, \\ldots, 0)^T$（第 $i$ 个位置为1）。"
+        },
+        {
+          "question": "两个向量 $\\vec{u}$, $\\vec{v}$ 正交的条件是？",
+          "type": "single",
+          "options": [
+            "$\\vec{u} \\cdot \\vec{v} = 0$",
+            "$\\vec{u} \\times \\vec{v} = 0$",
+            "$|\\vec{u}| = |\\vec{v}|$",
+            "$\\vec{u} + \\vec{v} = 0$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "两个向量正交（垂直）的充要条件是其内积为0：$\\vec{u} \\cdot \\vec{v} = 0$。"
+        },
+        {
+          "question": "格拉姆-施密特（Gram-Schmidt）正交化的目的是？",
+          "type": "single",
+          "options": [
+            "将线性无关向量组变为正交向量组",
+            "求矩阵的逆",
+            "计算行列式",
+            "求解线性方程组"
+          ],
+          "correctAnswer": 0,
+          "explanation": "Gram-Schmidt正交化过程将一组线性无关的向量变换为一组正交（或标准正交）向量，且张成相同的向量空间。"
+        },
+        {
+          "question": "矩阵 $A$ 的特征值 $\\lambda$ 和特征向量 $\\vec{v}$ 满足什么关系？",
+          "type": "single",
+          "options": [
+            "$A\\vec{v} = \\lambda \\vec{v}$",
+            "$A\\vec{v} = \\vec{v} + \\lambda$",
+            "$A + \\vec{v} = \\lambda$",
+            "$A - \\lambda I = 0$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "特征值和特征向量的定义：$A\\vec{v} = \\lambda \\vec{v}$，其中 $\\vec{v} \\neq \\vec{0}$。"
+        },
+        {
+          "question": "求矩阵 $A$ 的特征值，需要解什么方程？",
+          "type": "single",
+          "options": [
+            "$|A - \\lambda I| = 0$（特征方程）",
+            "$|A + \\lambda I| = 0$",
+            "$A - \\lambda I = 0$",
+            "$A\\vec{v} = 0$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "特征值是特征方程 $|A - \\lambda I| = 0$ 的根，也称为特征多项式的根。"
+        },
+        {
+          "question": "$n \\times n$ 矩阵 $A$ 的所有特征值之和等于？",
+          "type": "single",
+          "options": [
+            "$tr(A)$（矩阵的迹）",
+            "$|A|$（矩阵的行列式）",
+            "$n$",
+            "0"
+          ],
+          "correctAnswer": 0,
+          "explanation": "矩阵的迹 $tr(A) = \\sum_{i=1}^n a_{ii}$（主对角线元素之和）等于所有特征值之和：$\\sum_{i=1}^n \\lambda_i$。"
+        },
+        {
+          "question": "$n \\times n$ 矩阵 $A$ 的所有特征值之积等于？",
+          "type": "single",
+          "options": [
+            "$|A|$（矩阵的行列式）",
+            "$tr(A)$（矩阵的迹）",
+            "$n$",
+            "1"
+          ],
+          "correctAnswer": 0,
+          "explanation": "矩阵的行列式 $|A|$ 等于所有特征值的乘积：$\\prod_{i=1}^n \\lambda_i$。"
+        },
+        {
+          "question": "对称矩阵的特征值有什么性质？",
+          "type": "single",
+          "options": [
+            "都是实数",
+            "都是正数",
+            "都相等",
+            "都是整数"
+          ],
+          "correctAnswer": 0,
+          "explanation": "实对称矩阵的特征值都是实数。且不同特征值对应的特征向量相互正交。"
+        },
+        {
+          "question": "矩阵可对角化的充分条件是？",
+          "type": "single",
+          "options": [
+            "有 $n$ 个线性无关的特征向量",
+            "是对称矩阵",
+            "行列式不为0",
+            "是上三角矩阵"
+          ],
+          "correctAnswer": 0,
+          "explanation": "$n$ 阶矩阵 $A$ 可对角化的充要条件是有 $n$ 个线性无关的特征向量。实对称矩阵必可对角化（充分条件）。"
+        },
+        {
+          "question": "相似矩阵具有哪些相同的性质？",
+          "type": "multiple",
+          "options": [
+            "相同的特征值",
+            "相同的行列式",
+            "相同的秩",
+            "相同的迹"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "相似矩阵（$B = P^{-1}AP$）具有相同的：特征值、行列式、秩、迹。但特征向量一般不同。"
+        },
+        {
+          "question": "正定矩阵的所有特征值满足什么条件？",
+          "type": "single",
+          "options": [
+            "都大于0",
+            "都小于0",
+            "都等于0",
+            "有正有负"
+          ],
+          "correctAnswer": 0,
+          "explanation": "正定矩阵的所有特征值都大于0。负定矩阵的所有特征值都小于0。"
+        },
+        {
+          "question": "二次型 $f(x_1, x_2) = x_1^2 + 2x_1 x_2 + x_2^2$ 对应的矩阵是？",
+          "type": "single",
+          "options": [
+            "$\\begin{pmatrix} 1 & 1 \\\\\\\\ 1 & 1 \\end{pmatrix}$",
+            "$\\begin{pmatrix} 1 & 2 \\\\\\\\ 2 & 1 \\end{pmatrix}$",
+            "$\\begin{pmatrix} 1 & 0 \\\\\\\\ 0 & 1 \\end{pmatrix}$",
+            "$\\begin{pmatrix} 1 & 2 \\\\\\\\ 0 & 1 \\end{pmatrix}$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "二次型 $f = x_1^2 + 2x_1 x_2 + x_2^2$ 的矩阵是对称矩阵 $A = \\begin{pmatrix} 1 & 1 \\\\\\\\ 1 & 1 \\end{pmatrix}$，其中交叉项系数 $2x_1 x_2$ 拆分为 $a_{12} + a_{21} = 2$。"
+        },
+        {
+          "question": "正交矩阵 $Q$ 满足什么条件？",
+          "type": "single",
+          "options": [
+            "$Q^T Q = I$",
+            "$Q^2 = I$",
+            "$Q + Q^T = 0$",
+            "$|Q| = 0$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "正交矩阵的定义：$Q^T Q = QQ^T = I$，即 $Q^{-1} = Q^T$。正交矩阵的行列式为 $\\pm 1$。"
+        },
+        {
+          "question": "线性变换保持哪些运算？",
+          "type": "multiple",
+          "options": [
+            "向量加法",
+            "数乘",
+            "线性组合",
+            "向量内积"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "线性变换 $T$ 保持向量加法和数乘：$T(\\vec{u} + \\vec{v}) = T(\\vec{u}) + T(\\vec{v})$，$T(k\\vec{u}) = kT(\\vec{u})$。因此也保持线性组合。但不一定保持内积（正交变换才保持）。"
+        }
+      ]
+    }
+  ]
+}
+

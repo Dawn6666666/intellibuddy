@@ -1,0 +1,372 @@
+{
+  "题库说明": "本题库对应《计算机网络 (cs301)》知识点，涵盖OSI模型、TCP/IP协议、网络层、传输层、应用层等内容。",
+  "题库": [
+    {
+      "pointId": "cs301",
+      "pointTitle": "计算机网络",
+      "quiz": [
+        {
+          "question": "OSI七层模型从下到上的顺序是？",
+          "type": "single",
+          "options": [
+            "物理层、数据链路层、网络层、传输层、会话层、表示层、应用层",
+            "应用层、表示层、会话层、传输层、网络层、数据链路层、物理层",
+            "物理层、网络层、数据链路层、传输层、会话层、表示层、应用层",
+            "物理层、数据链路层、传输层、网络层、会话层、表示层、应用层"
+          ],
+          "correctAnswer": 0,
+          "explanation": "OSI七层模型（从下到上）：物理层、数据链路层、网络层、传输层、会话层、表示层、应用层。记忆口诀：物数网传会表应。"
+        },
+        {
+          "question": "TCP/IP四层模型包括哪些层？",
+          "type": "multiple",
+          "options": [
+            "网络接口层（链路层）",
+            "网络层（互联网层）",
+            "传输层",
+            "应用层"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "TCP/IP四层模型：网络接口层（对应OSI的物理层+数据链路层）、网络层、传输层、应用层（对应OSI的会话层+表示层+应用层）。"
+        },
+        {
+          "question": "物理层的主要功能是？",
+          "type": "single",
+          "options": [
+            "在物理媒体上传输比特流",
+            "提供可靠的数据传输",
+            "路由选择",
+            "数据加密"
+          ],
+          "correctAnswer": 0,
+          "explanation": "物理层负责在物理媒体上传输原始比特流，定义电气特性、机械特性、功能特性等。不关心数据的含义。"
+        },
+        {
+          "question": "数据链路层的主要功能包括？",
+          "type": "multiple",
+          "options": [
+            "成帧（Framing）",
+            "差错检测和纠正",
+            "流量控制",
+            "MAC地址寻址"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "数据链路层的功能：成帧、差错控制、流量控制、MAC地址寻址。常见协议有以太网、PPP、HDLC等。"
+        },
+        {
+          "question": "以太网的MAC地址长度是？",
+          "type": "single",
+          "options": [
+            "48位（6字节）",
+            "32位（4字节）",
+            "64位（8字节）",
+            "128位（16字节）"
+          ],
+          "correctAnswer": 0,
+          "explanation": "MAC地址（Media Access Control Address）是48位（6字节），通常表示为12个十六进制数，如 `AA:BB:CC:DD:EE:FF`。"
+        },
+        {
+          "question": "网络层的核心协议是？",
+          "type": "single",
+          "options": [
+            "IP（Internet Protocol）",
+            "TCP（Transmission Control Protocol）",
+            "HTTP（HyperText Transfer Protocol）",
+            "Ethernet"
+          ],
+          "correctAnswer": 0,
+          "explanation": "网络层的核心是IP协议，负责分组转发和路由选择。还包括ICMP、ARP、IGMP等辅助协议。"
+        },
+        {
+          "question": "IPv4地址的长度是？",
+          "type": "single",
+          "options": [
+            "32位（4字节）",
+            "48位（6字节）",
+            "64位（8字节）",
+            "128位（16字节）"
+          ],
+          "correctAnswer": 0,
+          "explanation": "IPv4地址是32位（4字节），通常以点分十进制表示，如 `192.168.1.1`。IPv6是128位。"
+        },
+        {
+          "question": "IPv6地址的长度是？",
+          "type": "single",
+          "options": [
+            "128位（16字节）",
+            "32位（4字节）",
+            "64位（8字节）",
+            "256位（32字节）"
+          ],
+          "correctAnswer": 0,
+          "explanation": "IPv6地址是128位（16字节），通常以冒号分隔的十六进制表示，如 `2001:0db8::1`。解决了IPv4地址枯竭问题。"
+        },
+        {
+          "question": "私有IP地址的范围包括？",
+          "type": "multiple",
+          "options": [
+            "10.0.0.0 - 10.255.255.255 (A类)",
+            "172.16.0.0 - 172.31.255.255 (B类)",
+            "192.168.0.0 - 192.168.255.255 (C类)",
+            "127.0.0.0 - 127.255.255.255 (回环地址)"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "私有IP地址范围（不能在公网使用）：10.0.0.0/8、172.16.0.0/12、192.168.0.0/16。127.0.0.0/8是回环地址，不是私有地址。"
+        },
+        {
+          "question": "子网掩码 255.255.255.0 对应的CIDR表示是？",
+          "type": "single",
+          "options": [
+            "/24",
+            "/16",
+            "/8",
+            "/32"
+          ],
+          "correctAnswer": 0,
+          "explanation": "255.255.255.0 = 11111111.11111111.11111111.00000000，有24个连续的1，所以CIDR表示为 /24。"
+        },
+        {
+          "question": "ARP协议的作用是？",
+          "type": "single",
+          "options": [
+            "将IP地址解析为MAC地址",
+            "将MAC地址解析为IP地址",
+            "域名解析",
+            "路由选择"
+          ],
+          "correctAnswer": 0,
+          "explanation": "ARP（Address Resolution Protocol）用于将IP地址解析为MAC地址。RARP是反向操作（现已少用）。"
+        },
+        {
+          "question": "ICMP协议主要用于？",
+          "type": "single",
+          "options": [
+            "网络诊断和错误报告（如ping）",
+            "文件传输",
+            "邮件发送",
+            "域名解析"
+          ],
+          "correctAnswer": 0,
+          "explanation": "ICMP（Internet Control Message Protocol）用于网络诊断和错误报告。常见应用有 ping（回显请求/应答）和 traceroute（路由跟踪）。"
+        },
+        {
+          "question": "传输层的两个主要协议是？",
+          "type": "multiple",
+          "options": [
+            "TCP（Transmission Control Protocol）",
+            "UDP（User Datagram Protocol）",
+            "IP（Internet Protocol）",
+            "HTTP（HyperText Transfer Protocol）"
+          ],
+          "correctAnswer": [0, 1],
+          "explanation": "传输层的两个核心协议：TCP（面向连接、可靠）和UDP（无连接、不可靠但快速）。IP是网络层，HTTP是应用层。"
+        },
+        {
+          "question": "TCP和UDP的主要区别包括？",
+          "type": "multiple",
+          "options": [
+            "TCP面向连接，UDP无连接",
+            "TCP可靠传输，UDP不保证可靠",
+            "TCP有流量控制和拥塞控制，UDP没有",
+            "TCP速度慢，UDP速度快"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "TCP vs UDP：面向连接vs无连接、可靠vs不可靠、有流量/拥塞控制vs无、慢vs快、有序vs可能乱序。"
+        },
+        {
+          "question": "TCP三次握手的过程是？",
+          "type": "single",
+          "options": [
+            "SYN → SYN+ACK → ACK",
+            "SYN → ACK → SYN+ACK",
+            "ACK → SYN → ACK",
+            "SYN → SYN → ACK"
+          ],
+          "correctAnswer": 0,
+          "explanation": "TCP三次握手：1) 客户端发送SYN；2) 服务器回复SYN+ACK；3) 客户端发送ACK。建立连接后才能传输数据。"
+        },
+        {
+          "question": "TCP四次挥手的过程是？",
+          "type": "single",
+          "options": [
+            "FIN → ACK → FIN → ACK",
+            "FIN → FIN → ACK → ACK",
+            "ACK → FIN → ACK → FIN",
+            "FIN → ACK → ACK → FIN"
+          ],
+          "correctAnswer": 0,
+          "explanation": "TCP四次挥手：1) 客户端发送FIN；2) 服务器回复ACK；3) 服务器发送FIN；4) 客户端回复ACK。全双工连接需要两个方向各自关闭。"
+        },
+        {
+          "question": "TCP为什么需要三次握手而不是两次？",
+          "type": "single",
+          "options": [
+            "防止已失效的连接请求到达服务器，造成资源浪费",
+            "为了加密数据",
+            "提高传输速度",
+            "没有特殊原因"
+          ],
+          "correctAnswer": 0,
+          "explanation": "三次握手可以防止旧的重复连接请求突然到达服务器，避免服务器建立无效连接而浪费资源。两次握手无法确认客户端的接收能力。"
+        },
+        {
+          "question": "TCP的流量控制使用什么机制？",
+          "type": "single",
+          "options": [
+            "滑动窗口（Sliding Window）",
+            "令牌桶（Token Bucket）",
+            "漏桶（Leaky Bucket）",
+            "轮询（Polling）"
+          ],
+          "correctAnswer": 0,
+          "explanation": "TCP使用滑动窗口机制进行流量控制。接收方通过窗口大小（rwnd）告知发送方自己的接收能力，防止发送过快导致溢出。"
+        },
+        {
+          "question": "TCP的拥塞控制算法包括？",
+          "type": "multiple",
+          "options": [
+            "慢启动（Slow Start）",
+            "拥塞避免（Congestion Avoidance）",
+            "快重传（Fast Retransmit）",
+            "快恢复（Fast Recovery）"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "TCP拥塞控制的四个算法：慢启动（指数增长）、拥塞避免（线性增长）、快重传（收到3个重复ACK立即重传）、快恢复（避免重新慢启动）。"
+        },
+        {
+          "question": "UDP适用于哪些应用场景？",
+          "type": "multiple",
+          "options": [
+            "实时音视频传输",
+            "DNS查询",
+            "在线游戏",
+            "文件下载"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "UDP适用于对实时性要求高、可容忍少量丢包的场景：音视频直播、在线游戏、DNS查询、SNMP等。文件下载需要可靠传输，应使用TCP。"
+        },
+        {
+          "question": "端口号的范围是？",
+          "type": "single",
+          "options": [
+            "0 - 65535",
+            "0 - 1023",
+            "1024 - 49151",
+            "0 - 255"
+          ],
+          "correctAnswer": 0,
+          "explanation": "端口号是16位，范围0-65535。其中0-1023是知名端口（Well-Known Ports），1024-49151是注册端口，49152-65535是动态端口。"
+        },
+        {
+          "question": "HTTP协议默认使用的端口号是？",
+          "type": "single",
+          "options": [
+            "80",
+            "443",
+            "21",
+            "22"
+          ],
+          "correctAnswer": 0,
+          "explanation": "常见端口：HTTP 80、HTTPS 443、FTP 21、SSH 22、Telnet 23、SMTP 25、DNS 53、MySQL 3306、Redis 6379。"
+        },
+        {
+          "question": "HTTPS协议默认使用的端口号是？",
+          "type": "single",
+          "options": [
+            "443",
+            "80",
+            "8080",
+            "8443"
+          ],
+          "correctAnswer": 0,
+          "explanation": "HTTPS（HTTP over SSL/TLS）默认使用443端口。HTTP使用80端口。"
+        },
+        {
+          "question": "DNS的主要功能是？",
+          "type": "single",
+          "options": [
+            "域名解析（域名到IP地址的映射）",
+            "文件传输",
+            "邮件发送",
+            "远程登录"
+          ],
+          "correctAnswer": 0,
+          "explanation": "DNS（Domain Name System）用于将域名（如www.example.com）解析为IP地址。采用分层的分布式数据库系统。"
+        },
+        {
+          "question": "HTTP请求方法包括哪些？",
+          "type": "multiple",
+          "options": [
+            "GET（获取资源）",
+            "POST（提交数据）",
+            "PUT（更新资源）",
+            "DELETE（删除资源）"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "常见HTTP方法：GET（幂等、安全）、POST（非幂等）、PUT（幂等）、DELETE（幂等）、HEAD、OPTIONS、PATCH等。"
+        },
+        {
+          "question": "HTTP状态码 200 表示？",
+          "type": "single",
+          "options": [
+            "请求成功",
+            "重定向",
+            "客户端错误",
+            "服务器错误"
+          ],
+          "correctAnswer": 0,
+          "explanation": "HTTP状态码分类：1xx信息、2xx成功（200 OK）、3xx重定向（301/302）、4xx客户端错误（404 Not Found）、5xx服务器错误（500）。"
+        },
+        {
+          "question": "HTTP状态码 404 表示？",
+          "type": "single",
+          "options": [
+            "资源未找到（Not Found）",
+            "服务器内部错误",
+            "请求成功",
+            "未授权"
+          ],
+          "correctAnswer": 0,
+          "explanation": "常见状态码：200 OK、301永久重定向、302临时重定向、400错误请求、401未授权、403禁止、404未找到、500服务器错误、502网关错误、503服务不可用。"
+        },
+        {
+          "question": "HTTP和HTTPS的区别是？",
+          "type": "multiple",
+          "options": [
+            "HTTPS使用SSL/TLS加密，HTTP明文传输",
+            "HTTPS需要CA证书",
+            "HTTPS使用443端口，HTTP使用80端口",
+            "HTTPS更安全"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "HTTPS = HTTP + SSL/TLS。区别：加密传输、需要证书、不同端口、更安全（防止中间人攻击）。"
+        },
+        {
+          "question": "Cookie和Session的区别是？",
+          "type": "single",
+          "options": [
+            "Cookie存储在客户端，Session存储在服务器端",
+            "Cookie存储在服务器端，Session存储在客户端",
+            "两者完全相同",
+            "Cookie用于加密，Session用于存储"
+          ],
+          "correctAnswer": 0,
+          "explanation": "Cookie存储在客户端（浏览器），有大小限制（约4KB），不安全。Session存储在服务器端，更安全，通常通过SessionID（存在Cookie中）关联。"
+        },
+        {
+          "question": "RESTful API的特点包括？",
+          "type": "multiple",
+          "options": [
+            "无状态（Stateless）",
+            "使用标准HTTP方法",
+            "资源用URI表示",
+            "客户端-服务器架构"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "RESTful架构风格：无状态、统一接口、资源用URI表示、使用HTTP方法操作资源、分层系统、可缓存。"
+        }
+      ]
+    }
+  ]
+}
+

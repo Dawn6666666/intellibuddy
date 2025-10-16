@@ -269,10 +269,14 @@ const handleAnalyze = async (questionId: string) => {
 
   try {
     analyzingQuestionId.value = questionId;
-    const response = await apiAnalyzeWrongQuestion(userStore.token, questionId);
+    
+    // 检查是否已有 AI 解析（如果有，则是重新生成）
+    const question = wrongQuestions.value.find(q => q._id === questionId);
+    const regenerate = !!question?.aiAnalysis;
+    
+    const response = await apiAnalyzeWrongQuestion(userStore.token, questionId, regenerate);
     
     // 更新本地数据
-    const question = wrongQuestions.value.find(q => q._id === questionId);
     if (question) {
       question.aiAnalysis = response.aiAnalysis;
     }
@@ -576,10 +580,6 @@ onMounted(async () => {
   font-size: 3rem;
   margin-bottom: 16px;
   color: var(--primary-color);
-}
-
-.questions-list {
-  /* 错题卡片在这里渲染 */
 }
 
 .empty-state {

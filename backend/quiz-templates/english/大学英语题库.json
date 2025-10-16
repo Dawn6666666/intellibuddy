@@ -1,0 +1,361 @@
+{
+  "题库说明": "本题库对应《大学英语 (eng101)》知识点，涵盖语法、词汇、阅读理解、写作基础等内容。",
+  "题库": [
+    {
+      "pointId": "eng101",
+      "pointTitle": "大学英语",
+      "quiz": [
+        {
+          "question": "英语句子的基本结构包括哪些成分？",
+          "type": "multiple",
+          "options": [
+            "主语（Subject）",
+            "谓语（Predicate/Verb）",
+            "宾语（Object）",
+            "定语（Attribute）"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "英语基本句型：主语+谓语（SV）、主+谓+宾（SVO）、主+系+表（SVC）、主+谓+间宾+直宾（SVOO）、主+谓+宾+宾补（SVOC）。定语、状语是修饰成分，不是基本成分。"
+        },
+        {
+          "question": "英语的五种基本句型是？",
+          "type": "multiple",
+          "options": [
+            "主+谓（S+V）",
+            "主+谓+宾（S+V+O）",
+            "主+系+表（S+V+C）",
+            "主+谓+间宾+直宾（S+V+O+O）",
+            "主+谓+宾+宾补（S+V+O+C）"
+          ],
+          "correctAnswer": [0, 1, 2, 3, 4],
+          "explanation": "五种基本句型：1) The sun rises.（主谓）；2) I love you.（主谓宾）；3) She is beautiful.（主系表）；4) He gave me a book.（主谓双宾）；5) We made him monitor.（主谓宾宾补）。"
+        },
+        {
+          "question": "英语的16种时态由哪两个维度组成？",
+          "type": "multiple",
+          "options": [
+            "时间（现在、过去、将来、过去将来）",
+            "状态（一般、进行、完成、完成进行）",
+            "语态（主动、被动）",
+            "语气（陈述、虚拟）"
+          ],
+          "correctAnswer": [0, 1],
+          "explanation": "16种时态=4种时间×4种状态。如：一般现在时（I work）、现在进行时（I am working）、现在完成时（I have worked）、现在完成进行时（I have been working）等。语态和语气是另外的语法范畴。"
+        },
+        {
+          "question": "一般现在时的用法包括？",
+          "type": "multiple",
+          "options": [
+            "客观事实或真理（The earth moves around the sun.）",
+            "习惯性动作（I get up at 7 every day.）",
+            "主将从现（条件、时间状语从句用现在时表将来）",
+            "正在发生的动作"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "一般现在时用法：1) 客观真理；2) 经常性、习惯性动作；3) 现在状态；4) 主将从现（If it rains tomorrow, I won't go.）。正在发生的动作用现在进行时。"
+        },
+        {
+          "question": "现在完成时的标志词包括？",
+          "type": "multiple",
+          "options": [
+            "already, yet, just",
+            "ever, never",
+            "since, for",
+            "yesterday"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "现在完成时（have/has done）：表示过去发生对现在有影响的动作或从过去持续到现在的状态。标志词：already（已经）、yet（还未）、just（刚刚）、ever/never、since（自从，+时间点）、for（+时间段）。yesterday用于一般过去时。"
+        },
+        {
+          "question": "被动语态的构成是？",
+          "type": "single",
+          "options": [
+            "be动词+过去分词（be done）",
+            "have+过去分词",
+            "be+现在分词",
+            "do+动词原形"
+          ],
+          "correctAnswer": 0,
+          "explanation": "被动语态：be+过去分词（be done）。各时态的被动：am/is/are done（一般现在）、was/were done（一般过去）、will be done（一般将来）、have/has been done（现在完成）等。by引出动作执行者。"
+        },
+        {
+          "question": "虚拟语气在条件句中的三种类型是？",
+          "type": "multiple",
+          "options": [
+            "与现在事实相反（If I were you, I would...）",
+            "与过去事实相反（If I had known, I would have...）",
+            "与将来事实相反（If it should rain, I would...）",
+            "与事实一致"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "虚拟语气：1) 与现在相反：If从句用过去式（be用were），主句用would/could/should/might+动词原形；2) 与过去相反：If从句用had done，主句用would have done；3) 与将来相反：If从句用should/were to，主句用would do。"
+        },
+        {
+          "question": "非谓语动词的三种形式是？",
+          "type": "multiple",
+          "options": [
+            "不定式（to do）",
+            "动名词（doing，名词性）",
+            "分词（doing/done，形容词性）",
+            "动词原形"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "非谓语动词：不能作谓语的动词形式。1) 不定式to do（表目的、将来）；2) 动名词doing（名词性，如主语、宾语）；3) 现在分词doing（主动、进行）和过去分词done（被动、完成）。动词原形不是非谓语。"
+        },
+        {
+          "question": "定语从句的引导词包括？",
+          "type": "multiple",
+          "options": [
+            "关系代词（who, whom, whose, which, that）",
+            "关系副词（when, where, why）",
+            "连词（and, but, or）",
+            "介词（in, on, at）"
+          ],
+          "correctAnswer": [0, 1],
+          "explanation": "定语从句：修饰名词的从句。关系词：1) 关系代词（指人who/whom/that，指物which/that，所有格whose）；2) 关系副词（时间when、地点where、原因why）。连词和介词不引导从句。"
+        },
+        {
+          "question": "限制性定语从句和非限制性定语从句的区别是？",
+          "type": "single",
+          "options": [
+            "限制性紧跟先行词无逗号，非限制性有逗号隔开，不能用that",
+            "限制性有逗号",
+            "非限制性可以用that",
+            "两者完全相同"
+          ],
+          "correctAnswer": 0,
+          "explanation": "限制性定语从句：紧跟先行词，无逗号，限定范围（The man who came is my uncle.）。非限制性：逗号隔开，补充说明（Beijing, which is the capital, is beautiful.），不能用that，可省略。"
+        },
+        {
+          "question": "名词性从句包括哪些类型？",
+          "type": "multiple",
+          "options": [
+            "主语从句（That he is honest is known.）",
+            "宾语从句（I know that he is honest.）",
+            "表语从句（The fact is that he is honest.）",
+            "同位语从句（The fact that he is honest is clear.）"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "名词性从句：在句中作名词成分。1) 主语从句（What he said is true.）；2) 宾语从句（I think (that) he is right.）；3) 表语从句（The problem is where we can find him.）；4) 同位语从句（解释抽象名词，The news that he won surprised us.）。"
+        },
+        {
+          "question": "状语从句的类型包括？",
+          "type": "multiple",
+          "options": [
+            "时间状语从句（when, while, before, after）",
+            "条件状语从句（if, unless）",
+            "原因状语从句（because, since, as）",
+            "让步状语从句（although, though）"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "状语从句：修饰动词、形容词、副词或整个句子。类型：时间（when）、地点（where）、原因（because）、结果（so...that）、目的（so that）、条件（if）、让步（although）、方式（as）、比较（than）。"
+        },
+        {
+          "question": "冠词（a/an/the）的用法区别是？",
+          "type": "single",
+          "options": [
+            "a/an表示泛指（一个），the表示特指（那个）",
+            "a/an表示特指",
+            "the表示泛指",
+            "冠词可以随意使用"
+          ],
+          "correctAnswer": 0,
+          "explanation": "冠词用法：a/an（不定冠词，泛指，首次提及，a用于辅音音素前，an用于元音音素前）、the（定冠词，特指，再次提及，世上唯一的事物如the sun）、零冠词（复数泛指、抽象名词、专有名词）。"
+        },
+        {
+          "question": "可数名词和不可数名词的区别是？",
+          "type": "single",
+          "options": [
+            "可数名词有单复数形式，不可数名词无复数",
+            "可数名词不能计数",
+            "不可数名词可以加复数",
+            "两者完全相同"
+          ],
+          "correctAnswer": 0,
+          "explanation": "可数名词：有单复数（book-books），可用a/an、数词。不可数名词：无复数（water, information），不能用a/an，用some/much/a lot of，借助量词（a piece of paper）。部分名词可数不可数意义不同（glass杯子/玻璃）。"
+        },
+        {
+          "question": "形容词比较级和最高级的构成规则是？",
+          "type": "multiple",
+          "options": [
+            "单音节词加-er/-est（tall-taller-tallest）",
+            "双音节及以上用more/most（beautiful-more beautiful-most beautiful）",
+            "不规则变化（good-better-best）",
+            "所有形容词都加-er/-est"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "比较级：1) 单音节加-er/-est（以e结尾加-r/-st）；2) 双音节及以上用more/most（部分双音节如clever可加-er/-est）；3) 不规则（good/well-better-best、bad/badly-worse-worst、many/much-more-most）。"
+        },
+        {
+          "question": "常见的连接词（连词）包括哪些类型？",
+          "type": "multiple",
+          "options": [
+            "并列连词（and, but, or）",
+            "从属连词（because, if, although）",
+            "连接副词（however, therefore, moreover）",
+            "动词"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "连接词：1) 并列连词（连接平行结构）：and（和）、but（但）、or（或）、so（所以）；2) 从属连词（引导从句）：because、if、when、although等；3) 连接副词（句子间逻辑关系）：however、therefore、besides等。动词不是连接词。"
+        },
+        {
+          "question": "介词的主要功能是什么？",
+          "type": "single",
+          "options": [
+            "表示名词与其他词之间的关系（时间、地点、方式等）",
+            "作谓语",
+            "修饰动词",
+            "连接句子"
+          ],
+          "correctAnswer": 0,
+          "explanation": "介词：表示名词/代词与其他词的关系。类型：1) 时间介词（at, on, in）；2) 地点介词（in, on, at, under）；3) 方式介词（by, with）；4) 其他（of所属、for目的）。介词后接名词/代词/动名词。"
+        },
+        {
+          "question": "主谓一致的原则包括？",
+          "type": "multiple",
+          "options": [
+            "语法一致（主语单数→谓语单数）",
+            "意义一致（The news is good.，news形式复数意义单数）",
+            "就近一致（There is a book and two pens.）",
+            "随意一致"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "主谓一致：1) 语法一致（单数主语单数动词）；2) 意义一致（集体名词family强调整体用单数、成员用复数）；3) 就近一致（there be、either...or、neither...nor等）。"
+        },
+        {
+          "question": "强调句型的结构是？",
+          "type": "single",
+          "options": [
+            "It is/was...that/who...（强调除谓语外的成分）",
+            "Do/Does/Did+动词原形",
+            "倒装句",
+            "被动语态"
+          ],
+          "correctAnswer": 0,
+          "explanation": "强调句型：It is/was+被强调部分+that/who+其他。如：It was Tom who/that broke the window.（强调Tom）。判断方法：去掉It is/was...that后句子完整。强调谓语用do/does/did+动词原形。"
+        },
+        {
+          "question": "倒装句的常见情况包括？",
+          "type": "multiple",
+          "options": [
+            "完全倒装（地点副词提前：Here comes the bus.）",
+            "部分倒装（否定词提前：Never have I seen...）",
+            "so/neither引导的倒装（So do I.）",
+            "正常语序"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "倒装：1) 完全倒装（谓语全部提前）：地点副词、there be；2) 部分倒装（助动词/be/情态动词提前）：否定词（never, seldom）、only+状语、so/such...that；3) so/neither/nor+助动词+主语（表示\"也是\"）。"
+        },
+        {
+          "question": "英语写作中，段落的基本结构是？",
+          "type": "single",
+          "options": [
+            "主题句（Topic Sentence）+ 支撑句（Supporting Sentences）+ 结论句（Concluding Sentence）",
+            "只有主题句",
+            "只有细节",
+            "随意排列"
+          ],
+          "correctAnswer": 0,
+          "explanation": "段落结构：1) 主题句（段落中心思想，通常在开头）；2) 支撑句（细节、例证、解释）；3) 结论句（总结、过渡，可选）。连贯性通过连接词（first, second, however, therefore）实现。"
+        },
+        {
+          "question": "常见的英语写作体裁包括？",
+          "type": "multiple",
+          "options": [
+            "议论文（Argumentative/Persuasive Essay）",
+            "说明文（Expository Essay）",
+            "记叙文（Narrative）",
+            "应用文（Practical Writing，如书信、通知）"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "写作体裁：1) 议论文（观点+论据，如Should students wear uniforms?）；2) 说明文（解释概念、过程）；3) 记叙文（讲故事，6要素：who, what, when, where, why, how）；4) 应用文（书信、简历、报告）。"
+        },
+        {
+          "question": "英语词汇学习的有效方法包括？",
+          "type": "multiple",
+          "options": [
+            "词根词缀记忆（如un-表否定）",
+            "语境记忆（通过句子、文章）",
+            "联想记忆（同义词、反义词）",
+            "死记硬背单词表"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "词汇学习方法：1) 词根词缀（如pre-前、-tion名词后缀）；2) 语境（阅读中记忆）；3) 联想（同义词big-large、反义词hot-cold、词族happy-happiness）；4) 应用（造句、写作）。死记硬背效率低易忘。"
+        },
+        {
+          "question": "阅读理解的技巧包括？",
+          "type": "multiple",
+          "options": [
+            "略读（Skimming，快速了解大意）",
+            "扫读（Scanning，查找特定信息）",
+            "精读（Intensive Reading，仔细理解）",
+            "只看第一句"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "阅读技巧：1) 略读（抓主旨，关注首尾段、主题句）；2) 扫读（快速定位关键词）；3) 精读（分析句子结构、推断生词）；4) 猜词（根据上下文、词根词缀）。根据目的选择策略。"
+        },
+        {
+          "question": "英语听力提高的方法包括？",
+          "type": "multiple",
+          "options": [
+            "泛听（大量输入，如播客、新闻）",
+            "精听（逐句听写、分析）",
+            "跟读模仿（提高语音语调）",
+            "只听一遍就放弃"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "听力提高：1) 泛听（大量输入，培养语感）；2) 精听（反复听，听写，注意连读、弱读）；3) 跟读（模仿发音、语调）；4) 预测（根据上下文预测内容）。需要持续练习，循序渐进。"
+        },
+        {
+          "question": "英语口语表达中的常见错误包括？",
+          "type": "multiple",
+          "options": [
+            "Chinglish（中式英语，如直译）",
+            "时态错误（混淆现在时和过去时）",
+            "发音不准（如th音）",
+            "使用地道表达"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "口语常见问题：1) Chinglish（如I very like→I like it very much）；2) 时态（Yesterday I go→went）；3) 发音（th/v/w）；4) 语法（主谓一致、单复数）；5) 不敢开口。改进：多说、模仿、纠错、积累地道表达。"
+        },
+        {
+          "question": "学术写作（Academic Writing）的特点是？",
+          "type": "multiple",
+          "options": [
+            "正式（避免口语、缩写）",
+            "客观（避免第一人称I、主观评价）",
+            "精确（使用专业术语）",
+            "随意（可以用网络用语）"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "学术写作特点：1) 正式（不用gonna、wanna，用full forms）；2) 客观（避免I think，用研究表明）；3) 精确（定义术语、引用数据）；4) 结构清晰（引言-主体-结论）；5) 引用规范（APA、MLA）。"
+        },
+        {
+          "question": "英语中的常用修辞手法包括？",
+          "type": "multiple",
+          "options": [
+            "比喻（Metaphor/Simile）",
+            "拟人（Personification）",
+            "夸张（Hyperbole）",
+            "平铺直叙"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "修辞手法：1) 明喻（as...as, like：He is as brave as a lion.）；2) 暗喻（直接比喻：Time is money.）；3) 拟人（The wind whispered.）；4) 夸张（I've told you a million times.）；5) 反问、排比、头韵等。"
+        },
+        {
+          "question": "提高英语综合能力的有效途径是？",
+          "type": "multiple",
+          "options": [
+            "大量阅读（扩大词汇、培养语感）",
+            "坚持写作（输出练习）",
+            "多听多说（实际运用）",
+            "只背单词不练习"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "英语学习方法：1) 大量输入（阅读、听力）；2) 积极输出（口语、写作）；3) 学以致用（实际场景）；4) 持之以恒（语言学习需要积累）；5) 兴趣驱动（看英文电影、听英文歌曲）。单纯背单词效果有限。"
+        }
+      ]
+    }
+  ]
+}
+

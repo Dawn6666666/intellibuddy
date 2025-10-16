@@ -1,0 +1,360 @@
+{
+  "题库说明": "本题库对应《概率论与数理统计 (math203)》知识点，涵盖概率基础、随机变量、概率分布、数理统计等内容。",
+  "题库": [
+    {
+      "pointId": "math203",
+      "pointTitle": "概率论与数理统计",
+      "quiz": [
+        {
+          "question": "抛一枚均匀硬币，正面朝上的概率是？",
+          "type": "single",
+          "options": [
+            "$\\frac{1}{2}$",
+            "$\\frac{1}{4}$",
+            "$\\frac{1}{3}$",
+            "1"
+          ],
+          "correctAnswer": 0,
+          "explanation": "均匀硬币有两个等可能结果（正面、反面），所以正面朝上的概率是 $P = \\frac{1}{2}$。"
+        },
+        {
+          "question": "掷一颗骰子，点数为偶数的概率是？",
+          "type": "single",
+          "options": [
+            "$\\frac{1}{2}$",
+            "$\\frac{1}{3}$",
+            "$\\frac{1}{6}$",
+            "$\\frac{2}{3}$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "骰子有6个面，偶数有3个（2, 4, 6），所以概率是 $P = \\frac{3}{6} = \\frac{1}{2}$。"
+        },
+        {
+          "question": "概率的取值范围是？",
+          "type": "single",
+          "options": [
+            "$[0, 1]$",
+            "$(-\\infty, +\\infty)$",
+            "$(0, 1)$",
+            "$[0, +\\infty)$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "概率的取值范围是 $[0, 1]$，即 $0 \\leq P(A) \\leq 1$。必然事件概率为1，不可能事件概率为0。"
+        },
+        {
+          "question": "全概率公式是？",
+          "type": "single",
+          "options": [
+            "$P(A) = \\sum_{i=1}^n P(B_i) P(A|B_i)$",
+            "$P(A) = \\sum_{i=1}^n P(A \\cap B_i)$",
+            "$P(A) = P(A|B) P(B)$",
+            "$P(A) = 1 - P(\\overline{A})$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "全概率公式：若 $\\{B_1, B_2, \\ldots, B_n\\}$ 是样本空间的一个完备事件组，则 $P(A) = \\sum_{i=1}^n P(B_i) P(A|B_i)$。"
+        },
+        {
+          "question": "贝叶斯公式用于计算什么？",
+          "type": "single",
+          "options": [
+            "后验概率 $P(B_i|A)$",
+            "先验概率 $P(B_i)$",
+            "条件概率 $P(A|B_i)$",
+            "联合概率 $P(A \\cap B_i)$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "贝叶斯公式：$P(B_i|A) = \\frac{P(B_i) P(A|B_i)}{\\sum_{j=1}^n P(B_j) P(A|B_j)}$，用于根据观测结果 $A$ 计算原因 $B_i$ 的概率（后验概率）。"
+        },
+        {
+          "question": "两个事件 $A$ 和 $B$ 相互独立的充要条件是？",
+          "type": "single",
+          "options": [
+            "$P(A \\cap B) = P(A) P(B)$",
+            "$P(A \\cup B) = P(A) + P(B)$",
+            "$P(A|B) = P(B|A)$",
+            "$P(A) = P(B)$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "两个事件相互独立的充要条件：$P(A \\cap B) = P(A) P(B)$，或等价地 $P(A|B) = P(A)$（当 $P(B) > 0$）。"
+        },
+        {
+          "question": "两个事件 $A$ 和 $B$ 互斥（互不相容）意味着什么？",
+          "type": "single",
+          "options": [
+            "$A \\cap B = \\emptyset$",
+            "$A \\cup B = \\emptyset$",
+            "$P(A) + P(B) = 1$",
+            "$P(A \\cap B) = P(A) P(B)$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "两个事件互斥（互不相容）意味着它们不能同时发生：$A \\cap B = \\emptyset$，此时 $P(A \\cap B) = 0$。"
+        },
+        {
+          "question": "加法公式 $P(A \\cup B) = ?$",
+          "type": "single",
+          "options": [
+            "$P(A) + P(B) - P(A \\cap B)$",
+            "$P(A) + P(B)$",
+            "$P(A) \\cdot P(B)$",
+            "$P(A) + P(B) + P(A \\cap B)$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "概率加法公式：$P(A \\cup B) = P(A) + P(B) - P(A \\cap B)$。若 $A$, $B$ 互斥，则 $P(A \\cup B) = P(A) + P(B)$。"
+        },
+        {
+          "question": "离散型随机变量的概率分布满足什么条件？",
+          "type": "multiple",
+          "options": [
+            "$P(X = x_i) \\geq 0$",
+            "$\\sum_i P(X = x_i) = 1$",
+            "$P(X = x_i) \\leq 1$",
+            "$x_i$ 互不相同"
+          ],
+          "correctAnswer": [0, 1],
+          "explanation": "离散型随机变量的概率分布需满足：1) 非负性 $P(X = x_i) \\geq 0$；2) 归一性 $\\sum_i P(X = x_i) = 1$。"
+        },
+        {
+          "question": "连续型随机变量的概率密度函数 $f(x)$ 满足什么条件？",
+          "type": "multiple",
+          "options": [
+            "$f(x) \\geq 0$",
+            "$\\int_{-\\infty}^{+\\infty} f(x) dx = 1$",
+            "$P(X = a) = 0$ (任意常数 $a$)",
+            "$f(x) \\leq 1$"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "概率密度函数需满足：1) 非负性 $f(x) \\geq 0$；2) 归一性 $\\int_{-\\infty}^{+\\infty} f(x) dx = 1$；3) 连续型随机变量在单点处的概率为0。注意 $f(x)$ 可以大于1。"
+        },
+        {
+          "question": "二项分布 $B(n, p)$ 表示什么？",
+          "type": "single",
+          "options": [
+            "$n$ 次独立重复试验中成功 $k$ 次的概率分布",
+            "连续型随机变量的分布",
+            "正态分布",
+            "泊松分布"
+          ],
+          "correctAnswer": 0,
+          "explanation": "二项分布 $X \\sim B(n, p)$：$n$ 次独立重复伯努利试验中成功 $k$ 次的概率为 $P(X = k) = C_n^k p^k (1-p)^{n-k}$。"
+        },
+        {
+          "question": "泊松分布 $P(\\lambda)$ 的概率质量函数是？",
+          "type": "single",
+          "options": [
+            "$P(X = k) = \\frac{\\lambda^k e^{-\\lambda}}{k!}$",
+            "$P(X = k) = C_n^k p^k (1-p)^{n-k}$",
+            "$P(X = k) = \\frac{1}{\\sqrt{2\\pi}} e^{-\\frac{k^2}{2}}$",
+            "$P(X = k) = \\frac{1}{b-a}$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "泊松分布 $X \\sim P(\\lambda)$：$P(X = k) = \\frac{\\lambda^k e^{-\\lambda}}{k!}$ (k = 0, 1, 2, ...)，常用于描述单位时间内随机事件发生的次数。"
+        },
+        {
+          "question": "标准正态分布 $N(0, 1)$ 的概率密度函数是？",
+          "type": "single",
+          "options": [
+            "$\\frac{1}{\\sqrt{2\\pi}} e^{-\\frac{x^2}{2}}$",
+            "$\\frac{1}{2\\pi} e^{-x^2}$",
+            "$e^{-x}$",
+            "$\\frac{1}{\\pi} e^{-\\frac{x^2}{2}}$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "标准正态分布 $N(0, 1)$ 的概率密度函数：$\\phi(x) = \\frac{1}{\\sqrt{2\\pi}} e^{-\\frac{x^2}{2}}$。"
+        },
+        {
+          "question": "一般正态分布 $N(\\mu, \\sigma^2)$ 的概率密度函数是？",
+          "type": "single",
+          "options": [
+            "$\\frac{1}{\\sqrt{2\\pi}\\sigma} e^{-\\frac{(x-\\mu)^2}{2\\sigma^2}}$",
+            "$\\frac{1}{\\sqrt{2\\pi}} e^{-\\frac{x^2}{2}}$",
+            "$\\frac{1}{\\sigma} e^{-\\frac{|x-\\mu|}{\\sigma}}$",
+            "$\\frac{1}{2\\pi\\sigma^2} e^{-\\frac{(x-\\mu)^2}{\\sigma^2}}$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "正态分布 $N(\\mu, \\sigma^2)$ 的概率密度函数：$f(x) = \\frac{1}{\\sqrt{2\\pi}\\sigma} e^{-\\frac{(x-\\mu)^2}{2\\sigma^2}}$，其中 $\\mu$ 是均值，$\\sigma^2$ 是方差。"
+        },
+        {
+          "question": "若 $X \\sim N(\\mu, \\sigma^2)$，则标准化变量 $Z = \\frac{X - \\mu}{\\sigma}$ 服从什么分布？",
+          "type": "single",
+          "options": [
+            "$N(0, 1)$",
+            "$N(\\mu, \\sigma^2)$",
+            "$N(1, 1)$",
+            "$N(0, \\sigma^2)$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "标准化变换：$Z = \\frac{X - \\mu}{\\sigma} \\sim N(0, 1)$。这是正态分布的重要性质，用于查标准正态分布表。"
+        },
+        {
+          "question": "均匀分布 $U(a, b)$ 的概率密度函数是？",
+          "type": "single",
+          "options": [
+            "$f(x) = \\begin{cases} \\frac{1}{b-a}, & a \\leq x \\leq b \\\\\\\\ 0, & \\text{其他} \\end{cases}$",
+            "$f(x) = \\frac{1}{2}$ (恒定)",
+            "$f(x) = \\frac{x}{b-a}$",
+            "$f(x) = e^{-x}$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "均匀分布 $U(a, b)$ 在 $[a, b]$ 上概率密度恒定：$f(x) = \\frac{1}{b-a}$，在区间外为0。"
+        },
+        {
+          "question": "指数分布 $Exp(\\lambda)$ 的概率密度函数是？",
+          "type": "single",
+          "options": [
+            "$f(x) = \\begin{cases} \\lambda e^{-\\lambda x}, & x \\geq 0 \\\\\\\\ 0, & x < 0 \\end{cases}$",
+            "$f(x) = e^{-x}$",
+            "$f(x) = \\frac{1}{\\lambda} e^{-\\frac{x}{\\lambda}}$",
+            "$f(x) = \\lambda x e^{-\\lambda x}$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "指数分布 $Exp(\\lambda)$：$f(x) = \\lambda e^{-\\lambda x}$ ($x \\geq 0$)，常用于描述「等待时间」，具有无记忆性。"
+        },
+        {
+          "question": "随机变量的数学期望（均值）$E(X)$ 的性质包括？",
+          "type": "multiple",
+          "options": [
+            "$E(aX + b) = aE(X) + b$（线性性）",
+            "$E(X + Y) = E(X) + E(Y)$（可加性）",
+            "$E(XY) = E(X)E(Y)$（仅当 $X$, $Y$ 独立）",
+            "$E(C) = C$（常数的期望是自身）"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "期望的性质：线性性 $E(aX+b) = aE(X)+b$、可加性 $E(X+Y) = E(X)+E(Y)$（总成立）、独立时 $E(XY) = E(X)E(Y)$、常数的期望是自身。"
+        },
+        {
+          "question": "方差 $D(X) = Var(X)$ 的定义是？",
+          "type": "single",
+          "options": [
+            "$E[(X - E(X))^2]$",
+            "$E(X^2)$",
+            "$[E(X)]^2$",
+            "$E(X) - E(X^2)$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "方差的定义：$D(X) = Var(X) = E[(X - E(X))^2] = E(X^2) - [E(X)]^2$。"
+        },
+        {
+          "question": "方差的计算公式 $D(X) = ?$",
+          "type": "single",
+          "options": [
+            "$E(X^2) - [E(X)]^2$",
+            "$E(X^2) + [E(X)]^2$",
+            "$[E(X^2)]^2 - E(X)$",
+            "$E[(X + E(X))^2]$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "方差的计算公式：$D(X) = E(X^2) - [E(X)]^2$。这是比定义式更方便的计算公式。"
+        },
+        {
+          "question": "方差的性质 $D(aX + b) = ?$",
+          "type": "single",
+          "options": [
+            "$a^2 D(X)$",
+            "$a D(X) + b$",
+            "$a D(X)$",
+            "$a^2 D(X) + b^2$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "方差的性质：$D(aX + b) = a^2 D(X)$。常数的方差为0，所以 $b$ 不影响方差。"
+        },
+        {
+          "question": "标准差 $\\sigma(X)$ 是？",
+          "type": "single",
+          "options": [
+            "$\\sqrt{D(X)}$",
+            "$D(X)$",
+            "$[D(X)]^2$",
+            "$E(X)$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "标准差是方差的算术平方根：$\\sigma(X) = \\sqrt{D(X)}$。标准差与原变量同量纲。"
+        },
+        {
+          "question": "协方差 $Cov(X, Y)$ 的定义是？",
+          "type": "single",
+          "options": [
+            "$E[(X - E(X))(Y - E(Y))]$",
+            "$E(XY)$",
+            "$E(X)E(Y)$",
+            "$D(X)D(Y)$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "协方差的定义：$Cov(X, Y) = E[(X - E(X))(Y - E(Y))] = E(XY) - E(X)E(Y)$，用于衡量两个变量的线性相关程度。"
+        },
+        {
+          "question": "相关系数 $\\rho(X, Y)$ 的计算公式是？",
+          "type": "single",
+          "options": [
+            "$\\frac{Cov(X, Y)}{\\sqrt{D(X) D(Y)}}$",
+            "$\\frac{Cov(X, Y)}{D(X) + D(Y)}$",
+            "$Cov(X, Y)$",
+            "$\\frac{E(XY)}{E(X)E(Y)}$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "相关系数（皮尔逊相关系数）：$\\rho(X, Y) = \\frac{Cov(X, Y)}{\\sqrt{D(X) D(Y)}} = \\frac{Cov(X, Y)}{\\sigma_X \\sigma_Y}$，取值范围 $[-1, 1]$。"
+        },
+        {
+          "question": "若相关系数 $\\rho(X, Y) = 0$，则 $X$ 和 $Y$ 的关系是？",
+          "type": "single",
+          "options": [
+            "不相关（线性无关）",
+            "相互独立",
+            "正相关",
+            "负相关"
+          ],
+          "correctAnswer": 0,
+          "explanation": "$\\rho(X, Y) = 0$ 表示 $X$ 和 $Y$ 不相关（线性无关），但不一定独立。独立一定不相关，但不相关不一定独立。"
+        },
+        {
+          "question": "中心极限定理说明了什么？",
+          "type": "single",
+          "options": [
+            "大量独立随机变量之和近似服从正态分布",
+            "任何分布都是正态分布",
+            "正态分布是唯一的连续分布",
+            "期望和方差相等"
+          ],
+          "correctAnswer": 0,
+          "explanation": "中心极限定理：设 $X_1, X_2, \\ldots, X_n$ 独立同分布，均值 $\\mu$，方差 $\\sigma^2$，则当 $n$ 足够大时，$\\frac{\\sum_{i=1}^n X_i - n\\mu}{\\sqrt{n}\\sigma}$ 近似服从 $N(0, 1)$。"
+        },
+        {
+          "question": "样本均值 $\\bar{X} = \\frac{1}{n} \\sum_{i=1}^n X_i$ 是什么的无偏估计？",
+          "type": "single",
+          "options": [
+            "总体均值 $\\mu$",
+            "总体方差 $\\sigma^2$",
+            "总体标准差 $\\sigma$",
+            "总体中位数"
+          ],
+          "correctAnswer": 0,
+          "explanation": "样本均值 $\\bar{X}$ 是总体均值 $\\mu$ 的无偏估计：$E(\\bar{X}) = \\mu$。"
+        },
+        {
+          "question": "样本方差 $S^2 = \\frac{1}{n-1} \\sum_{i=1}^n (X_i - \\bar{X})^2$ 中分母为什么是 $n-1$ 而不是 $n$？",
+          "type": "single",
+          "options": [
+            "为了使其成为总体方差的无偏估计",
+            "为了计算简便",
+            "为了减小方差",
+            "没有特殊原因"
+          ],
+          "correctAnswer": 0,
+          "explanation": "使用 $n-1$ 作为分母（贝塞尔校正）使得 $E(S^2) = \\sigma^2$，即 $S^2$ 是总体方差 $\\sigma^2$ 的无偏估计。若用 $n$，则是有偏估计。"
+        },
+        {
+          "question": "假设检验中，显著性水平 $\\alpha$ 表示什么？",
+          "type": "single",
+          "options": [
+            "第一类错误（弃真）的概率",
+            "第二类错误（取伪）的概率",
+            "检验的效能",
+            "样本大小"
+          ],
+          "correctAnswer": 0,
+          "explanation": "显著性水平 $\\alpha$ 是第一类错误的概率，即原假设为真时错误拒绝的概率（弃真概率）。常用值为 0.05 或 0.01。"
+        }
+      ]
+    }
+  ]
+}
+

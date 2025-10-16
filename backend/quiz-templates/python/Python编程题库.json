@@ -1,0 +1,2257 @@
+{
+  "题库说明": "本题库对应《Python编程 (cs104)》课程，整合了基础语法、函数与模块、面向对象、文件操作、异常处理、常用库及综合进阶等所有知识点。",
+  "题库": [
+    {
+      "pointId": "python_basic_001",
+      "pointTitle": "基础语法 - 数据类型",
+      "quiz": [
+        {
+          "question": "在 Python 中，以下哪个数据结构是有序且可变的？",
+          "type": "single",
+          "options": [
+            "列表 (list)",
+            "元组 (tuple)",
+            "集合 (set)",
+            "字典 (dict)"
+          ],
+          "correctAnswer": 0,
+          "explanation": "列表是有序且可变的数据结构，可以动态添加、删除和修改元素。元组有序但不可变，集合无序且元素唯一，字典是键值对映射（Python 3.7+ 有序）。"
+        },
+        {
+          "question": "执行 `type(3.14)` 会返回什么结果？",
+          "type": "single",
+          "options": [
+            "<class 'int'>",
+            "<class 'float'>",
+            "<class 'double'>",
+            "<class 'decimal'>"
+          ],
+          "correctAnswer": 1,
+          "explanation": "Python 中小数默认为 float 类型。Python 没有 double 类型（float 已经是双精度），decimal 需要导入 decimal 模块。"
+        },
+        {
+          "question": "以下哪些是 Python 的不可变数据类型？",
+          "type": "multiple",
+          "options": [
+            "整数 (int)",
+            "列表 (list)",
+            "元组 (tuple)",
+            "字符串 (str)"
+          ],
+          "correctAnswer": [
+            0,
+            2,
+            3
+          ],
+          "explanation": "Python 中不可变类型包括：int、float、str、tuple、frozenset 等。可变类型包括：list、dict、set 等。不可变类型一旦创建就不能修改。"
+        },
+        {
+          "question": "字典的键必须是不可变类型。",
+          "type": "boolean",
+          "options": [
+            "正确",
+            "错误"
+          ],
+          "correctAnswer": 0,
+          "explanation": "正确。字典的键必须是可哈希的（hashable），而可哈希类型都是不可变的，如 int、str、tuple。列表和字典不能作为键。"
+        },
+        {
+          "question": "以下代码的输出是什么？\\n```python\\nx = [1, 2, 3]\\ny = x\\ny.append(4)\\nprint(len(x))\\n```",
+          "type": "single",
+          "options": [
+            "3",
+            "4",
+            "报错",
+            "None"
+          ],
+          "correctAnswer": 1,
+          "explanation": "Python 中列表赋值是引用传递，`y = x` 使得 y 和 x 指向同一个列表对象。修改 y 也会影响 x，所以 x 的长度变为 4。如果要复制列表，应使用 `y = x.copy()` 或 `y = x[:]`。"
+        }
+      ]
+    },
+    {
+      "pointId": "python_basic_002",
+      "pointTitle": "基础语法 - 字符串操作",
+      "quiz": [
+        {
+          "question": "执行 `'Hello'[1:4]` 的结果是？",
+          "type": "single",
+          "options": [
+            "'Hel'",
+            "'ell'",
+            "'ello'",
+            "'Hell'"
+          ],
+          "correctAnswer": 1,
+          "explanation": "Python 切片 `[start:end]` 包含 start 索引但不包含 end 索引。`'Hello'[1:4]` 取索引 1、2、3 的字符，即 'ell'。"
+        },
+        {
+          "question": "以下哪个字符串方法会修改原字符串？",
+          "type": "single",
+          "options": [
+            "str.upper()",
+            "str.replace()",
+            "str.strip()",
+            "以上都不会"
+          ],
+          "correctAnswer": 3,
+          "explanation": "字符串在 Python 中是不可变的（immutable），所有字符串方法都返回新字符串，不会修改原字符串。要保存结果需要重新赋值：`s = s.upper()`。"
+        },
+        {
+          "question": "以下哪些是有效的字符串格式化方法？",
+          "type": "multiple",
+          "options": [
+            "f'Hello {name}'",
+            "'Hello {}'.format(name)",
+            "'Hello %s' % name",
+            "'Hello ' + name"
+          ],
+          "correctAnswer": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "explanation": "Python 支持多种字符串格式化方式：\\n1. f-string (Python 3.6+，推荐)\\n2. str.format() 方法\\n3. % 格式化（旧式）\\n4. 字符串拼接（+）\\n其中 f-string 最简洁高效。"
+        },
+        {
+          "question": "执行 `'Python'[::-1]` 会反转字符串。",
+          "type": "boolean",
+          "options": [
+            "正确",
+            "错误"
+          ],
+          "correctAnswer": 0,
+          "explanation": "正确。切片语法 `[start:end:step]` 中，`[::-1]` 表示步长为 -1，从后向前遍历，实现字符串反转，结果为 'nohtyP'。"
+        },
+        {
+          "question": "以下代码的输出是什么？\\n```python\\ntext = 'Python'\\nprint(text.find('th'))\\n```",
+          "type": "single",
+          "options": [
+            "2",
+            "3",
+            "4",
+            "-1"
+          ],
+          "correctAnswer": 1,
+          "explanation": "str.find() 返回子串首次出现的起始索引。'th' 在 'Python' 中从索引 3 开始（P=0, y=1, t=2, h=3）。如果未找到则返回 -1。"
+        }
+      ]
+    },
+    {
+      "pointId": "python_basic_003",
+      "pointTitle": "基础语法 - 运算符",
+      "quiz": [
+        {
+          "question": "在 Python 中，`10 // 3` 的结果是？",
+          "type": "single",
+          "options": [
+            "3.33",
+            "3",
+            "4",
+            "3.0"
+          ],
+          "correctAnswer": 1,
+          "explanation": "`//` 是整除运算符（floor division），返回商的整数部分。`10 // 3 = 3`。注意与 `/` 区别：`10 / 3 = 3.3333...`（浮点除法）。"
+        },
+        {
+          "question": "以下哪个表达式的结果为 `True`？",
+          "type": "single",
+          "options": [
+            "10 / 2 == 5",
+            "10 // 3 == 3.33",
+            "10 % 3 == 0",
+            "10 ** 2 == 20"
+          ],
+          "correctAnswer": 0,
+          "explanation": "分析各选项：\\n- `10 / 2 == 5` → `5.0 == 5` → True（Python 自动类型转换）\\n- `10 // 3 == 3.33` → `3 == 3.33` → False\\n- `10 % 3 == 0` → `1 == 0` → False\\n- `10 ** 2 == 20` → `100 == 20` → False"
+        },
+        {
+          "question": "以下哪些运算符可以用于字符串？",
+          "type": "multiple",
+          "options": [
+            "+ (加法)",
+            "* (乘法)",
+            "in (成员运算)",
+            "/ (除法)"
+          ],
+          "correctAnswer": [
+            0,
+            1,
+            2
+          ],
+          "explanation": "字符串支持的运算符：\\n- `+`：连接字符串 `'Hello' + 'World'`\\n- `*`：重复字符串 `'Ha' * 3 = 'HaHaHa'`\\n- `in`：检查子串 `'lo' in 'Hello'`\\n- `/` 不支持：字符串无法进行除法运算"
+        },
+        {
+          "question": "`is` 和 `==` 运算符在 Python 中是等价的。",
+          "type": "boolean",
+          "options": [
+            "正确",
+            "错误"
+          ],
+          "correctAnswer": 1,
+          "explanation": "错误。两者有本质区别：\\n- `is`：判断是否为同一对象（内存地址相同）\\n- `==`：判断值是否相等\\n例如：`x = [1,2]`, `y = [1,2]` 时，`x == y` 为 True，但 `x is y` 为 False。"
+        },
+        {
+          "question": "以下代码的输出是什么？\\n```python\\nresult = 2 ** 3 ** 2\\nprint(result)\\n```",
+          "type": "single",
+          "options": [
+            "64",
+            "512",
+            "256",
+            "报错"
+          ],
+          "correctAnswer": 1,
+          "explanation": "幂运算符 `**` 是右结合的，所以 `2 ** 3 ** 2` 等价于 `2 ** (3 ** 2)` = `2 ** 9` = 512，而不是 `(2 ** 3) ** 2` = 64。"
+        }
+      ]
+    },
+    {
+      "pointId": "python_basic_004",
+      "pointTitle": "基础语法 - 控制结构",
+      "quiz": [
+        {
+          "question": "以下哪个 `range()` 调用会生成序列 `[2, 4, 6, 8]`？",
+          "type": "single",
+          "options": [
+            "range(2, 9, 2)",
+            "range(2, 8, 2)",
+            "range(2, 10, 2)",
+            "range(2, 9, 3)"
+          ],
+          "correctAnswer": 0,
+          "explanation": "`range(start, stop, step)` 生成 [start, stop) 区间的序列。\\n- `range(2, 9, 2)` → [2, 4, 6, 8] ✓\\n- `range(2, 8, 2)` → [2, 4, 6]\\n- `range(2, 10, 2)` → [2, 4, 6, 8]（也正确）\\n选项 A 是最紧凑的正确答案。"
+        },
+        {
+          "question": "列表推导式 `[x**2 for x in range(5) if x % 2 == 0]` 的结果是？",
+          "type": "single",
+          "options": [
+            "[0, 1, 4, 9, 16]",
+            "[0, 4, 16]",
+            "[1, 9]",
+            "[0, 2, 4]"
+          ],
+          "correctAnswer": 1,
+          "explanation": "列表推导式执行过程：\\n1. range(5) → [0, 1, 2, 3, 4]\\n2. 筛选偶数 → [0, 2, 4]\\n3. 计算平方 → [0, 4, 16]\\n列表推导式格式：`[表达式 for 变量 in 序列 if 条件]`"
+        },
+        {
+          "question": "以下哪些语句可以跳出循环？",
+          "type": "multiple",
+          "options": [
+            "break",
+            "continue",
+            "return",
+            "pass"
+          ],
+          "correctAnswer": [
+            0,
+            2
+          ],
+          "explanation": "循环控制语句：\\n- `break`：终止整个循环\\n- `continue`：跳过当前迭代，继续下一次迭代\\n- `return`：退出函数（间接终止循环）\\n- `pass`：空操作，占位符，不影响循环执行"
+        },
+        {
+          "question": "`for...else` 结构中，`else` 块总是会执行。",
+          "type": "boolean",
+          "options": [
+            "正确",
+            "错误"
+          ],
+          "correctAnswer": 1,
+          "explanation": "错误。`for...else` 中，`else` 块只在循环正常结束时执行（未遇到 break）。如果循环被 break 终止，else 块不会执行。这对于 while...else 同样适用。"
+        },
+        {
+          "question": "以下代码的输出是什么？\\n```python\\nfor i in range(3):\\n    for j in range(2):\\n        if i == j:\\n            break\\n    else:\\n        print(i)\\n```",
+          "type": "single",
+          "options": [
+            "0 1 2",
+            "1 2",
+            "0 1",
+            "不输出任何内容"
+          ],
+          "correctAnswer": 1,
+          "explanation": "分析嵌套循环：\\n- i=0: j循环中 j=0 时 break，else不执行\\n- i=1: j循环正常结束（j=0,1均不满足i==j），打印1\\n- i=2: j循环正常结束，打印2\\n结果：1 2"
+        }
+      ]
+    },
+    {
+      "pointId": "python_basic_005",
+      "pointTitle": "基础语法 - 输入输出",
+      "quiz": [
+        {
+          "question": "`input()` 函数返回的数据类型是？",
+          "type": "single",
+          "options": [
+            "int",
+            "str",
+            "根据输入内容自动判断",
+            "bytes"
+          ],
+          "correctAnswer": 1,
+          "explanation": "`input()` 总是返回字符串类型（str），即使输入的是数字。如果需要数字类型，必须手动转换：`num = int(input())`。"
+        },
+        {
+          "question": "以下哪个格式化方式可以保留2位小数？",
+          "type": "single",
+          "options": [
+            "f'{pi:2f}'",
+            "f'{pi:.2f}'",
+            "f'{pi:2.f}'",
+            "f'{pi:.f2}'"
+          ],
+          "correctAnswer": 1,
+          "explanation": "f-string 数字格式化语法：`{变量:宽度.精度类型}`\\n- `.2f` 表示浮点数保留2位小数\\n- 例如：`f'{3.14159:.2f}'` → '3.14'\\n- `2f` 会报错，必须有小数点"
+        },
+        {
+          "question": "以下哪些是有效的字符串对齐方式？",
+          "type": "multiple",
+          "options": [
+            "f'{text:<10}' (左对齐)",
+            "f'{text:>10}' (右对齐)",
+            "f'{text:^10}' (居中)",
+            "f'{text:=10}' (两端对齐)"
+          ],
+          "correctAnswer": [
+            0,
+            1,
+            2
+          ],
+          "explanation": "Python f-string 对齐方式：\\n- `<` 左对齐\\n- `>` 右对齐\\n- `^` 居中对齐\\n- `=` 用于数字，在符号后填充（不是两端对齐）\\n例如：`f'{\"Hi\":<5}'` → 'Hi   '"
+        },
+        {
+          "question": "`print()` 函数的 `sep` 参数默认值是空格。",
+          "type": "boolean",
+          "options": [
+            "正确",
+            "错误"
+          ],
+          "correctAnswer": 0,
+          "explanation": "正确。`print()` 的默认参数：\\n- `sep=' '`：多个参数间用空格分隔\\n- `end='\\\\n'`：结尾换行\\n可自定义：`print('a', 'b', 'c', sep='-')` → 'a-b-c'"
+        },
+        {
+          "question": "以下代码的输出是什么？\\n```python\\nnum = 1234567\\nprint(f'{num:,}')\\n```",
+          "type": "single",
+          "options": [
+            "1234567",
+            "1,234,567",
+            "1.234.567",
+            "报错"
+          ],
+          "correctAnswer": 1,
+          "explanation": "f-string 中 `,` 格式化选项会添加千分位分隔符。`f'{1234567:,}'` → '1,234,567'。常用于格式化大数字，提高可读性。"
+        }
+      ]
+    },
+    {
+      "pointId": "python_func_001",
+      "pointTitle": "函数与模块 - 函数定义",
+      "quiz": [
+        {
+          "question": "以下哪个是正确的函数定义默认参数的方式？",
+          "type": "single",
+          "options": [
+            "def func(a=1, b):",
+            "def func(b, a=1):",
+            "def func(a=1, b=2, c):",
+            "def func(*args, a=1):"
+          ],
+          "correctAnswer": 1,
+          "explanation": "Python 函数参数顺序规则：\\n1. 位置参数\\n2. 默认参数\\n3. 可变参数 (*args)\\n4. 关键字参数 (**kwargs)\\n默认参数必须在位置参数之后，所以 `def func(b, a=1):` 正确。"
+        },
+        {
+          "question": "`*args` 和 `**kwargs` 的区别是什么？",
+          "type": "single",
+          "options": [
+            "*args 接收位置参数元组，**kwargs 接收关键字参数字典",
+            "*args 接收关键字参数，**kwargs 接收位置参数",
+            "两者完全相同，可以互换使用",
+            "*args 只能接收一个参数，**kwargs 可以接收多个"
+          ],
+          "correctAnswer": 0,
+          "explanation": "- `*args`：接收任意数量的位置参数，存储为元组\\n  例如：`func(1, 2, 3)` → args = (1, 2, 3)\\n- `**kwargs`：接收任意数量的关键字参数，存储为字典\\n  例如：`func(a=1, b=2)` → kwargs = {'a': 1, 'b': 2}"
+        },
+        {
+          "question": "以下哪些是函数参数的有效传递方式？",
+          "type": "multiple",
+          "options": [
+            "位置参数：func(1, 2)",
+            "关键字参数：func(a=1, b=2)",
+            "混合使用：func(1, b=2)",
+            "解包传递：func(*[1, 2])"
+          ],
+          "correctAnswer": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "explanation": "Python 支持多种参数传递方式：\\n1. 位置参数：按顺序传递\\n2. 关键字参数：指定参数名\\n3. 混合使用：位置参数必须在关键字参数前\\n4. 解包：`*` 解包序列，`**` 解包字典\\n例如：`func(*[1,2], **{'c':3})`"
+        },
+        {
+          "question": "函数的默认参数在函数定义时求值。",
+          "type": "boolean",
+          "options": [
+            "正确",
+            "错误"
+          ],
+          "correctAnswer": 0,
+          "explanation": "正确。这是 Python 的重要特性，可能导致陷阱：\\n```python\\ndef func(lst=[]):\\n    lst.append(1)\\n    return lst\\n```\\n多次调用会共享同一个列表对象。建议使用 `None` 作为默认值：`def func(lst=None): lst = lst or []`"
+        },
+        {
+          "question": "以下代码的输出是什么？\\n```python\\ndef func(a, b, c=3):\\n    return a + b + c\\nprint(func(1, c=5, b=2))\\n```",
+          "type": "single",
+          "options": [
+            "6",
+            "8",
+            "11",
+            "报错"
+          ],
+          "correctAnswer": 1,
+          "explanation": "分析参数传递：\\n- a=1（位置参数）\\n- b=2（关键字参数）\\n- c=5（关键字参数，覆盖默认值3）\\n结果：1 + 2 + 5 = 8"
+        }
+      ]
+    },
+    {
+      "pointId": "python_func_002",
+      "pointTitle": "函数与模块 - Lambda函数",
+      "quiz": [
+        {
+          "question": "Lambda 函数的主要特点是什么？",
+          "type": "single",
+          "options": [
+            "可以包含多条语句",
+            "必须有 return 语句",
+            "只能包含一个表达式",
+            "可以使用装饰器"
+          ],
+          "correctAnswer": 2,
+          "explanation": "Lambda 函数特点：\\n- 匿名函数（无函数名）\\n- 只能包含一个表达式\\n- 自动返回表达式的值（无需 return）\\n- 语法：`lambda 参数: 表达式`\\n例如：`square = lambda x: x**2`"
+        },
+        {
+          "question": "`list(map(lambda x: x*2, [1,2,3]))` 的结果是？",
+          "type": "single",
+          "options": [
+            "[1, 2, 3]",
+            "[2, 4, 6]",
+            "[1, 4, 9]",
+            "[(1,2), (2,4), (3,6)]"
+          ],
+          "correctAnswer": 1,
+          "explanation": "`map()` 函数将 lambda 应用到序列的每个元素：\\n- x=1 → 1*2 = 2\\n- x=2 → 2*2 = 4\\n- x=3 → 3*2 = 6\\n结果：[2, 4, 6]"
+        },
+        {
+          "question": "以下哪些内置函数常与 lambda 一起使用？",
+          "type": "multiple",
+          "options": [
+            "map()",
+            "filter()",
+            "sorted()",
+            "reduce()"
+          ],
+          "correctAnswer": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "explanation": "Lambda 常用于高阶函数：\\n- `map(func, seq)`：映射转换\\n- `filter(func, seq)`：过滤筛选\\n- `sorted(seq, key=func)`：排序键函数\\n- `reduce(func, seq)`：累积计算（需导入 functools）\\n例如：`filter(lambda x: x%2==0, [1,2,3,4])` → [2,4]"
+        },
+        {
+          "question": "Lambda 函数可以访问外部变量。",
+          "type": "boolean",
+          "options": [
+            "正确",
+            "错误"
+          ],
+          "correctAnswer": 0,
+          "explanation": "正确。Lambda 函数可以访问其定义作用域内的变量（闭包特性）：\\n```python\\nfactor = 10\\nmultiply = lambda x: x * factor\\nprint(multiply(5))  # 50\\n```\\nLambda 可以捕获外部变量的值。"
+        },
+        {
+          "question": "以下代码的输出是什么？\\n```python\\nstudents = [('Alice', 85), ('Bob', 90), ('Charlie', 78)]\\nresult = sorted(students, key=lambda x: x[1], reverse=True)\\nprint(result[0][0])\\n```",
+          "type": "single",
+          "options": [
+            "Alice",
+            "Bob",
+            "Charlie",
+            "报错"
+          ],
+          "correctAnswer": 1,
+          "explanation": "分析过程：\\n1. `key=lambda x: x[1]` 按成绩（第二个元素）排序\\n2. `reverse=True` 降序排列\\n3. 排序后：[('Bob', 90), ('Alice', 85), ('Charlie', 78)]\\n4. `result[0][0]` 取第一个学生的姓名：'Bob'"
+        }
+      ]
+    },
+    {
+      "pointId": "python_func_003",
+      "pointTitle": "函数与模块 - 装饰器",
+      "quiz": [
+        {
+          "question": "装饰器的本质是什么？",
+          "type": "single",
+          "options": [
+            "一个类",
+            "一个接受函数并返回函数的函数",
+            "一个特殊的语法糖",
+            "一个内置模块"
+          ],
+          "correctAnswer": 1,
+          "explanation": "装饰器本质上是一个高阶函数：\\n- 接收一个函数作为参数\\n- 返回一个新函数（通常是增强版）\\n- `@decorator` 语法等价于 `func = decorator(func)`\\n装饰器用于在不修改原函数代码的情况下增加功能。"
+        },
+        {
+          "question": "以下代码中，`@my_decorator` 等价于？\\n```python\\n@my_decorator\\ndef func():\\n    pass\\n```",
+          "type": "single",
+          "options": [
+            "my_decorator = func()",
+            "func = my_decorator(func)",
+            "func = my_decorator()",
+            "my_decorator(func())"
+          ],
+          "correctAnswer": 1,
+          "explanation": "`@decorator` 语法糖等价于：\\n```python\\ndef func():\\n    pass\\nfunc = my_decorator(func)\\n```\\n装饰器将原函数作为参数，返回包装后的新函数，并重新绑定到原函数名。"
+        },
+        {
+          "question": "以下哪些是装饰器的常见用途？",
+          "type": "multiple",
+          "options": [
+            "计时统计函数执行时间",
+            "日志记录函数调用",
+            "权限验证",
+            "缓存函数结果"
+          ],
+          "correctAnswer": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "explanation": "装饰器的典型应用场景：\\n1. 性能监控：计时、性能分析\\n2. 日志记录：记录函数调用和参数\\n3. 权限控制：检查用户权限\\n4. 缓存优化：缓存函数结果（如 @lru_cache）\\n5. 重试机制、参数验证等"
+        },
+        {
+          "question": "`@wraps(func)` 装饰器用于保留原函数的元信息。",
+          "type": "boolean",
+          "options": [
+            "正确",
+            "错误"
+          ],
+          "correctAnswer": 0,
+          "explanation": "正确。`functools.wraps` 保留原函数的元信息（名称、文档字符串等）：\\n```python\\nfrom functools import wraps\\n\\ndef decorator(func):\\n    @wraps(func)  # 保留 func 的 __name__, __doc__ 等\\n    def wrapper(*args, **kwargs):\\n        return func(*args, **kwargs)\\n    return wrapper\\n```\\n否则 wrapper 会覆盖原函数的元信息。"
+        },
+        {
+          "question": "以下代码的输出是什么？\\n```python\\ndef repeat(n):\\n    def decorator(func):\\n        def wrapper(*args):\\n            for _ in range(n):\\n                func(*args)\\n        return wrapper\\n    return decorator\\n\\n@repeat(2)\\ndef greet(name):\\n    print(f'Hi {name}')\\n\\ngreet('Alice')\\n```",
+          "type": "single",
+          "options": [
+            "Hi Alice",
+            "Hi Alice\\nHi Alice",
+            "Alice Alice",
+            "报错"
+          ],
+          "correctAnswer": 1,
+          "explanation": "这是带参数的装饰器：\\n1. `@repeat(2)` 返回 decorator\\n2. decorator 包装 greet 函数\\n3. wrapper 执行 greet 两次\\n4. 输出：\\nHi Alice\\nHi Alice"
+        }
+      ]
+    },
+    {
+      "pointId": "python_func_004",
+      "pointTitle": "函数与模块 - 闭包",
+      "quiz": [
+        {
+          "question": "什么是闭包？",
+          "type": "single",
+          "options": [
+            "一个被关闭的函数",
+            "嵌套函数引用了外层函数的变量",
+            "一个没有返回值的函数",
+            "一个匿名函数"
+          ],
+          "correctAnswer": 1,
+          "explanation": "闭包的三个要素：\\n1. 必须有嵌套函数\\n2. 内层函数引用外层函数的变量\\n3. 外层函数返回内层函数\\n闭包可以记住并访问其定义时的环境。"
+        },
+        {
+          "question": "在闭包中修改外层变量需要使用哪个关键字？",
+          "type": "single",
+          "options": [
+            "global",
+            "nonlocal",
+            "local",
+            "closure"
+          ],
+          "correctAnswer": 1,
+          "explanation": "`nonlocal` 关键字用于在闭包中修改外层（非全局）变量：\\n```python\\ndef outer():\\n    count = 0\\n    def inner():\\n        nonlocal count  # 声明修改外层变量\\n        count += 1\\n        return count\\n    return inner\\n```\\n`global` 用于全局变量，`nonlocal` 用于外层局部变量。"
+        },
+        {
+          "question": "以下哪些是闭包的优点？",
+          "type": "multiple",
+          "options": [
+            "实现数据封装",
+            "避免使用全局变量",
+            "创建工厂函数",
+            "提高代码执行速度"
+          ],
+          "correctAnswer": [
+            0,
+            1,
+            2
+          ],
+          "explanation": "闭包的优点：\\n1. 数据封装：外部无法直接访问闭包变量\\n2. 避免全局变量：减少命名冲突\\n3. 工厂函数：根据参数创建不同的函数\\n注意：闭包不会提高执行速度，反而可能略慢。"
+        },
+        {
+          "question": "闭包函数每次调用都会创建新的变量副本。",
+          "type": "boolean",
+          "options": [
+            "正确",
+            "错误"
+          ],
+          "correctAnswer": 1,
+          "explanation": "错误。闭包函数会持续引用同一个外层变量：\\n```python\\ndef make_counter():\\n    count = 0\\n    def counter():\\n        nonlocal count\\n        count += 1\\n        return count\\n    return counter\\n\\nc = make_counter()\\nprint(c())  # 1\\nprint(c())  # 2（累加）\\n```\\n外层变量在闭包的生命周期内持续存在。"
+        },
+        {
+          "question": "以下代码的输出是什么？\\n```python\\ndef multiplier(n):\\n    return lambda x: x * n\\n\\ndouble = multiplier(2)\\ntriple = multiplier(3)\\nprint(double(5) + triple(5))\\n```",
+          "type": "single",
+          "options": [
+            "10",
+            "15",
+            "25",
+            "30"
+          ],
+          "correctAnswer": 2,
+          "explanation": "分析过程：\\n1. `double = multiplier(2)` → `lambda x: x * 2`\\n2. `triple = multiplier(3)` → `lambda x: x * 3`\\n3. `double(5)` = 5 * 2 = 10\\n4. `triple(5)` = 5 * 3 = 15\\n5. 10 + 15 = 25\\n每个闭包保持独立的 n 值。"
+        }
+      ]
+    },
+    {
+      "pointId": "python_func_005",
+      "pointTitle": "函数与模块 - 作用域",
+      "quiz": [
+        {
+          "question": "Python 变量查找遵循什么规则？",
+          "type": "single",
+          "options": [
+            "LEGB（Local→Enclosing→Global→Built-in）",
+            "GEBL（Global→Enclosing→Built-in→Local）",
+            "BLGE（Built-in→Local→Global→Enclosing）",
+            "LBGE（Local→Built-in→Global→Enclosing）"
+          ],
+          "correctAnswer": 0,
+          "explanation": "Python 作用域查找顺序（LEGB）：\\n1. Local（局部）：函数内部\\n2. Enclosing（外层）：嵌套函数的外层函数\\n3. Global（全局）：模块级别\\n4. Built-in（内置）：Python 内置命名空间\\n从内向外依次查找，找到即停止。"
+        },
+        {
+          "question": "以下代码会发生什么？\\n```python\\nx = 10\\ndef func():\\n    x = x + 1\\n    return x\\nfunc()\\n```",
+          "type": "single",
+          "options": [
+            "返回 11",
+            "返回 10",
+            "UnboundLocalError",
+            "NameError"
+          ],
+          "correctAnswer": 2,
+          "explanation": "报错 `UnboundLocalError`：\\n- Python 看到 `x = x + 1` 中的赋值，将 x 视为局部变量\\n- 但在赋值前就使用了 x（右侧的 x）\\n- 此时局部 x 尚未绑定值\\n解决方法：使用 `global x` 声明使用全局变量。"
+        },
+        {
+          "question": "以下哪些关键字用于声明变量作用域？",
+          "type": "multiple",
+          "options": [
+            "global",
+            "nonlocal",
+            "local",
+            "static"
+          ],
+          "correctAnswer": [
+            0,
+            1
+          ],
+          "explanation": "Python 作用域声明关键字：\\n- `global`：声明使用全局变量\\n- `nonlocal`：声明使用外层函数的局部变量\\n注意：Python 没有 `local` 和 `static` 关键字。局部变量默认就是 local，不需要声明。"
+        },
+        {
+          "question": "在函数内部，如果不使用 `global` 关键字，就无法访问全局变量。",
+          "type": "boolean",
+          "options": [
+            "正确",
+            "错误"
+          ],
+          "correctAnswer": 1,
+          "explanation": "错误。可以读取全局变量，但不能修改：\\n```python\\nx = 10\\ndef func():\\n    print(x)  # 可以读取，输出 10\\nfunc()\\n```\\n只有在函数内对全局变量赋值时，才需要用 `global` 声明，否则会创建同名的局部变量。"
+        },
+        {
+          "question": "以下代码的输出是什么？\\n```python\\nx = 5\\ndef outer():\\n    x = 10\\n    def inner():\\n        nonlocal x\\n        x += 5\\n        return x\\n    return inner()\\n\\nprint(outer())\\nprint(x)\\n```",
+          "type": "single",
+          "options": [
+            "15, 5",
+            "15, 10",
+            "10, 5",
+            "20, 5"
+          ],
+          "correctAnswer": 0,
+          "explanation": "分析作用域：\\n1. outer() 中 x = 10（外层局部变量）\\n2. inner() 使用 nonlocal x，修改外层的 x\\n3. x += 5 → x = 15\\n4. 全局 x 不受影响，仍为 5\\n输出：15, 5"
+        }
+      ]
+    },
+    {
+      "pointId": "python_func_006",
+      "pointTitle": "函数与模块 - 模块导入",
+      "quiz": [
+        {
+          "question": "以下哪个导入方式不推荐使用？",
+          "type": "single",
+          "options": [
+            "import math",
+            "from math import pi",
+            "from math import *",
+            "import numpy as np"
+          ],
+          "correctAnswer": 2,
+          "explanation": "`from module import *` 不推荐的原因：\\n1. 污染命名空间，不知道导入了什么\\n2. 可能覆盖已有变量\\n3. 降低代码可读性\\n4. 不利于静态分析工具\\n推荐使用明确的导入方式。"
+        },
+        {
+          "question": "`import math` 和 `from math import sqrt` 有什么区别？",
+          "type": "single",
+          "options": [
+            "前者导入整个模块，后者只导入特定函数",
+            "两者完全相同",
+            "后者执行速度更快",
+            "前者会占用更多内存"
+          ],
+          "correctAnswer": 0,
+          "explanation": "导入方式对比：\\n- `import math`：导入模块，使用 `math.sqrt()`\\n- `from math import sqrt`：只导入函数，直接使用 `sqrt()`\\n\\n注意：Python 模块只加载一次（缓存在 sys.modules），内存占用相同。区别在于使用方式和命名空间。"
+        },
+        {
+          "question": "以下哪些是查看模块内容的有效方法？",
+          "type": "multiple",
+          "options": [
+            "dir(module)",
+            "help(module)",
+            "module.__all__",
+            "print(module)"
+          ],
+          "correctAnswer": [
+            0,
+            1,
+            2
+          ],
+          "explanation": "查看模块内容的方法：\\n1. `dir(module)`：列出模块的所有属性和方法\\n2. `help(module)`：查看模块的详细帮助文档\\n3. `module.__all__`：查看模块定义的公开接口\\n4. `print(module)` 只会显示模块对象信息，无法查看内容"
+        },
+        {
+          "question": "Python 模块在首次导入时会执行模块中的所有代码。",
+          "type": "boolean",
+          "options": [
+            "正确",
+            "错误"
+          ],
+          "correctAnswer": 0,
+          "explanation": "正确。模块导入时的执行过程：\\n1. 查找模块文件\\n2. 编译为字节码（.pyc）\\n3. 执行模块代码（顶层代码只执行一次）\\n4. 缓存到 sys.modules\\n\\n这就是为什么模块中常用 `if __name__ == '__main__':` 来区分直接运行和导入运行。"
+        },
+        {
+          "question": "以下代码的输出是什么？\\n```python\\n# module.py\\nprint('Module loaded')\\nVERSION = '1.0'\\n\\n# main.py\\nimport module\\nimport module\\nimport module\\n```",
+          "type": "single",
+          "options": [
+            "Module loaded",
+            "Module loaded\\nModule loaded",
+            "Module loaded\\nModule loaded\\nModule loaded",
+            "不输出任何内容"
+          ],
+          "correctAnswer": 0,
+          "explanation": "模块只在首次导入时加载和执行一次：\\n- 第一次 import：加载并执行，输出 'Module loaded'\\n- 后续 import：直接从 sys.modules 缓存中获取\\n\\n如需重新加载模块，使用 `importlib.reload(module)`。"
+        }
+      ]
+    },
+    {
+      "pointId": "python_oop_001",
+      "pointTitle": "面向对象 - 类和对象",
+      "quiz": [
+        {
+          "question": "`__init__` 方法的作用是什么？",
+          "type": "single",
+          "options": [
+            "类的构造函数，创建对象时自动调用",
+            "类的析构函数，销毁对象时调用",
+            "类的静态方法",
+            "类的抽象方法"
+          ],
+          "correctAnswer": 0,
+          "explanation": "`__init__` 是类的初始化方法（构造函数）：\\n- 创建对象时自动调用\\n- 用于初始化实例属性\\n- 第一个参数必须是 `self`\\n- 可以接收其他参数\\n例如：`obj = MyClass(args)` 会调用 `__init__(self, args)`"
+        },
+        {
+          "question": "类变量和实例变量的区别是什么？",
+          "type": "single",
+          "options": [
+            "类变量被所有实例共享，实例变量属于单个实例",
+            "类变量不能修改，实例变量可以修改",
+            "类变量在方法内定义，实例变量在类内定义",
+            "两者完全相同，只是叫法不同"
+          ],
+          "correctAnswer": 0,
+          "explanation": "类变量 vs 实例变量：\\n\\n**类变量**：\\n- 定义在类内、方法外\\n- 所有实例共享\\n- 通过类名或实例访问\\n\\n**实例变量**：\\n- 定义在 `__init__` 或其他方法中（使用 self）\\n- 每个实例独立拥有\\n- 只能通过实例访问"
+        },
+        {
+          "question": "以下哪些是 Python 类的特殊方法（魔法方法）？",
+          "type": "multiple",
+          "options": [
+            "__init__",
+            "__str__",
+            "__repr__",
+            "__main__"
+          ],
+          "correctAnswer": [
+            0,
+            1,
+            2
+          ],
+          "explanation": "常见的魔法方法（双下划线包围）：\\n- `__init__`：构造函数\\n- `__str__`：用户友好的字符串表示（str()）\\n- `__repr__`：开发者友好的表示（repr()）\\n- `__len__`：长度（len()）\\n- `__add__`：加法（+）\\n\\n`__main__` 不是魔法方法，是模块名。"
+        },
+        {
+          "question": "`self` 参数必须是方法的第一个参数。",
+          "type": "boolean",
+          "options": [
+            "正确",
+            "错误"
+          ],
+          "correctAnswer": 0,
+          "explanation": "正确。在实例方法中，`self` 必须是第一个参数：\\n- `self` 代表实例本身\\n- Python 自动传递，调用时不需要手动传入\\n- 名字可以不叫 `self`，但这是约定俗成\\n\\n注意：类方法用 `cls`，静态方法不需要 `self`。"
+        },
+        {
+          "question": "以下代码的输出是什么？\\n```python\\nclass Counter:\\n    count = 0\\n    def __init__(self):\\n        Counter.count += 1\\n\\nc1 = Counter()\\nc2 = Counter()\\nprint(Counter.count)\\n```",
+          "type": "single",
+          "options": [
+            "0",
+            "1",
+            "2",
+            "报错"
+          ],
+          "correctAnswer": 2,
+          "explanation": "分析过程：\\n1. `count` 是类变量，初始值为 0\\n2. 创建 c1 时，`Counter.count` 变为 1\\n3. 创建 c2 时，`Counter.count` 变为 2\\n4. 输出：2\\n\\n类变量被所有实例共享，可以用来统计实例数量。"
+        }
+      ]
+    },
+    {
+      "pointId": "python_oop_002",
+      "pointTitle": "面向对象 - 继承和多态",
+      "quiz": [
+        {
+          "question": "`super()` 函数的作用是什么？",
+          "type": "single",
+          "options": [
+            "调用父类的方法",
+            "创建父类的实例",
+            "判断是否为子类",
+            "获取类的所有父类"
+          ],
+          "correctAnswer": 0,
+          "explanation": "`super()` 用于调用父类的方法：\\n```python\\nclass Child(Parent):\\n    def __init__(self, name):\\n        super().__init__(name)  # 调用父类构造函数\\n```\\n优点：\\n- 支持多重继承\\n- 代码更灵活（改父类名无需修改）\\n- 遵循 MRO（方法解析顺序）"
+        },
+        {
+          "question": "Python 支持多重继承吗？",
+          "type": "single",
+          "options": [
+            "不支持",
+            "支持，可以继承多个父类",
+            "只支持二重继承",
+            "只有特殊类才能多重继承"
+          ],
+          "correctAnswer": 1,
+          "explanation": "Python 支持多重继承：\\n```python\\nclass Child(Parent1, Parent2, Parent3):\\n    pass\\n```\\n\\n多重继承的特点：\\n- 可以继承多个父类\\n- 方法查找遵循 MRO（C3 线性化算法）\\n- 使用 `ClassName.mro()` 查看方法解析顺序\\n- 需谨慎使用，避免菱形继承问题"
+        },
+        {
+          "question": "以下哪些体现了多态性？",
+          "type": "multiple",
+          "options": [
+            "不同类的对象调用同名方法",
+            "子类重写父类方法",
+            "使用抽象基类",
+            "使用类变量"
+          ],
+          "correctAnswer": [
+            0,
+            1,
+            2
+          ],
+          "explanation": "Python 的多态性体现：\\n\\n1. **鸭子类型**：不同类的对象只要有相同方法即可互换\\n2. **方法重写**：子类可以重写父类方法\\n3. **抽象基类**：定义接口规范\\n\\n多态允许使用统一的接口处理不同类型的对象，提高代码灵活性。"
+        },
+        {
+          "question": "子类会自动继承父类的所有属性和方法。",
+          "type": "boolean",
+          "options": [
+            "正确",
+            "错误"
+          ],
+          "correctAnswer": 0,
+          "explanation": "正确。子类继承父类的所有内容：\\n- 公有方法和属性\\n- 保护方法（_method）\\n- 私有方法（__method，会名称改编）\\n\\n子类可以：\\n- 使用继承的方法\\n- 重写（override）方法\\n- 扩展新方法\\n- 通过 super() 调用父类方法"
+        },
+        {
+          "question": "以下代码的输出是什么？\\n```python\\nclass Animal:\\n    def speak(self):\\n        return 'Some sound'\\n\\nclass Dog(Animal):\\n    def speak(self):\\n        return 'Woof!'\\n\\nclass Cat(Animal):\\n    pass\\n\\ndog = Dog()\\ncat = Cat()\\nprint(dog.speak())\\nprint(cat.speak())\\n```",
+          "type": "single",
+          "options": [
+            "Woof!\\nWoof!",
+            "Woof!\\nSome sound",
+            "Some sound\\nSome sound",
+            "报错"
+          ],
+          "correctAnswer": 1,
+          "explanation": "分析继承和重写：\\n1. Dog 类重写了 speak() 方法，返回 'Woof!'\\n2. Cat 类没有重写，继承父类的 speak()，返回 'Some sound'\\n\\n输出：\\nWoof!\\nSome sound"
+        }
+      ]
+    },
+    {
+      "pointId": "python_oop_003",
+      "pointTitle": "面向对象 - 特殊方法",
+      "quiz": [
+        {
+          "question": "`__str__` 和 `__repr__` 的区别是什么？",
+          "type": "single",
+          "options": [
+            "__str__ 面向用户，__repr__ 面向开发者",
+            "__str__ 面向开发者，__repr__ 面向用户",
+            "两者完全相同",
+            "__str__ 返回字符串，__repr__ 返回对象"
+          ],
+          "correctAnswer": 0,
+          "explanation": "两个方法的定位：\\n\\n**`__str__`**：\\n- 用户友好的字符串表示\\n- str() 和 print() 调用\\n- 可读性优先\\n\\n**`__repr__`**：\\n- 开发者友好，明确的表示\\n- repr() 调用，交互式解释器显示\\n- 应尽可能返回可重建对象的表达式\\n\\n如果只定义一个，推荐 `__repr__`。"
+        },
+        {
+          "question": "`__add__` 方法用于实现什么操作？",
+          "type": "single",
+          "options": [
+            "+ 运算符",
+            "- 运算符",
+            "* 运算符",
+            "/ 运算符"
+          ],
+          "correctAnswer": 0,
+          "explanation": "运算符重载对应的魔法方法：\\n- `__add__(self, other)`：+ 运算符\\n- `__sub__(self, other)`：- 运算符\\n- `__mul__(self, other)`：* 运算符\\n- `__truediv__(self, other)`：/ 运算符\\n- `__eq__(self, other)`：== 运算符\\n\\n例如：`a + b` 等价于 `a.__add__(b)`"
+        },
+        {
+          "question": "以下哪些是 Python 的魔法方法？",
+          "type": "multiple",
+          "options": [
+            "__len__（长度）",
+            "__getitem__（索引访问）",
+            "__call__（可调用对象）",
+            "__del__（析构函数）"
+          ],
+          "correctAnswer": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "explanation": "常用魔法方法分类：\\n\\n**容器相关**：\\n- `__len__`：len(obj)\\n- `__getitem__`：obj[key]\\n- `__setitem__`：obj[key] = value\\n\\n**可调用**：\\n- `__call__`：obj()\\n\\n**生命周期**：\\n- `__init__`：初始化\\n- `__del__`：析构（对象销毁时）"
+        },
+        {
+          "question": "定义了 `__call__` 方法的对象可以像函数一样被调用。",
+          "type": "boolean",
+          "options": [
+            "正确",
+            "错误"
+          ],
+          "correctAnswer": 0,
+          "explanation": "正确。`__call__` 使对象可调用：\\n```python\\nclass Multiplier:\\n    def __init__(self, factor):\\n        self.factor = factor\\n    \\n    def __call__(self, x):\\n        return x * self.factor\\n\\ndouble = Multiplier(2)\\nprint(double(5))  # 10，像函数一样调用\\n```\\n这在创建函数对象、装饰器类时很有用。"
+        },
+        {
+          "question": "以下代码的输出是什么？\\n```python\\nclass Point:\\n    def __init__(self, x, y):\\n        self.x = x\\n        self.y = y\\n    \\n    def __add__(self, other):\\n        return Point(self.x + other.x, self.y + other.y)\\n    \\n    def __str__(self):\\n        return f'({self.x}, {self.y})'\\n\\np1 = Point(1, 2)\\np2 = Point(3, 4)\\np3 = p1 + p2\\nprint(p3)\\n```",
+          "type": "single",
+          "options": [
+            "(1, 2)",
+            "(3, 4)",
+            "(4, 6)",
+            "报错"
+          ],
+          "correctAnswer": 2,
+          "explanation": "分析运算符重载：\\n1. `p1 + p2` 调用 `p1.__add__(p2)`\\n2. 创建新 Point(1+3, 2+4) = Point(4, 6)\\n3. print() 调用 `__str__` 方法\\n4. 输出：(4, 6)"
+        }
+      ]
+    },
+    {
+      "pointId": "python_oop_004",
+      "pointTitle": "面向对象 - 属性装饰器",
+      "quiz": [
+        {
+          "question": "`@property` 装饰器的作用是什么？",
+          "type": "single",
+          "options": [
+            "将方法转换为属性，可以像访问属性一样调用",
+            "将属性转换为方法",
+            "定义类属性",
+            "定义静态属性"
+          ],
+          "correctAnswer": 0,
+          "explanation": "`@property` 将方法转换为只读属性：\\n```python\\nclass Circle:\\n    def __init__(self, radius):\\n        self._radius = radius\\n    \\n    @property\\n    def area(self):\\n        return 3.14 * self._radius ** 2\\n\\nc = Circle(5)\\nprint(c.area)  # 像属性一样访问，无需括号\\n```\\n优点：封装计算逻辑，对外暴露简洁接口。"
+        },
+        {
+          "question": "如何为 `@property` 定义的属性添加 setter？",
+          "type": "single",
+          "options": [
+            "使用 @property.setter",
+            "使用 @属性名.setter",
+            "使用 @setter",
+            "使用 @set_property"
+          ],
+          "correctAnswer": 1,
+          "explanation": "定义 getter 和 setter：\\n```python\\nclass Temperature:\\n    def __init__(self):\\n        self._celsius = 0\\n    \\n    @property\\n    def celsius(self):\\n        return self._celsius\\n    \\n    @celsius.setter\\n    def celsius(self, value):\\n        if value < -273:\\n            raise ValueError('太冷了！')\\n        self._celsius = value\\n```\\n使用：`temp.celsius = 25`"
+        },
+        {
+          "question": "以下哪些是使用 `@property` 的好处？",
+          "type": "multiple",
+          "options": [
+            "数据验证和保护",
+            "计算属性（动态计算值）",
+            "保持接口一致性",
+            "提高代码执行速度"
+          ],
+          "correctAnswer": [
+            0,
+            1,
+            2
+          ],
+          "explanation": "`@property` 的优势：\\n\\n1. **数据验证**：setter 中检查值的有效性\\n2. **计算属性**：动态计算而非存储\\n3. **接口一致**：属性访问语法统一\\n4. **向后兼容**：可将属性改为方法而不影响调用代码\\n\\n注意：不会提高执行速度，反而略慢。"
+        },
+        {
+          "question": "只定义 `@property` 而不定义 setter 的属性是只读的。",
+          "type": "boolean",
+          "options": [
+            "正确",
+            "错误"
+          ],
+          "correctAnswer": 0,
+          "explanation": "正确。只有 getter 的属性是只读的：\\n```python\\nclass Person:\\n    @property\\n    def age(self):\\n        return self._age\\n\\np = Person()\\nprint(p.age)  # ✓ 可以读取\\np.age = 25    # ✗ AttributeError: can't set attribute\\n```\\n这是实现封装和数据保护的常用方法。"
+        },
+        {
+          "question": "以下代码会发生什么？\\n```python\\nclass Rectangle:\\n    def __init__(self, width, height):\\n        self.width = width\\n        self.height = height\\n    \\n    @property\\n    def area(self):\\n        return self.width * self.height\\n\\nrect = Rectangle(5, 3)\\nrect.area = 20\\n```",
+          "type": "single",
+          "options": [
+            "成功设置 area 为 20",
+            "area 变为 15",
+            "AttributeError",
+            "TypeError"
+          ],
+          "correctAnswer": 2,
+          "explanation": "报错 `AttributeError: can't set attribute`：\\n- `area` 只定义了 getter（@property）\\n- 没有定义 setter\\n- 尝试赋值会报错\\n\\n要允许赋值，需要添加 `@area.setter`。"
+        }
+      ]
+    },
+    {
+      "pointId": "python_oop_005",
+      "pointTitle": "面向对象 - 类方法和静态方法",
+      "quiz": [
+        {
+          "question": "`@classmethod` 和 `@staticmethod` 的主要区别是什么？",
+          "type": "single",
+          "options": [
+            "类方法接收 cls 参数，静态方法不接收特殊参数",
+            "类方法不能访问类属性，静态方法可以",
+            "类方法是静态的，静态方法不是",
+            "两者完全相同"
+          ],
+          "correctAnswer": 0,
+          "explanation": "三种方法对比：\\n\\n**实例方法**：接收 `self`，访问实例\\n**类方法**（@classmethod）：接收 `cls`，访问类\\n**静态方法**（@staticmethod）：无特殊参数，工具函数\\n\\n```python\\nclass MyClass:\\n    @classmethod\\n    def class_method(cls):\\n        pass\\n    \\n    @staticmethod\\n    def static_method():\\n        pass\\n```"
+        },
+        {
+          "question": "类方法的典型用途是什么？",
+          "type": "single",
+          "options": [
+            "工厂方法（创建对象的替代构造函数）",
+            "访问实例属性",
+            "提高执行速度",
+            "私有方法"
+          ],
+          "correctAnswer": 0,
+          "explanation": "类方法的常见用途：\\n\\n1. **工厂方法**：\\n```python\\nclass Date:\\n    @classmethod\\n    def from_string(cls, date_str):\\n        y, m, d = date_str.split('-')\\n        return cls(int(y), int(m), int(d))\\n\\ndate = Date.from_string('2024-01-15')\\n```\\n\\n2. **操作类属性**\\n3. **继承友好**（返回 cls 而非硬编码类名）"
+        },
+        {
+          "question": "以下哪些情况适合使用静态方法？",
+          "type": "multiple",
+          "options": [
+            "不需要访问类或实例的工具函数",
+            "逻辑上属于类，但不依赖类状态",
+            "验证函数（如日期验证）",
+            "需要修改类属性"
+          ],
+          "correctAnswer": [
+            0,
+            1,
+            2
+          ],
+          "explanation": "静态方法适用场景：\\n\\n1. **工具函数**：与类相关但不需要访问类/实例\\n2. **验证函数**：如 `is_valid_email()`\\n3. **辅助函数**：纯函数，无副作用\\n\\n```python\\nclass MathUtils:\\n    @staticmethod\\n    def is_prime(n):\\n        # 不需要 self 或 cls\\n        return all(n % i != 0 for i in range(2, int(n**0.5)+1))\\n```"
+        },
+        {
+          "question": "类方法可以通过类名和实例两种方式调用。",
+          "type": "boolean",
+          "options": [
+            "正确",
+            "错误"
+          ],
+          "correctAnswer": 0,
+          "explanation": "正确。类方法和静态方法都可以：\\n\\n```python\\nclass MyClass:\\n    @classmethod\\n    def method(cls):\\n        pass\\n\\n# 通过类名调用（推荐）\\nMyClass.method()\\n\\n# 通过实例调用（也可以）\\nobj = MyClass()\\nobj.method()\\n```\\n\\n但推荐用类名调用，更清晰地表达意图。"
+        },
+        {
+          "question": "以下代码的输出是什么？\\n```python\\nclass Date:\\n    def __init__(self, year):\\n        self.year = year\\n    \\n    @classmethod\\n    def from_year(cls, year):\\n        return cls(year)\\n    \\n    @staticmethod\\n    def is_leap_year(year):\\n        return year % 4 == 0\\n\\ndate = Date.from_year(2024)\\nprint(date.year)\\nprint(Date.is_leap_year(2024))\\n```",
+          "type": "single",
+          "options": [
+            "2024\\nTrue",
+            "2024\\nFalse",
+            "Date object\\nTrue",
+            "报错"
+          ],
+          "correctAnswer": 0,
+          "explanation": "分析过程：\\n1. `Date.from_year(2024)` 类方法创建实例\\n2. `cls(year)` 等价于 `Date(2024)`\\n3. `date.year` 输出 2024\\n4. `is_leap_year(2024)` 返回 True（2024 % 4 == 0）\\n\\n输出：\\n2024\\nTrue"
+        }
+      ]
+    },
+    {
+      "pointId": "python_oop_006",
+      "pointTitle": "面向对象 - 抽象基类",
+      "quiz": [
+        {
+          "question": "抽象基类（ABC）的主要作用是什么？",
+          "type": "single",
+          "options": [
+            "定义接口规范，强制子类实现特定方法",
+            "提高代码执行速度",
+            "实现多重继承",
+            "保护类不被实例化"
+          ],
+          "correctAnswer": 0,
+          "explanation": "抽象基类的作用：\\n\\n1. **定义接口**：规定子类必须实现的方法\\n2. **类型检查**：使用 isinstance() 检查\\n3. **文档作用**：明确类的契约\\n\\n```python\\nfrom abc import ABC, abstractmethod\\n\\nclass Shape(ABC):\\n    @abstractmethod\\n    def area(self):\\n        pass\\n```\\n\\n子类必须实现所有抽象方法才能实例化。"
+        },
+        {
+          "question": "如何定义抽象方法？",
+          "type": "single",
+          "options": [
+            "使用 @abstract 装饰器",
+            "使用 @abstractmethod 装饰器",
+            "使用 abstract 关键字",
+            "使用 pass 语句"
+          ],
+          "correctAnswer": 1,
+          "explanation": "定义抽象方法需要：\\n\\n1. 从 abc 模块导入\\n2. 类继承 ABC\\n3. 使用 @abstractmethod 装饰器\\n\\n```python\\nfrom abc import ABC, abstractmethod\\n\\nclass Animal(ABC):\\n    @abstractmethod\\n    def make_sound(self):\\n        pass  # 或 raise NotImplementedError\\n```"
+        },
+        {
+          "question": "以下哪些关于抽象基类的说法是正确的？",
+          "type": "multiple",
+          "options": [
+            "抽象基类不能被实例化",
+            "子类必须实现所有抽象方法才能实例化",
+            "抽象类可以包含具体方法",
+            "抽象方法不能有方法体"
+          ],
+          "correctAnswer": [
+            0,
+            1,
+            2
+          ],
+          "explanation": "抽象基类特性：\\n\\n1. ✓ **不能实例化**：`Shape()` 会报错\\n2. ✓ **强制实现**：子类必须实现抽象方法\\n3. ✓ **混合内容**：可以有抽象方法和具体方法\\n4. ✗ **可以有方法体**：抽象方法可以有默认实现\\n\\n```python\\n@abstractmethod\\ndef method(self):\\n    # 可以有默认实现\\n    return 'default'\\n```"
+        },
+        {
+          "question": "子类可以继承抽象基类的具体方法。",
+          "type": "boolean",
+          "options": [
+            "正确",
+            "错误"
+          ],
+          "correctAnswer": 0,
+          "explanation": "正确。抽象基类可以包含：\\n\\n1. **抽象方法**：子类必须实现\\n2. **具体方法**：子类可以直接继承使用\\n\\n```python\\nclass Shape(ABC):\\n    @abstractmethod\\n    def area(self):  # 抽象方法\\n        pass\\n    \\n    def describe(self):  # 具体方法\\n        return f'This is a {self.__class__.__name__}'\\n\\nclass Circle(Shape):\\n    def area(self):  # 必须实现\\n        return 3.14 * self.r ** 2\\n    # describe() 自动继承\\n```"
+        },
+        {
+          "question": "以下代码会发生什么？\\n```python\\nfrom abc import ABC, abstractmethod\\n\\nclass Animal(ABC):\\n    @abstractmethod\\n    def speak(self):\\n        pass\\n\\nclass Dog(Animal):\\n    pass\\n\\ndog = Dog()\\n```",
+          "type": "single",
+          "options": [
+            "成功创建 dog 对象",
+            "TypeError: Can't instantiate abstract class",
+            "AttributeError",
+            "NameError"
+          ],
+          "correctAnswer": 1,
+          "explanation": "报错 `TypeError: Can't instantiate abstract class Dog with abstract method speak`：\\n\\n- Dog 继承了 Animal\\n- 但没有实现抽象方法 speak()\\n- Python 禁止实例化有未实现抽象方法的类\\n\\n解决：在 Dog 中实现 speak() 方法。"
+        }
+      ]
+    },
+    {
+      "pointId": "python_file_001",
+      "pointTitle": "文件操作 - 基础读写",
+      "quiz": [
+        {
+          "question": "`with open()` 语句的主要优势是什么？",
+          "type": "single",
+          "options": [
+            "自动关闭文件，即使发生异常",
+            "读取速度更快",
+            "可以同时打开多个文件",
+            "支持更多的文件格式"
+          ],
+          "correctAnswer": 0,
+          "explanation": "`with` 语句是上下文管理器，确保文件在使用后自动关闭：\\n```python\\nwith open('file.txt', 'r') as f:\\n    content = f.read()\\n# 退出 with 块时自动关闭文件\\n```\\n即使发生异常也会正确关闭文件，避免资源泄漏。"
+        },
+        {
+          "question": "以下哪个文件打开模式会清空原文件内容？",
+          "type": "single",
+          "options": [
+            "'r' (只读)",
+            "'a' (追加)",
+            "'w' (写入)",
+            "'x' (独占创建)"
+          ],
+          "correctAnswer": 2,
+          "explanation": "文件打开模式：\\n- `'r'`：只读，文件必须存在\\n- `'w'`：写入，会清空原文件内容\\n- `'a'`：追加，不清空，在末尾添加\\n- `'x'`：独占创建，文件存在则报错\\n- `'r+'`：读写，不清空\\n- `'w+'`：读写，清空"
+        },
+        {
+          "question": "以下哪些方法可以读取文件内容？",
+          "type": "multiple",
+          "options": [
+            "read() - 读取全部内容",
+            "readline() - 读取一行",
+            "readlines() - 读取所有行为列表",
+            "readall() - 读取全部"
+          ],
+          "correctAnswer": [
+            0,
+            1,
+            2
+          ],
+          "explanation": "文件读取方法：\\n- `read()`：读取全部内容为字符串\\n- `readline()`：读取单行（包含换行符）\\n- `readlines()`：读取所有行为列表\\n- `for line in file`：逐行迭代（推荐）\\n\\n注意：没有 `readall()` 方法。"
+        },
+        {
+          "question": "打开文件时应该指定 `encoding='utf-8'` 参数以避免编码问题。",
+          "type": "boolean",
+          "options": [
+            "正确",
+            "错误"
+          ],
+          "correctAnswer": 0,
+          "explanation": "正确。指定编码避免平台差异：\\n```python\\nwith open('file.txt', 'r', encoding='utf-8') as f:\\n    content = f.read()\\n```\\n- Windows 默认 GBK/CP936\\n- Linux/Mac 默认 UTF-8\\n明确指定 `encoding='utf-8'` 确保跨平台兼容。"
+        },
+        {
+          "question": "以下代码的结果是什么？\\n```python\\nwith open('test.txt', 'w') as f:\\n    f.write('Hello')\\n    f.write('World')\\nwith open('test.txt', 'r') as f:\\n    print(f.read())\\n```",
+          "type": "single",
+          "options": [
+            "Hello World",
+            "HelloWorld",
+            "Hello\\nWorld",
+            "报错"
+          ],
+          "correctAnswer": 1,
+          "explanation": "`write()` 不会自动添加换行符，多次写入会直接拼接：\\n- 第一次：'Hello'\\n- 第二次：'World'\\n- 结果：'HelloWorld'\\n\\n如需换行，应写：`f.write('Hello\\\\n')`"
+        }
+      ]
+    },
+    {
+      "pointId": "python_file_002",
+      "pointTitle": "文件操作 - JSON处理",
+      "quiz": [
+        {
+          "question": "`json.dump()` 和 `json.dumps()` 的区别是什么？",
+          "type": "single",
+          "options": [
+            "dump() 写入文件，dumps() 返回字符串",
+            "dump() 返回字符串，dumps() 写入文件",
+            "两者完全相同",
+            "dump() 更快"
+          ],
+          "correctAnswer": 0,
+          "explanation": "JSON 序列化方法：\\n\\n**json.dump(obj, file)**：\\n- 将对象序列化并写入文件\\n\\n**json.dumps(obj)**：\\n- 将对象序列化为字符串\\n\\n类似地：\\n- `json.load(file)` 从文件加载\\n- `json.loads(string)` 从字符串加载"
+        },
+        {
+          "question": "`ensure_ascii=False` 参数的作用是？",
+          "type": "single",
+          "options": [
+            "允许输出中文等非ASCII字符",
+            "禁止使用ASCII字符",
+            "确保只使用ASCII字符",
+            "提高编码速度"
+          ],
+          "correctAnswer": 0,
+          "explanation": "`ensure_ascii=False` 保留非ASCII字符：\\n```python\\ndata = {'name': '张三'}\\n\\n# 默认 ensure_ascii=True\\njson.dumps(data)  # '{\"name\": \"\\\\u5f20\\\\u4e09\"}'\\n\\n# ensure_ascii=False\\njson.dumps(data, ensure_ascii=False)  # '{\"name\": \"张三\"}'\\n```\\n处理中文时建议设为 False，提高可读性。"
+        },
+        {
+          "question": "以下哪些Python数据类型可以直接JSON序列化？",
+          "type": "multiple",
+          "options": [
+            "dict, list",
+            "str, int, float",
+            "bool, None",
+            "datetime, set"
+          ],
+          "correctAnswer": [
+            0,
+            1,
+            2
+          ],
+          "explanation": "JSON 支持的Python类型：\\n✓ dict, list, tuple（转为list）\\n✓ str, int, float\\n✓ bool, None\\n\\n✗ datetime, set, bytes等需要自定义编码器\\n\\n例如：\\n```python\\nclass DateEncoder(json.JSONEncoder):\\n    def default(self, obj):\\n        if isinstance(obj, datetime):\\n            return obj.isoformat()\\n        return super().default(obj)\\n```"
+        },
+        {
+          "question": "JSON 格式要求键必须是字符串。",
+          "type": "boolean",
+          "options": [
+            "正确",
+            "错误"
+          ],
+          "correctAnswer": 0,
+          "explanation": "正确。JSON 标准规定键必须是字符串：\\n```python\\n# Python字典可以用整数作键\\ndata = {1: 'a', 2: 'b'}\\n\\n# JSON序列化后，键被转为字符串\\njson.dumps(data)  # '{\"1\": \"a\", \"2\": \"b\"}'\\n\\n# 反序列化后键是字符串\\njson.loads('{\"1\": \"a\"}')  # {'1': 'a'}\\n```"
+        },
+        {
+          "question": "以下代码的输出是什么？\\n```python\\nimport json\\ndata = {'a': 1, 'b': [2, 3], 'c': None}\\njson_str = json.dumps(data)\\nprint(type(json_str))\\n```",
+          "type": "single",
+          "options": [
+            "<class 'dict'>",
+            "<class 'str'>",
+            "<class 'json'>",
+            "<class 'bytes'>"
+          ],
+          "correctAnswer": 1,
+          "explanation": "`json.dumps()` 返回字符串类型：\\n- dumps() → str（JSON格式的字符串）\\n- dump() → None（直接写入文件）\\n- loads() → dict/list等（反序列化）\\n- load() → dict/list等（从文件读取并反序列化）"
+        }
+      ]
+    },
+    {
+      "pointId": "python_file_003",
+      "pointTitle": "异常处理 - 基础语法",
+      "quiz": [
+        {
+          "question": "`try-except-else-finally` 结构中，`else` 块什么时候执行？",
+          "type": "single",
+          "options": [
+            "try块没有异常时执行",
+            "发生异常时执行",
+            "finally块之前总是执行",
+            "except块之后总是执行"
+          ],
+          "correctAnswer": 0,
+          "explanation": "异常处理执行顺序：\\n```python\\ntry:\\n    # 可能出错的代码\\nexcept Exception:\\n    # 发生异常时执行\\nelse:\\n    # 没有异常时执行\\nfinally:\\n    # 总是执行（无论是否异常）\\n```\\n`else` 块只在 try 成功完成（无异常）时执行。"
+        },
+        {
+          "question": "以下哪个异常用于表示除零错误？",
+          "type": "single",
+          "options": [
+            "ValueError",
+            "ZeroDivisionError",
+            "ArithmeticError",
+            "DivisionError"
+          ],
+          "correctAnswer": 1,
+          "explanation": "常见异常类型：\\n- `ZeroDivisionError`：除零错误\\n- `ValueError`：值错误（如 int('abc')）\\n- `TypeError`：类型错误\\n- `KeyError`：字典键不存在\\n- `IndexError`：索引超出范围\\n- `FileNotFoundError`：文件不存在\\n- `AttributeError`：属性不存在"
+        },
+        {
+          "question": "以下哪些是捕获异常的最佳实践？",
+          "type": "multiple",
+          "options": [
+            "捕获具体的异常类型而非 Exception",
+            "不要使用空的 except",
+            "使用 finally 清理资源",
+            "可以捕获并忽略所有异常"
+          ],
+          "correctAnswer": [
+            0,
+            1,
+            2
+          ],
+          "explanation": "异常处理最佳实践：\\n\\n✓ 捕获具体异常：`except ValueError`\\n✓ 避免空except：`except: pass` 会隐藏错误\\n✓ finally清理：关闭文件、释放锁等\\n✓ 记录异常信息：使用 logging\\n\\n✗ 不要忽略异常：至少应记录日志\\n✗ 不要过度使用：异常应该是例外情况"
+        },
+        {
+          "question": "`finally` 块会在 return 语句之前执行。",
+          "type": "boolean",
+          "options": [
+            "正确",
+            "错误"
+          ],
+          "correctAnswer": 0,
+          "explanation": "正确。`finally` 总是在函数返回前执行：\\n```python\\ndef test():\\n    try:\\n        return 'try'\\n    finally:\\n        print('finally')\\n        # finally 先执行，然后才 return\\n\\nresult = test()\\n# 输出：finally\\n# result = 'try'\\n```\\n即使 try 或 except 中有 return，finally 也会执行。"
+        },
+        {
+          "question": "以下代码的输出是什么？\\n```python\\ntry:\\n    result = 10 / 0\\nexcept ZeroDivisionError:\\n    print('A')\\nexcept Exception:\\n    print('B')\\nelse:\\n    print('C')\\nfinally:\\n    print('D')\\n```",
+          "type": "single",
+          "options": [
+            "A D",
+            "B D",
+            "A C D",
+            "A B D"
+          ],
+          "correctAnswer": 0,
+          "explanation": "执行流程分析：\\n1. try 块除零，抛出 ZeroDivisionError\\n2. 第一个 except 捕获，打印 'A'\\n3. else 不执行（有异常）\\n4. finally 总是执行，打印 'D'\\n\\n输出：A D"
+        }
+      ]
+    },
+    {
+      "pointId": "python_file_004",
+      "pointTitle": "异常处理 - 自定义异常",
+      "quiz": [
+        {
+          "question": "自定义异常类应该继承自哪个类？",
+          "type": "single",
+          "options": [
+            "BaseException",
+            "Exception",
+            "Error",
+            "CustomError"
+          ],
+          "correctAnswer": 1,
+          "explanation": "异常继承层次：\\n```\\nBaseException\\n├── SystemExit\\n├── KeyboardInterrupt\\n└── Exception  ← 用户自定义异常继承这里\\n    ├── ValueError\\n    ├── TypeError\\n    └── ...\\n```\\n\\n自定义异常应继承 `Exception`：\\n```python\\nclass MyError(Exception):\\n    pass\\n```\\n不要继承 BaseException（系统级异常）。"
+        },
+        {
+          "question": "`raise` 语句的作用是什么？",
+          "type": "single",
+          "options": [
+            "抛出（引发）异常",
+            "捕获异常",
+            "忽略异常",
+            "记录异常"
+          ],
+          "correctAnswer": 0,
+          "explanation": "`raise` 用于主动抛出异常：\\n```python\\n# 抛出内置异常\\nif age < 0:\\n    raise ValueError('年龄不能为负')\\n\\n# 抛出自定义异常\\nif score > 100:\\n    raise CustomError('分数超出范围')\\n\\n# 在except中重新抛出\\ntry:\\n    # some code\\nexcept Exception as e:\\n    logging.error(e)\\n    raise  # 重新抛出当前异常\\n```"
+        },
+        {
+          "question": "以下哪些是定义异常类的好习惯？",
+          "type": "multiple",
+          "options": [
+            "类名以 Error 或 Exception 结尾",
+            "提供清晰的错误消息",
+            "创建异常层次结构",
+            "添加额外的属性和方法"
+          ],
+          "correctAnswer": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "explanation": "自定义异常最佳实践：\\n\\n```python\\nclass AppError(Exception):\\n    \"\"\"应用基础异常\"\"\"\\n    pass\\n\\nclass ValidationError(AppError):\\n    \"\"\"验证错误\"\"\"\\n    def __init__(self, field, message):\\n        self.field = field\\n        super().__init__(f'{field}: {message}')\\n\\nclass DatabaseError(AppError):\\n    \"\"\"数据库错误\"\"\"\\n    pass\\n```\\n\\n好处：分类捕获、清晰的错误信息、易于维护。"
+        },
+        {
+          "question": "异常链（exception chaining）使用 `raise ... from ...` 语法。",
+          "type": "boolean",
+          "options": [
+            "正确",
+            "错误"
+          ],
+          "correctAnswer": 0,
+          "explanation": "正确。异常链保留原始异常信息：\\n```python\\ntry:\\n    int('abc')\\nexcept ValueError as e:\\n    # 保留原始异常\\n    raise TypeError('转换失败') from e\\n```\\n\\n好处：\\n- 保留完整的错误追踪\\n- 显示异常因果关系\\n- 便于调试\\n\\n输出会显示：`TypeError... from ValueError...`"
+        },
+        {
+          "question": "以下代码的输出是什么？\\n```python\\nclass MyError(Exception):\\n    def __init__(self, code, message):\\n        self.code = code\\n        super().__init__(message)\\n\\ntry:\\n    raise MyError(404, 'Not Found')\\nexcept MyError as e:\\n    print(e.code)\\n```",
+          "type": "single",
+          "options": [
+            "404",
+            "Not Found",
+            "MyError",
+            "报错"
+          ],
+          "correctAnswer": 0,
+          "explanation": "自定义异常可以添加额外属性：\\n1. 创建 MyError 实例，code=404, message='Not Found'\\n2. 抛出异常\\n3. 捕获异常，访问 code 属性\\n4. 输出：404\\n\\n这种方式可以携带更多错误上下文信息。"
+        }
+      ]
+    },
+    {
+      "pointId": "python_file_005",
+      "pointTitle": "CSV文件处理",
+      "quiz": [
+        {
+          "question": "为什么在写入CSV时需要 `newline=''` 参数？",
+          "type": "single",
+          "options": [
+            "避免在Windows上产生额外的空行",
+            "提高写入速度",
+            "支持中文",
+            "兼容旧版本Python"
+          ],
+          "correctAnswer": 0,
+          "explanation": "CSV文件的换行处理：\\n```python\\n# Windows需要 newline='' 避免双重换行\\nwith open('data.csv', 'w', newline='', encoding='utf-8') as f:\\n    writer = csv.writer(f)\\n    writer.writerow(['A', 'B'])\\n```\\n\\n原因：\\n- CSV模块自己处理换行\\n- Windows文本模式会将\\\\n转为\\\\r\\\\n\\n- 导致双重换行\\n- `newline=''` 禁用Python的换行转换"
+        },
+        {
+          "question": "`DictWriter` 相比 `writer` 的优势是什么？",
+          "type": "single",
+          "options": [
+            "可以使用字典，字段名更清晰",
+            "写入速度更快",
+            "文件更小",
+            "支持更多数据类型"
+          ],
+          "correctAnswer": 0,
+          "explanation": "`DictWriter` vs `writer`：\\n\\n**csv.writer**（列表）：\\n```python\\nwriter.writerow(['Alice', 25, 'Beijing'])\\n```\\n\\n**csv.DictWriter**（字典，推荐）：\\n```python\\nwriter = csv.DictWriter(f, fieldnames=['name', 'age', 'city'])\\nwriter.writeheader()\\nwriter.writerow({'name': 'Alice', 'age': 25, 'city': 'Beijing'})\\n```\\n\\n优势：字段名明确、顺序灵活、代码可读性高。"
+        },
+        {
+          "question": "以下哪些方法可以读取CSV文件？",
+          "type": "multiple",
+          "options": [
+            "csv.reader() - 返回列表",
+            "csv.DictReader() - 返回字典",
+            "pandas.read_csv() - 返回DataFrame",
+            "json.load() - 读取CSV"
+          ],
+          "correctAnswer": [
+            0,
+            1,
+            2
+          ],
+          "explanation": "CSV读取方法：\\n\\n1. **csv.reader()**：\\n```python\\nfor row in csv.reader(f):\\n    print(row)  # ['Alice', '25', 'Beijing']\\n```\\n\\n2. **csv.DictReader()**（推荐）：\\n```python\\nfor row in csv.DictReader(f):\\n    print(row['name'])  # 'Alice'\\n```\\n\\n3. **pandas.read_csv()**（数据分析）：\\n```python\\ndf = pd.read_csv('data.csv')\\n```\\n\\njson.load() 用于JSON，不能读取CSV。"
+        },
+        {
+          "question": "CSV文件默认的分隔符是逗号。",
+          "type": "boolean",
+          "options": [
+            "正确",
+            "错误"
+          ],
+          "correctAnswer": 0,
+          "explanation": "正确。CSV（Comma-Separated Values）默认用逗号：\\n```python\\n# 默认逗号分隔\\nwriter = csv.writer(f)\\n\\n# 自定义分隔符（如制表符）\\nwriter = csv.writer(f, delimiter='\\\\t')\\n\\n# 自定义分隔符（如分号，欧洲常用）\\nwriter = csv.writer(f, delimiter=';')\\n```\\n\\n注意：包含逗号的字段会自动加引号。"
+        },
+        {
+          "question": "以下代码会发生什么？\\n```python\\nimport csv\\nwith open('data.csv', 'w', newline='') as f:\\n    writer = csv.DictWriter(f, fieldnames=['a', 'b'])\\n    writer.writerow({'a': 1, 'b': 2, 'c': 3})\\n```",
+          "type": "single",
+          "options": [
+            "成功写入，c列被忽略",
+            "报错：ValueError",
+            "写入所有三列",
+            "只写入a列"
+          ],
+          "correctAnswer": 1,
+          "explanation": "DictWriter 严格检查字段：\\n- `fieldnames` 定义了 ['a', 'b']\\n- 但字典包含额外的键 'c'\\n- 默认会抛出 `ValueError: dict contains fields not in fieldnames`\\n\\n解决方法：\\n```python\\nwriter = csv.DictWriter(f, fieldnames=['a', 'b'], \\n                       extrasaction='ignore')  # 忽略额外字段\\n```"
+        }
+      ]
+    },
+    {
+      "pointId": "python_file_006",
+      "pointTitle": "上下文管理器",
+      "quiz": [
+        {
+          "question": "上下文管理器需要实现哪两个魔法方法？",
+          "type": "single",
+          "options": [
+            "__enter__ 和 __exit__",
+            "__init__ 和 __del__",
+            "__start__ 和 __end__",
+            "__begin__ 和 __finish__"
+          ],
+          "correctAnswer": 0,
+          "explanation": "上下文管理器协议：\\n```python\\nclass MyContext:\\n    def __enter__(self):\\n        # 进入上下文时执行\\n        return self  # 返回值赋给 as 后的变量\\n    \\n    def __exit__(self, exc_type, exc_val, exc_tb):\\n        # 退出上下文时执行\\n        # 参数是异常信息（如果有）\\n        return False  # False表示不抑制异常\\n\\nwith MyContext() as ctx:\\n    # 使用上下文\\n    pass\\n```"
+        },
+        {
+          "question": "`@contextmanager` 装饰器的作用是？",
+          "type": "single",
+          "options": [
+            "将生成器函数转为上下文管理器",
+            "创建新的上下文",
+            "优化上下文管理器性能",
+            "捕获上下文中的异常"
+          ],
+          "correctAnswer": 0,
+          "explanation": "`@contextmanager` 简化上下文管理器创建：\\n```python\\nfrom contextlib import contextmanager\\n\\n@contextmanager\\ndef my_context():\\n    # __enter__ 部分\\n    print('Enter')\\n    resource = setup_resource()\\n    \\n    try:\\n        yield resource  # 返回给 with 语句\\n    finally:\\n        # __exit__ 部分\\n        print('Exit')\\n        cleanup_resource(resource)\\n\\nwith my_context() as res:\\n    use(res)\\n```"
+        },
+        {
+          "question": "以下哪些是上下文管理器的典型应用场景？",
+          "type": "multiple",
+          "options": [
+            "文件操作（自动关闭）",
+            "数据库连接（自动提交/回滚）",
+            "锁管理（自动释放）",
+            "数学计算（加速运算）"
+          ],
+          "correctAnswer": [
+            0,
+            1,
+            2
+          ],
+          "explanation": "上下文管理器的常见用途：\\n\\n1. **资源管理**：文件、网络连接、数据库\\n2. **锁管理**：threading.Lock\\n3. **事务管理**：数据库事务\\n4. **临时状态**：临时改变配置\\n5. **计时统计**：性能监控\\n\\n核心思想：自动化资源的获取和释放，确保清理代码总是执行。"
+        },
+        {
+          "question": "`__exit__` 方法返回 `True` 会抑制异常。",
+          "type": "boolean",
+          "options": [
+            "正确",
+            "错误"
+          ],
+          "correctAnswer": 0,
+          "explanation": "正确。`__exit__` 的返回值控制异常传播：\\n```python\\nclass SuppressException:\\n    def __enter__(self):\\n        return self\\n    \\n    def __exit__(self, exc_type, exc_val, exc_tb):\\n        if exc_type is ValueError:\\n            print(f'抑制异常: {exc_val}')\\n            return True  # 抑制ValueError\\n        return False  # 其他异常继续传播\\n\\nwith SuppressException():\\n    raise ValueError('error')  # 不会抛出\\n```"
+        },
+        {
+          "question": "以下代码的输出顺序是？\\n```python\\n@contextmanager\\ndef test():\\n    print('1')\\n    yield\\n    print('2')\\n\\nwith test():\\n    print('3')\\nprint('4')\\n```",
+          "type": "single",
+          "options": [
+            "1 3 2 4",
+            "1 2 3 4",
+            "3 1 2 4",
+            "1 3 4 2"
+          ],
+          "correctAnswer": 0,
+          "explanation": "执行流程：\\n1. 进入 with，执行 __enter__ 部分，打印 '1'\\n2. yield 暂停，执行 with 块内代码，打印 '3'\\n3. 退出 with，继续 yield 后代码，打印 '2'\\n4. with 语句结束，打印 '4'\\n\\n输出：1 3 2 4"
+        }
+      ]
+    },
+    {
+      "pointId": "python_lib_001",
+      "pointTitle": "常用库 - Pandas数据处理",
+      "quiz": [
+        {
+          "question": "Pandas 的两个主要数据结构是什么？",
+          "type": "single",
+          "options": [
+            "Series 和 DataFrame",
+            "List 和 Dict",
+            "Array 和 Matrix",
+            "Table 和 Column"
+          ],
+          "correctAnswer": 0,
+          "explanation": "Pandas 核心数据结构：\\n\\n**Series**：一维数据，带索引的数组\\n```python\\ns = pd.Series([1, 2, 3], index=['a', 'b', 'c'])\\n```\\n\\n**DataFrame**：二维表格，类似Excel\\n```python\\ndf = pd.DataFrame({\\n    'name': ['Alice', 'Bob'],\\n    'age': [25, 30]\\n})\\n```"
+        },
+        {
+          "question": "`loc` 和 `iloc` 的区别是什么？",
+          "type": "single",
+          "options": [
+            "loc 基于标签，iloc 基于位置",
+            "loc 基于位置，iloc 基于标签",
+            "两者完全相同",
+            "loc 更快"
+          ],
+          "correctAnswer": 0,
+          "explanation": "DataFrame 索引方式：\\n\\n**loc**（基于标签）：\\n```python\\ndf.loc[0]  # 索引标签为 0 的行\\ndf.loc[:, 'name']  # 选择 'name' 列\\n```\\n\\n**iloc**（基于位置，整数）：\\n```python\\ndf.iloc[0]  # 第一行（位置0）\\ndf.iloc[:, 0]  # 第一列（位置0）\\n```"
+        },
+        {
+          "question": "以下哪些方法可以处理缺失值？",
+          "type": "multiple",
+          "options": [
+            "dropna() - 删除缺失值",
+            "fillna() - 填充缺失值",
+            "isna() - 检测缺失值",
+            "removena() - 移除缺失值"
+          ],
+          "correctAnswer": [
+            0,
+            1,
+            2
+          ],
+          "explanation": "Pandas 缺失值处理：\\n```python\\n# 检测\\ndf.isna()  # 返回布尔DataFrame\\ndf.notna()  # 非缺失值\\n\\n# 删除\\ndf.dropna()  # 删除含NaN的行\\ndf.dropna(axis=1)  # 删除含NaN的列\\n\\n# 填充\\ndf.fillna(0)  # 用0填充\\ndf.fillna(method='ffill')  # 前向填充\\n```\\n\\n没有 `removena()` 方法。"
+        },
+        {
+          "question": "`groupby()` 操作通常与聚合函数一起使用。",
+          "type": "boolean",
+          "options": [
+            "正确",
+            "错误"
+          ],
+          "correctAnswer": 0,
+          "explanation": "正确。`groupby()` 实现分组聚合：\\n```python\\n# 按城市分组，计算平均薪资\\ndf.groupby('city')['salary'].mean()\\n\\n# 多个聚合函数\\ndf.groupby('city')['salary'].agg(['mean', 'max', 'min'])\\n\\n# 多列分组\\ndf.groupby(['city', 'department'])['salary'].sum()\\n```\\n\\n常用聚合函数：mean, sum, count, max, min, std"
+        },
+        {
+          "question": "以下代码的结果是什么？\\n```python\\nimport pandas as pd\\ndf = pd.DataFrame({'A': [1, 2, 3]})\\ndf['B'] = df['A'] * 2\\nprint(len(df.columns))\\n```",
+          "type": "single",
+          "options": [
+            "1",
+            "2",
+            "3",
+            "报错"
+          ],
+          "correctAnswer": 1,
+          "explanation": "DataFrame 列操作：\\n1. 创建 DataFrame，包含列 'A'\\n2. 添加新列 'B'，值为 'A' 的两倍\\n3. 现在有两列：'A' 和 'B'\\n4. `len(df.columns)` 返回列数：2\\n\\nDataFrame 可以通过赋值轻松添加新列。"
+        }
+      ]
+    },
+    {
+      "pointId": "python_lib_002",
+      "pointTitle": "常用库 - 日期时间处理",
+      "quiz": [
+        {
+          "question": "`datetime.now()` 和 `date.today()` 的区别是？",
+          "type": "single",
+          "options": [
+            "now() 包含时间，today() 只有日期",
+            "now() 只有日期，today() 包含时间",
+            "两者完全相同",
+            "now() 更快"
+          ],
+          "correctAnswer": 0,
+          "explanation": "日期时间对象：\\n\\n**datetime.now()**：\\n```python\\nfrom datetime import datetime\\nnow = datetime.now()\\nprint(now)  # 2024-01-15 14:30:45.123456\\n```\\n\\n**date.today()**：\\n```python\\nfrom datetime import date\\ntoday = date.today()\\nprint(today)  # 2024-01-15\\n```\\n\\ndatetime 包含日期和时间，date 只有日期。"
+        },
+        {
+          "question": "`strftime()` 和 `strptime()` 分别用于什么？",
+          "type": "single",
+          "options": [
+            "strftime 格式化输出，strptime 解析字符串",
+            "strftime 解析字符串，strptime 格式化输出",
+            "两者都是格式化输出",
+            "两者都是解析字符串"
+          ],
+          "correctAnswer": 0,
+          "explanation": "日期时间转换：\\n\\n**strftime**（string format time）：\\n```python\\nnow = datetime.now()\\nformatted = now.strftime('%Y-%m-%d %H:%M:%S')\\n# '2024-01-15 14:30:45'\\n```\\n\\n**strptime**（string parse time）：\\n```python\\ndate_str = '2024-01-15 14:30:45'\\ndt = datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S')\\n# datetime 对象\\n```\\n\\n记忆：f=format（格式化），p=parse（解析）"
+        },
+        {
+          "question": "以下哪些是有效的日期时间格式化符号？",
+          "type": "multiple",
+          "options": [
+            "%Y - 四位年份",
+            "%m - 月份（01-12）",
+            "%d - 日期（01-31）",
+            "%H - 小时（00-23）"
+          ],
+          "correctAnswer": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "explanation": "常用格式化符号：\\n- `%Y` - 年份（4位）：2024\\n- `%y` - 年份（2位）：24\\n- `%m` - 月份：01-12\\n- `%d` - 日：01-31\\n- `%H` - 时（24小时制）：00-23\\n- `%M` - 分：00-59\\n- `%S` - 秒：00-59\\n- `%A` - 星期：Monday\\n- `%B` - 月份名：January"
+        },
+        {
+          "question": "`timedelta` 可以用于日期时间的加减运算。",
+          "type": "boolean",
+          "options": [
+            "正确",
+            "错误"
+          ],
+          "correctAnswer": 0,
+          "explanation": "正确。`timedelta` 表示时间差：\\n```python\\nfrom datetime import datetime, timedelta\\n\\nnow = datetime.now()\\n\\n# 加法\\ntomorrow = now + timedelta(days=1)\\nnext_week = now + timedelta(weeks=1)\\ntwo_hours_later = now + timedelta(hours=2)\\n\\n# 减法\\nyesterday = now - timedelta(days=1)\\n\\n# 日期差\\ndiff = date2 - date1\\nprint(diff.days)  # 相差天数\\n```"
+        },
+        {
+          "question": "以下代码的输出是什么？\\n```python\\nfrom datetime import datetime\\ndt = datetime(2024, 1, 15, 14, 30)\\nprint(dt.strftime('%Y年%m月%d日'))\\n```",
+          "type": "single",
+          "options": [
+            "2024-01-15",
+            "2024年01月15日",
+            "2024/01/15",
+            "报错"
+          ],
+          "correctAnswer": 1,
+          "explanation": "`strftime()` 按格式化字符串输出：\\n- `%Y` → 2024\\n- `年` → 年（原样输出）\\n- `%m` → 01\\n- `月` → 月（原样输出）\\n- `%d` → 15\\n- `日` → 日（原样输出）\\n\\n结果：2024年01月15日"
+        }
+      ]
+    },
+    {
+      "pointId": "python_lib_003",
+      "pointTitle": "常用库 - 正则表达式",
+      "quiz": [
+        {
+          "question": "`re.match()` 和 `re.search()` 的区别是？",
+          "type": "single",
+          "options": [
+            "match 从头匹配，search 搜索整个字符串",
+            "match 搜索整个字符串，search 从头匹配",
+            "两者完全相同",
+            "match 更快"
+          ],
+          "correctAnswer": 0,
+          "explanation": "正则表达式匹配方法：\\n\\n**re.match()**：从字符串开头匹配\\n```python\\nre.match(r'\\\\d+', '123abc')  # 匹配成功\\nre.match(r'\\\\d+', 'abc123')  # None（不从头开始）\\n```\\n\\n**re.search()**：搜索整个字符串\\n```python\\nre.search(r'\\\\d+', 'abc123')  # 匹配成功\\n```\\n\\n**re.findall()**：查找所有匹配\\n```python\\nre.findall(r'\\\\d+', 'a1b2c3')  # ['1', '2', '3']\\n```"
+        },
+        {
+          "question": "正则表达式 `\\d{3}-\\d{4}` 匹配什么格式？",
+          "type": "single",
+          "options": [
+            "3位数字-4位数字（如123-4567）",
+            "3到4位数字",
+            "任意数字",
+            "日期格式"
+          ],
+          "correctAnswer": 0,
+          "explanation": "正则表达式元字符：\\n- `\\\\d` - 数字 [0-9]\\n- `{n}` - 重复n次\\n- `-` - 字面字符\\n\\n所以 `\\\\d{3}-\\\\d{4}` 表示：\\n- 3个数字 + 连字符 + 4个数字\\n- 例如：123-4567\\n\\n常见量词：\\n- `*` - 0次或多次\\n- `+` - 1次或多次\\n- `?` - 0次或1次\\n- `{n,m}` - n到m次"
+        },
+        {
+          "question": "以下哪些是常用的正则表达式特殊字符？",
+          "type": "multiple",
+          "options": [
+            ". - 匹配任意字符（除换行）",
+            "^ - 匹配字符串开头",
+            "$ - 匹配字符串结尾",
+            "# - 注释符号"
+          ],
+          "correctAnswer": [
+            0,
+            1,
+            2
+          ],
+          "explanation": "正则表达式元字符：\\n\\n**位置锚点**：\\n- `^` - 开头\\n- `$` - 结尾\\n- `\\\\b` - 单词边界\\n\\n**匹配**：\\n- `.` - 任意字符\\n- `\\\\d` - 数字\\n- `\\\\w` - 字母数字下划线\\n- `\\\\s` - 空白字符\\n\\n**分组**：\\n- `()` - 捕获分组\\n- `[]` - 字符集\\n\\n`#` 在正则中不是特殊字符。"
+        },
+        {
+          "question": "`re.sub()` 用于正则替换。",
+          "type": "boolean",
+          "options": [
+            "正确",
+            "错误"
+          ],
+          "correctAnswer": 0,
+          "explanation": "正确。`re.sub()` 进行正则替换：\\n```python\\nimport re\\n\\n# 替换数字为 *\\ntext = 'Tel: 138-1234-5678'\\nresult = re.sub(r'\\\\d', '*', text)\\nprint(result)  # 'Tel: ***-****-****'\\n\\n# 使用函数替换\\ndef double(match):\\n    return str(int(match.group()) * 2)\\n\\nre.sub(r'\\\\d+', double, '12 + 34')  # '24 + 68'\\n\\n# 限制替换次数\\nre.sub(r'a', 'A', 'aaa', count=2)  # 'AAa'\\n```"
+        },
+        {
+          "question": "以下代码的输出是什么？\\n```python\\nimport re\\ntext = 'Email: alice@example.com'\\nmatch = re.search(r'(\\\\w+)@(\\\\w+\\\\.\\\\w+)', text)\\nif match:\\n    print(match.group(1))\\n```",
+          "type": "single",
+          "options": [
+            "alice",
+            "example.com",
+            "alice@example.com",
+            "Email"
+          ],
+          "correctAnswer": 0,
+          "explanation": "正则分组捕获：\\n- `(\\\\w+)` - 第一组：匹配alice\\n- `@` - 字面字符\\n- `(\\\\w+\\\\.\\\\w+)` - 第二组：匹配example.com\\n\\n`match.group()`方法：\\n- `group(0)` - 完整匹配：alice@example.com\\n- `group(1)` - 第一组：alice\\n- `group(2)` - 第二组：example.com\\n\\n输出：alice"
+        }
+      ]
+    },
+    {
+      "pointId": "python_lib_004",
+      "pointTitle": "常用库 - HTTP请求",
+      "quiz": [
+        {
+          "question": "`requests` 库相比 `urllib` 的优势是什么？",
+          "type": "single",
+          "options": [
+            "API更简洁易用",
+            "速度更快",
+            "是Python内置库",
+            "支持更多协议"
+          ],
+          "correctAnswer": 0,
+          "explanation": "`requests` vs `urllib`：\\n\\n**requests**（推荐）：\\n```python\\nimport requests\\nresponse = requests.get('https://api.github.com')\\ndata = response.json()  # 自动解析JSON\\n```\\n\\n**urllib**（内置但繁琐）：\\n```python\\nimport urllib.request\\nimport json\\nresponse = urllib.request.urlopen('https://api.github.com')\\ndata = json.loads(response.read().decode())\\n```\\n\\nrequests 优势：简洁、功能强大、自动处理编码"
+        },
+        {
+          "question": "HTTP 状态码 200 表示什么？",
+          "type": "single",
+          "options": [
+            "请求成功",
+            "重定向",
+            "客户端错误",
+            "服务器错误"
+          ],
+          "correctAnswer": 0,
+          "explanation": "HTTP 状态码分类：\\n\\n**2xx 成功**：\\n- 200 OK - 请求成功\\n- 201 Created - 创建成功\\n\\n**3xx 重定向**：\\n- 301 Moved Permanently\\n- 302 Found\\n\\n**4xx 客户端错误**：\\n- 400 Bad Request\\n- 404 Not Found\\n\\n**5xx 服务器错误**：\\n- 500 Internal Server Error\\n- 503 Service Unavailable"
+        },
+        {
+          "question": "以下哪些是 requests 的常用方法？",
+          "type": "multiple",
+          "options": [
+            "get() - GET请求",
+            "post() - POST请求",
+            "put() - PUT请求",
+            "delete() - DELETE请求"
+          ],
+          "correctAnswer": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "explanation": "requests HTTP方法：\\n```python\\n# GET - 获取资源\\nrequests.get(url, params={'key': 'value'})\\n\\n# POST - 创建资源\\nrequests.post(url, json={'data': 'value'})\\n\\n# PUT - 更新资源\\nrequests.put(url, json={'data': 'value'})\\n\\n# DELETE - 删除资源\\nrequests.delete(url)\\n\\n# PATCH - 部分更新\\nrequests.patch(url, json={'field': 'value'})\\n```"
+        },
+        {
+          "question": "`response.json()` 会自动解析JSON响应。",
+          "type": "boolean",
+          "options": [
+            "正确",
+            "错误"
+          ],
+          "correctAnswer": 0,
+          "explanation": "正确。requests 提供便捷的JSON处理：\\n```python\\nresponse = requests.get('https://api.github.com')\\n\\n# 自动解析JSON\\ndata = response.json()  # 返回 dict 或 list\\n\\n# 等价于\\nimport json\\ndata = json.loads(response.text)\\n\\n# 其他响应格式\\nresponse.text  # 字符串\\nresponse.content  # 字节\\nresponse.headers  # 响应头\\nresponse.status_code  # 状态码\\n```"
+        },
+        {
+          "question": "以下代码的作用是什么？\\n```python\\nimport requests\\ntry:\\n    r = requests.get(url, timeout=5)\\nexcept requests.Timeout:\\n    print('请求超时')\\n```",
+          "type": "single",
+          "options": [
+            "5秒后超时并捕获异常",
+            "最多重试5次",
+            "等待5秒后发送请求",
+            "下载限制5MB"
+          ],
+          "correctAnswer": 0,
+          "explanation": "`timeout` 参数设置超时时间：\\n```python\\n# 5秒超时\\nrequests.get(url, timeout=5)\\n\\n# 分别设置连接和读取超时\\nrequests.get(url, timeout=(3, 10))  # 连接3秒，读取10秒\\n\\n# 捕获超时异常\\ntry:\\n    requests.get(url, timeout=5)\\nexcept requests.Timeout:\\n    print('超时')\\nexcept requests.RequestException as e:\\n    print(f'请求错误: {e}')\\n```"
+        }
+      ]
+    },
+    {
+      "pointId": "python_lib_005",
+      "pointTitle": "常用库 - 命令行参数",
+      "quiz": [
+        {
+          "question": "`argparse` 模块用于什么？",
+          "type": "single",
+          "options": [
+            "解析命令行参数",
+            "解析JSON",
+            "解析XML",
+            "解析URL"
+          ],
+          "correctAnswer": 0,
+          "explanation": "`argparse` 是命令行参数解析器：\\n```python\\nimport argparse\\n\\nparser = argparse.ArgumentParser(description='程序说明')\\n\\n# 位置参数（必需）\\nparser.add_argument('input', help='输入文件')\\n\\n# 可选参数\\nparser.add_argument('-o', '--output', help='输出文件')\\nparser.add_argument('-v', '--verbose', action='store_true')\\n\\nargs = parser.parse_args()\\nprint(args.input, args.output)\\n```\\n\\n用法：`python script.py input.txt -o output.txt`"
+        },
+        {
+          "question": "`action='store_true'` 的作用是什么？",
+          "type": "single",
+          "options": [
+            "创建布尔标志，存在时为True",
+            "存储字符串'true'",
+            "验证参数为真值",
+            "保存所有参数"
+          ],
+          "correctAnswer": 0,
+          "explanation": "`action` 参数定义行为：\\n\\n**store_true**（布尔标志）：\\n```python\\nparser.add_argument('-v', '--verbose', action='store_true')\\n# 使用 -v → args.verbose = True\\n# 不使用 → args.verbose = False\\n```\\n\\n**其他action**：\\n- `store`（默认）：存储值\\n- `store_false`：标志为False\\n- `append`：追加到列表\\n- `count`：计数（-vvv）\\n- `help`：显示帮助"
+        },
+        {
+          "question": "以下哪些参数类型可以在 argparse 中使用？",
+          "type": "multiple",
+          "options": [
+            "type=int - 整数",
+            "type=float - 浮点数",
+            "type=str - 字符串（默认）",
+            "type=bool - 布尔值"
+          ],
+          "correctAnswer": [
+            0,
+            1,
+            2
+          ],
+          "explanation": "argparse 类型转换：\\n```python\\n# 整数\\nparser.add_argument('-n', type=int, default=10)\\n\\n# 浮点数\\nparser.add_argument('-r', '--rate', type=float)\\n\\n# 字符串（默认）\\nparser.add_argument('--name', type=str)\\n\\n# 自定义类型\\ndef valid_date(s):\\n    try:\\n        return datetime.strptime(s, '%Y-%m-%d')\\n    except ValueError:\\n        raise argparse.ArgumentTypeError('无效日期')\\n\\nparser.add_argument('--date', type=valid_date)\\n```\\n\\n注意：布尔值用 `action='store_true'`，不用 `type=bool`"
+        },
+        {
+          "question": "`choices` 参数可以限制参数的可选值。",
+          "type": "boolean",
+          "options": [
+            "正确",
+            "错误"
+          ],
+          "correctAnswer": 0,
+          "explanation": "正确。`choices` 限制参数范围：\\n```python\\nparser.add_argument(\\n    '--format',\\n    choices=['json', 'csv', 'xml'],\\n    default='json',\\n    help='输出格式'\\n)\\n\\n# 有效：--format json\\n# 无效：--format txt（报错）\\n\\n# 也可用于数字\\nparser.add_argument(\\n    '--level',\\n    type=int,\\n    choices=range(1, 6),  # 1-5\\n    help='级别'\\n)\\n```"
+        },
+        {
+          "question": "以下代码实现了什么功能？\\n```python\\nparser = argparse.ArgumentParser()\\nparser.add_argument('files', nargs='+')\\n```",
+          "type": "single",
+          "options": [
+            "接收一个或多个文件名",
+            "接收恰好一个文件名",
+            "接收零个或多个文件名",
+            "接收两个文件名"
+          ],
+          "correctAnswer": 0,
+          "explanation": "`nargs` 控制参数数量：\\n\\n- `nargs='?'` - 0或1个\\n- `nargs='*'` - 0个或多个\\n- `nargs='+'` - 1个或多个（至少一个）\\n- `nargs=N` - 恰好N个\\n\\n```python\\n# 一个或多个文件\\nparser.add_argument('files', nargs='+')\\n# 用法：script.py file1.txt file2.txt file3.txt\\n\\n# 可选文件\\nparser.add_argument('file', nargs='?', default='stdin')\\n```"
+        }
+      ]
+    },
+    {
+      "pointId": "python_advanced_001",
+      "pointTitle": "Python标准库 - collections",
+      "quiz": [
+        {
+          "question": "`Counter` 最常用于什么场景？",
+          "type": "single",
+          "options": [
+            "统计元素出现次数",
+            "创建计数器",
+            "排序列表",
+            "过滤数据"
+          ],
+          "correctAnswer": 0,
+          "explanation": "`Counter` 是计数工具：\\n```python\\nfrom collections import Counter\\n\\nwords = ['apple', 'banana', 'apple', 'cherry', 'banana', 'apple']\\ncounter = Counter(words)\\nprint(counter)\\n# Counter({'apple': 3, 'banana': 2, 'cherry': 1})\\n\\n# 最常见的N个元素\\nprint(counter.most_common(2))\\n# [('apple', 3), ('banana', 2)]\\n```"
+        },
+        {
+          "question": "`defaultdict` 相比普通 dict 的优势是？",
+          "type": "single",
+          "options": [
+            "访问不存在的键时自动创建默认值",
+            "速度更快",
+            "占用内存更小",
+            "支持更多数据类型"
+          ],
+          "correctAnswer": 0,
+          "explanation": "`defaultdict` 自动初始化：\\n```python\\nfrom collections import defaultdict\\n\\n# 普通字典需要检查键是否存在\\nword_dict = {}\\nfor word in words:\\n    if word[0] not in word_dict:\\n        word_dict[word[0]] = []\\n    word_dict[word[0]].append(word)\\n\\n# defaultdict 自动创建\\nword_dict = defaultdict(list)\\nfor word in words:\\n    word_dict[word[0]].append(word)  # 自动创建空列表\\n```"
+        },
+        {
+          "question": "`deque` 适合什么操作？",
+          "type": "multiple",
+          "options": [
+            "队列操作（FIFO）",
+            "栈操作（LIFO）",
+            "两端快速添加删除",
+            "随机访问元素"
+          ],
+          "correctAnswer": [
+            0,
+            1,
+            2
+          ],
+          "explanation": "`deque`（双端队列）特点：\\n```python\\nfrom collections import deque\\n\\ndq = deque([1, 2, 3])\\n\\n# 两端操作都是 O(1)\\ndq.append(4)        # 右侧添加\\ndq.appendleft(0)    # 左侧添加\\ndq.pop()            # 右侧删除\\ndq.popleft()        # 左侧删除\\n\\n# 限制长度（循环队列）\\ndq = deque(maxlen=3)\\n```\\n\\n列表的 append/pop 是 O(1)，但 insert(0)/pop(0) 是 O(n)。"
+        },
+        {
+          "question": "`namedtuple` 创建的对象是不可变的。",
+          "type": "boolean",
+          "options": [
+            "正确",
+            "错误"
+          ],
+          "correctAnswer": 0,
+          "explanation": "正确。`namedtuple` 是不可变的：\\n```python\\nfrom collections import namedtuple\\n\\nPoint = namedtuple('Point', ['x', 'y'])\\np = Point(10, 20)\\n\\nprint(p.x, p.y)  # 10 20\\nprint(p[0], p[1])  # 10 20\\n\\n# 不可修改\\n# p.x = 30  # AttributeError\\n\\n# 需要修改则创建新对象\\np2 = p._replace(x=30)  # Point(30, 20)\\n```\\n\\n优点：轻量级、可读性强、可用作字典键。"
+        },
+        {
+          "question": "以下代码的输出是什么？\\n```python\\nfrom collections import Counter\\ncounter = Counter('abracadabra')\\nprint(counter['a'])\\n```",
+          "type": "single",
+          "options": [
+            "5",
+            "4",
+            "3",
+            "2"
+          ],
+          "correctAnswer": 0,
+          "explanation": "Counter 统计字符出现次数：\\n- 'abracadabra' 中 'a' 出现 5 次\\n- 'b' 出现 2 次\\n- 'r' 出现 2 次\\n- 'c' 出现 1 次\\n- 'd' 出现 1 次\\n\\n输出：5"
+        }
+      ]
+    },
+    {
+      "pointId": "python_advanced_002",
+      "pointTitle": "高级编程 - 生成器",
+      "quiz": [
+        {
+          "question": "生成器相比列表的主要优势是什么？",
+          "type": "single",
+          "options": [
+            "节省内存，延迟计算",
+            "速度更快",
+            "支持更多操作",
+            "语法更简单"
+          ],
+          "correctAnswer": 0,
+          "explanation": "生成器的优势：\\n\\n**列表**（一次性创建）：\\n```python\\n# 占用大量内存\\nnumbers = [x**2 for x in range(1000000)]\\n```\\n\\n**生成器**（按需生成）：\\n```python\\n# 几乎不占内存\\nnumbers = (x**2 for x in range(1000000))\\nfor n in numbers:\\n    process(n)  # 逐个生成\\n```\\n\\n适用场景：大数据处理、无限序列、管道处理。"
+        },
+        {
+          "question": "`yield` 关键字的作用是？",
+          "type": "single",
+          "options": [
+            "暂停函数并返回值，下次从断点继续",
+            "立即返回并结束函数",
+            "跳过当前循环",
+            "抛出异常"
+          ],
+          "correctAnswer": 0,
+          "explanation": "`yield` 创建生成器：\\n```python\\ndef fibonacci(n):\\n    a, b = 0, 1\\n    for _ in range(n):\\n        yield a  # 暂停并返回a\\n        a, b = b, a + b  # 下次从这里继续\\n\\n# 使用\\nfor num in fibonacci(10):\\n    print(num, end=' ')\\n# 0 1 1 2 3 5 8 13 21 34\\n```\\n\\nyield vs return：\\n- return：结束函数\\n- yield：暂停函数，保持状态"
+        },
+        {
+          "question": "以下哪些是生成器的使用场景？",
+          "type": "multiple",
+          "options": [
+            "读取大文件",
+            "无限序列（如斐波那契）",
+            "数据流处理",
+            "小列表处理"
+          ],
+          "correctAnswer": [
+            0,
+            1,
+            2
+          ],
+          "explanation": "生成器适用场景：\\n\\n**1. 大文件读取**：\\n```python\\ndef read_large_file(file_path):\\n    with open(file_path) as f:\\n        for line in f:\\n            yield line.strip()\\n```\\n\\n**2. 无限序列**：\\n```python\\ndef infinite_counter(start=0):\\n    while True:\\n        yield start\\n        start += 1\\n```\\n\\n**3. 管道处理**：\\n```python\\ndata = read_file(path)\\nprocessed = map(process, data)\\nresults = filter(validate, processed)\\n```"
+        },
+        {
+          "question": "生成器只能迭代一次。",
+          "type": "boolean",
+          "options": [
+            "正确",
+            "错误"
+          ],
+          "correctAnswer": 0,
+          "explanation": "正确。生成器是一次性的：\\n```python\\ngen = (x**2 for x in range(5))\\n\\n# 第一次迭代\\nprint(list(gen))  # [0, 1, 4, 9, 16]\\n\\n# 第二次迭代（已耗尽）\\nprint(list(gen))  # []\\n```\\n\\n需要多次使用，有两种方案：\\n1. 重新创建生成器\\n2. 转换为列表（失去内存优势）\\n\\n使用 `itertools.tee()` 可以复制迭代器。"
+        },
+        {
+          "question": "以下代码的输出是什么？\\n```python\\ndef gen():\\n    yield 1\\n    yield 2\\n    return 3\\n\\ng = gen()\\nprint(next(g))\\nprint(next(g))\\n```",
+          "type": "single",
+          "options": [
+            "1\\n2",
+            "1\\n2\\n3",
+            "1\\n3",
+            "报错"
+          ],
+          "correctAnswer": 0,
+          "explanation": "生成器执行过程：\\n1. `next(g)` 执行到第一个 yield，返回 1\\n2. `next(g)` 继续执行到第二个 yield，返回 2\\n3. 如果再次调用 `next(g)`，会触发 StopIteration 异常\\n\\nreturn 的值会成为 StopIteration 异常的 value 属性，通常不直接使用。"
+        }
+      ]
+    },
+    {
+      "pointId": "python_advanced_003",
+      "pointTitle": "数据分析 - NumPy基础",
+      "quiz": [
+        {
+          "question": "NumPy 数组相比 Python 列表的优势是？",
+          "type": "single",
+          "options": [
+            "速度更快，支持向量化运算",
+            "占用内存更大",
+            "语法更复杂",
+            "只能存储数字"
+          ],
+          "correctAnswer": 0,
+          "explanation": "NumPy 的优势：\\n\\n**速度**：\\n```python\\n# Python 列表\\nresult = [x**2 for x in range(1000000)]  # 慢\\n\\n# NumPy 数组\\nimport numpy as np\\narr = np.arange(1000000)\\nresult = arr ** 2  # 快100倍+\\n```\\n\\n**向量化运算**：\\n```python\\na = np.array([1, 2, 3])\\nb = np.array([4, 5, 6])\\nc = a + b  # [5, 7, 9]（一次性计算）\\n```\\n\\n原因：C语言实现，连续内存，SIMD指令。"
+        },
+        {
+          "question": "`np.arange()` 和 `np.linspace()` 的区别是？",
+          "type": "single",
+          "options": [
+            "arange 指定步长，linspace 指定元素个数",
+            "arange 指定个数，linspace 指定步长",
+            "两者完全相同",
+            "arange 更快"
+          ],
+          "correctAnswer": 0,
+          "explanation": "NumPy 数组创建：\\n\\n**np.arange(start, stop, step)**：\\n```python\\nnp.arange(0, 10, 2)  # [0, 2, 4, 6, 8]\\n# 类似 Python 的 range\\n```\\n\\n**np.linspace(start, stop, num)**：\\n```python\\nnp.linspace(0, 10, 5)  # [0, 2.5, 5, 7.5, 10]\\n# 生成指定个数的等间隔数\\n```\\n\\nlinspace 包含终点，arange 不包含。"
+        },
+        {
+          "question": "以下哪些是 NumPy 的聚合函数？",
+          "type": "multiple",
+          "options": [
+            "np.sum() - 求和",
+            "np.mean() - 平均值",
+            "np.std() - 标准差",
+            "np.sort() - 排序"
+          ],
+          "correctAnswer": [
+            0,
+            1,
+            2
+          ],
+          "explanation": "NumPy 聚合函数：\\n```python\\narr = np.array([1, 2, 3, 4, 5])\\n\\n# 聚合函数（返回标量）\\nnp.sum(arr)     # 15\\nnp.mean(arr)    # 3.0\\nnp.std(arr)     # 标准差\\nnp.max(arr)     # 5\\nnp.min(arr)     # 1\\nnp.median(arr)  # 中位数\\n\\n# 非聚合函数（返回数组）\\nnp.sort(arr)    # 排序\\nnp.unique(arr)  # 去重\\n```"
+        },
+        {
+          "question": "NumPy 数组的索引从 0 开始。",
+          "type": "boolean",
+          "options": [
+            "正确",
+            "错误"
+          ],
+          "correctAnswer": 0,
+          "explanation": "正确。NumPy 遵循 Python 的索引规则：\\n```python\\narr = np.array([10, 20, 30, 40, 50])\\n\\nprint(arr[0])   # 10（第一个元素）\\nprint(arr[-1])  # 50（最后一个元素）\\nprint(arr[1:4]) # [20, 30, 40]（切片）\\n\\n# 二维数组\\nmatrix = np.array([[1,2,3], [4,5,6]])\\nprint(matrix[0, 1])  # 2（第1行第2列）\\nprint(matrix[:, 0])  # [1, 4]（第1列）\\n```"
+        },
+        {
+          "question": "以下代码的输出是什么？\\n```python\\nimport numpy as np\\narr = np.array([1, 2, 3, 4, 5])\\nprint(arr[arr > 3])\\n```",
+          "type": "single",
+          "options": [
+            "[4 5]",
+            "[1 2 3]",
+            "[True False]",
+            "报错"
+          ],
+          "correctAnswer": 0,
+          "explanation": "NumPy 布尔索引：\\n1. `arr > 3` 生成布尔数组：[False, False, False, True, True]\\n2. `arr[布尔数组]` 选择 True 位置的元素\\n3. 结果：[4, 5]\\n\\n这是 NumPy 的强大特性，用于条件筛选：\\n```python\\neven = arr[arr % 2 == 0]  # 偶数\\nlarge = arr[arr > arr.mean()]  # 大于平均值\\n```"
+        }
+      ]
+    },
+    {
+      "pointId": "python_advanced_004",
+      "pointTitle": "Web开发 - Flask基础",
+      "quiz": [
+        {
+          "question": "Flask 的路由装饰器 `@app.route()` 的作用是？",
+          "type": "single",
+          "options": [
+            "将URL路径映射到处理函数",
+            "启动Web服务器",
+            "连接数据库",
+            "验证用户身份"
+          ],
+          "correctAnswer": 0,
+          "explanation": "Flask 路由定义：\\n```python\\nfrom flask import Flask\\napp = Flask(__name__)\\n\\n@app.route('/')  # 根路径\\ndef home():\\n    return '<h1>首页</h1>'\\n\\n@app.route('/user/<username>')  # 动态路由\\ndef user_profile(username):\\n    return f'<h1>用户: {username}</h1>'\\n\\n@app.route('/api/data', methods=['GET', 'POST'])\\ndef api_data():\\n    if request.method == 'POST':\\n        # 处理POST请求\\n        pass\\n```"
+        },
+        {
+          "question": "`jsonify()` 函数的作用是？",
+          "type": "single",
+          "options": [
+            "将Python对象转为JSON响应",
+            "解析JSON请求",
+            "验证JSON格式",
+            "压缩JSON数据"
+          ],
+          "correctAnswer": 0,
+          "explanation": "`jsonify()` 创建JSON响应：\\n```python\\nfrom flask import Flask, jsonify\\n\\n@app.route('/api/user/<int:user_id>')\\ndef get_user(user_id):\\n    user = {\\n        'id': user_id,\\n        'name': 'Alice',\\n        'email': 'alice@example.com'\\n    }\\n    return jsonify(user)\\n    # 自动设置 Content-Type: application/json\\n\\n# 返回列表\\n@app.route('/api/users')\\ndef get_users():\\n    return jsonify([user1, user2, user3])\\n```"
+        },
+        {
+          "question": "以下哪些HTTP方法在Flask中常用？",
+          "type": "multiple",
+          "options": [
+            "GET - 获取资源",
+            "POST - 创建资源",
+            "PUT - 更新资源",
+            "DELETE - 删除资源"
+          ],
+          "correctAnswer": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "explanation": "RESTful API HTTP方法：\\n```python\\n# GET - 获取\\n@app.route('/api/users', methods=['GET'])\\ndef get_users():\\n    return jsonify(users)\\n\\n# POST - 创建\\n@app.route('/api/users', methods=['POST'])\\ndef create_user():\\n    data = request.get_json()\\n    # 创建用户\\n    return jsonify(new_user), 201\\n\\n# PUT - 完整更新\\n@app.route('/api/users/<id>', methods=['PUT'])\\n\\n# DELETE - 删除\\n@app.route('/api/users/<id>', methods=['DELETE'])\\n```"
+        },
+        {
+          "question": "`request.get_json()` 用于获取POST请求的JSON数据。",
+          "type": "boolean",
+          "options": [
+            "正确",
+            "错误"
+          ],
+          "correctAnswer": 0,
+          "explanation": "正确。Flask 处理JSON请求：\\n```python\\nfrom flask import request\\n\\n@app.route('/api/login', methods=['POST'])\\ndef login():\\n    # 获取JSON数据\\n    data = request.get_json()\\n    \\n    username = data.get('username')\\n    password = data.get('password')\\n    \\n    # 验证逻辑\\n    if validate(username, password):\\n        return jsonify({'token': 'abc123'})\\n    return jsonify({'error': '登录失败'}), 401\\n```\\n\\n客户端发送：Content-Type: application/json"
+        },
+        {
+          "question": "以下代码定义了什么样的路由？\\n```python\\n@app.route('/post/<int:post_id>')\\ndef show_post(post_id):\\n    return f'Post {post_id}'\\n```",
+          "type": "single",
+          "options": [
+            "动态路由，接收整数参数",
+            "静态路由",
+            "接收字符串参数",
+            "接收任意类型参数"
+          ],
+          "correctAnswer": 0,
+          "explanation": "Flask 动态路由：\\n\\n**类型转换器**：\\n- `<int:id>` - 整数\\n- `<float:price>` - 浮点数\\n- `<string:name>` - 字符串（默认）\\n- `<path:filepath>` - 路径（含斜杠）\\n- `<uuid:id>` - UUID\\n\\n```python\\n@app.route('/post/<int:post_id>')\\ndef show_post(post_id):\\n    # post_id 自动转为整数\\n    post = get_post_by_id(post_id)\\n    return render_template('post.html', post=post)\\n```\\n\\n访问：/post/123 → post_id = 123 (int)"
+        }
+      ]
+    },
+    {
+      "pointId": "python_advanced_005",
+      "pointTitle": "综合实战 - 项目开发",
+      "quiz": [
+        {
+          "question": "Python 项目中 `requirements.txt` 文件的作用是？",
+          "type": "single",
+          "options": [
+            "记录项目依赖的包和版本",
+            "配置项目参数",
+            "定义项目结构",
+            "记录项目需求"
+          ],
+          "correctAnswer": 0,
+          "explanation": "`requirements.txt` 管理依赖：\\n\\n**生成**：\\n```bash\\npip freeze > requirements.txt\\n```\\n\\n**内容示例**：\\n```\\nflask==2.3.0\\nrequests==2.31.0\\npandas>=1.5.0\\nnumpy~=1.24.0\\n```\\n\\n**安装**：\\n```bash\\npip install -r requirements.txt\\n```\\n\\n版本符号：\\n- `==` 精确版本\\n- `>=` 最小版本\\n- `~=` 兼容版本"
+        },
+        {
+          "question": "虚拟环境（venv）的主要作用是？",
+          "type": "single",
+          "options": [
+            "隔离项目依赖，避免版本冲突",
+            "提高代码运行速度",
+            "加密项目代码",
+            "自动部署项目"
+          ],
+          "correctAnswer": 0,
+          "explanation": "Python 虚拟环境：\\n\\n**创建**：\\n```bash\\npython -m venv venv\\n```\\n\\n**激活**：\\n```bash\\n# Windows\\nvenv\\\\Scripts\\\\activate\\n\\n# Linux/Mac\\nsource venv/bin/activate\\n```\\n\\n**好处**：\\n- 项目间依赖隔离\\n- 不同Python版本\\n- 避免污染全局环境\\n- 便于复现环境"
+        },
+        {
+          "question": "以下哪些是Python项目的最佳实践？",
+          "type": "multiple",
+          "options": [
+            "使用虚拟环境",
+            "编写README文档",
+            "使用版本控制（Git）",
+            "遵循PEP 8代码规范"
+          ],
+          "correctAnswer": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "explanation": "Python 项目最佳实践：\\n\\n**1. 项目结构**：\\n```\\nproject/\\n├── src/          # 源代码\\n├── tests/        # 测试\\n├── docs/         # 文档\\n├── requirements.txt\\n├── README.md\\n└── .gitignore\\n```\\n\\n**2. 代码质量**：\\n- PEP 8 规范\\n- 类型提示\\n- 文档字符串\\n- 单元测试\\n\\n**3. 版本管理**：\\n- Git 版本控制\\n- 语义化版本\\n- CHANGELOG"
+        },
+        {
+          "question": "Python 的 `if __name__ == '__main__':` 用于区分模块导入和直接运行。",
+          "type": "boolean",
+          "options": [
+            "正确",
+            "错误"
+          ],
+          "correctAnswer": 0,
+          "explanation": "正确。Python 模块执行控制：\\n```python\\n# mymodule.py\\ndef hello():\\n    print('Hello')\\n\\ndef main():\\n    print('Main function')\\n    hello()\\n\\n# 只在直接运行时执行\\nif __name__ == '__main__':\\n    main()\\n```\\n\\n**作为模块导入**：\\n```python\\nimport mymodule  # 不执行 main()\\nmymodule.hello()  # 可以调用函数\\n```\\n\\n**直接运行**：\\n```bash\\npython mymodule.py  # 执行 main()\\n```"
+        },
+        {
+          "question": "以下代码实现了什么设计模式？\\n```python\\nclass Database:\\n    _instance = None\\n    \\n    def __new__(cls):\\n        if cls._instance is None:\\n            cls._instance = super().__new__(cls)\\n        return cls._instance\\n```",
+          "type": "single",
+          "options": [
+            "单例模式",
+            "工厂模式",
+            "观察者模式",
+            "装饰器模式"
+          ],
+          "correctAnswer": 0,
+          "explanation": "单例模式（Singleton）：\\n\\n**作用**：确保类只有一个实例\\n\\n**使用场景**：\\n- 数据库连接\\n- 配置管理\\n- 日志记录\\n- 缓存管理\\n\\n**使用**：\\n```python\\ndb1 = Database()\\ndb2 = Database()\\nprint(db1 is db2)  # True（同一实例）\\n```\\n\\n**其他实现方式**：\\n- 装饰器\\n- 元类\\n- 模块级变量"
+        }
+      ]
+    }
+  ]
+}

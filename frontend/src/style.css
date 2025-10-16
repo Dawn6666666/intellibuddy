@@ -54,3 +54,14 @@ body {
     min-height: 100vh;
     transition: background-color 0.3s ease, color 0.3s ease;
 }
+
+/* 确保 Font Awesome 图标使用正确的字体 */
+i.fa, i.fas, i.far, i.fal, i.fat, i.fad, i.fab,
+i.fa-solid, i.fa-regular, i.fa-light, i.fa-thin, i.fa-duotone, i.fa-brands,
+.fa, .fas, .far, .fal, .fat, .fad, .fab {
+    font-family: 'Font Awesome 6 Free', 'Font Awesome 6 Pro', 'Font Awesome 6 Brands', 'FontAwesome' !important;
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+}

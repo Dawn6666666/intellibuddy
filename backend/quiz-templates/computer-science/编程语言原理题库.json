@@ -1,0 +1,360 @@
+{
+  "题库说明": "本题库对应《编程语言原理 (cs206-pl)》知识点，涵盖编程语言分类、语法语义、类型系统、函数式编程、编译原理等内容。",
+  "题库": [
+    {
+      "pointId": "cs206-pl",
+      "pointTitle": "编程语言原理",
+      "quiz": [
+        {
+          "question": "编程语言的三个主要组成部分是？",
+          "type": "multiple",
+          "options": [
+            "语法（Syntax）",
+            "语义（Semantics）",
+            "语用（Pragmatics）",
+            "编译器"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "编程语言三要素：语法（形式规则，如BNF）、语义（含义，如操作语义）、语用（使用方式、习惯用法）。编译器是实现工具，不是语言组成部分。"
+        },
+        {
+          "question": "编程语言的分类方式包括？",
+          "type": "multiple",
+          "options": [
+            "按编程范式（命令式、函数式、逻辑式）",
+            "按类型系统（静态类型、动态类型）",
+            "按执行方式（编译型、解释型）",
+            "按代码颜色"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "编程语言分类：1) 范式（命令式、面向对象、函数式、逻辑式）；2) 类型（静态/动态、强/弱类型）；3) 执行（编译/解释/JIT）；4) 层次（高级/低级）。"
+        },
+        {
+          "question": "编译型语言和解释型语言的主要区别是？",
+          "type": "single",
+          "options": [
+            "编译型先翻译成机器码再执行，解释型逐行翻译执行",
+            "编译型语言更慢",
+            "解释型语言不能调试",
+            "两者完全相同"
+          ],
+          "correctAnswer": 0,
+          "explanation": "编译型（如C、C++）：源代码→编译→机器码→执行，快但不跨平台。解释型（如Python、JavaScript）：逐行解释执行，慢但灵活跨平台。JIT介于两者之间（如Java、C#）。"
+        },
+        {
+          "question": "静态类型和动态类型的区别是？",
+          "type": "single",
+          "options": [
+            "静态类型在编译时检查类型，动态类型在运行时检查",
+            "静态类型更慢",
+            "动态类型更安全",
+            "两者没有区别"
+          ],
+          "correctAnswer": 0,
+          "explanation": "静态类型（如Java、C++）：编译时确定和检查类型，早发现错误但不灵活。动态类型（如Python、JavaScript）：运行时确定类型，灵活但错误发现晚。"
+        },
+        {
+          "question": "强类型和弱类型的区别是？",
+          "type": "single",
+          "options": [
+            "强类型严格类型检查，弱类型允许隐式类型转换",
+            "强类型语言运行更快",
+            "弱类型语言更安全",
+            "强类型只能用于数学计算"
+          ],
+          "correctAnswer": 0,
+          "explanation": "强类型（如Python、Java）：严格类型检查，不允许随意类型转换。弱类型（如JavaScript、C）：宽松，允许隐式转换（如'5'+3=53在JS中）。注意：强/弱和静态/动态是两个维度。"
+        },
+        {
+          "question": "BNF（Backus-Naur Form）是什么？",
+          "type": "single",
+          "options": [
+            "描述编程语言语法的形式化表示法",
+            "一种编程语言",
+            "一种编译器",
+            "一种数据结构"
+          ],
+          "correctAnswer": 0,
+          "explanation": "BNF（巴科斯范式）：形式化描述上下文无关文法（CFG）的元语言。用于定义编程语言语法。如：<expr> ::= <term> | <expr> + <term>。扩展版本有EBNF。"
+        },
+        {
+          "question": "词法分析（Lexical Analysis）的作用是？",
+          "type": "single",
+          "options": [
+            "将源代码分解为词法单元（Token）",
+            "检查语法错误",
+            "生成机器码",
+            "执行程序"
+          ],
+          "correctAnswer": 0,
+          "explanation": "编译过程：词法分析（源代码→Token，如关键字、标识符、运算符）→语法分析（Token→语法树）→语义分析（类型检查）→中间代码生成→优化→目标代码生成。"
+        },
+        {
+          "question": "语法分析（Parsing）的输出是？",
+          "type": "single",
+          "options": [
+            "抽象语法树（AST）",
+            "机器码",
+            "词法单元",
+            "可执行文件"
+          ],
+          "correctAnswer": 0,
+          "explanation": "语法分析（Parser）：根据文法规则，将Token序列组织成抽象语法树（AST），表示程序的层次结构。常见算法：递归下降、LL、LR。"
+        },
+        {
+          "question": "类型推断（Type Inference）是什么？",
+          "type": "single",
+          "options": [
+            "编译器自动推导变量类型，无需显式声明",
+            "运行时检查类型",
+            "强制类型转换",
+            "动态类型系统"
+          ],
+          "correctAnswer": 0,
+          "explanation": "类型推断：编译器根据上下文自动推导类型（如Haskell、ML、TypeScript的let）。优点：静态类型的安全性+动态类型的简洁性。Hindley-Milner算法是经典实现。"
+        },
+        {
+          "question": "泛型（Generics）的主要作用是？",
+          "type": "single",
+          "options": [
+            "编写类型无关的代码，提高复用性和类型安全",
+            "提高运行速度",
+            "简化语法",
+            "减少内存使用"
+          ],
+          "correctAnswer": 0,
+          "explanation": "泛型（参数化多态）：编写适用于多种类型的代码，在使用时指定具体类型。如Java的List<T>、C++的template。优点：代码复用、类型安全（编译时检查）。"
+        },
+        {
+          "question": "命令式编程（Imperative Programming）的特点是？",
+          "type": "single",
+          "options": [
+            "描述\"如何做\"，通过语句改变程序状态",
+            "描述\"做什么\"，通过表达式求值",
+            "基于逻辑推理",
+            "没有变量"
+          ],
+          "correctAnswer": 0,
+          "explanation": "命令式编程：通过语句序列改变程序状态（变量赋值、循环、条件）。代表：C、Python。对比：声明式编程描述\"做什么\"（如SQL、函数式编程）。"
+        },
+        {
+          "question": "函数式编程（Functional Programming）的核心特性包括？",
+          "type": "multiple",
+          "options": [
+            "函数是一等公民（First-Class Functions）",
+            "不可变性（Immutability）",
+            "无副作用（Pure Functions）",
+            "必须使用for循环"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "函数式编程特点：函数是一等公民（可作为参数和返回值）、不可变数据、纯函数（无副作用）、高阶函数、递归代替循环。代表：Haskell、Lisp、Scala。"
+        },
+        {
+          "question": "纯函数（Pure Function）的定义是？",
+          "type": "single",
+          "options": [
+            "相同输入总是产生相同输出，且无副作用",
+            "只能用纯数字计算",
+            "不能调用其他函数",
+            "必须是递归函数"
+          ],
+          "correctAnswer": 0,
+          "explanation": "纯函数：1) 引用透明（相同输入→相同输出）；2) 无副作用（不修改外部状态、不执行I/O）。优点：易测试、易推理、可缓存、可并行化。"
+        },
+        {
+          "question": "高阶函数（Higher-Order Function）是指？",
+          "type": "single",
+          "options": [
+            "接受函数作为参数或返回函数的函数",
+            "执行速度更快的函数",
+            "层次结构高的函数",
+            "复杂度高的函数"
+          ],
+          "correctAnswer": 0,
+          "explanation": "高阶函数：把函数当作数据（作为参数传入或作为返回值）。例子：map、filter、reduce。函数式编程的核心工具，实现代码复用和抽象。"
+        },
+        {
+          "question": "闭包（Closure）是什么？",
+          "type": "single",
+          "options": [
+            "函数及其引用的外部变量的组合",
+            "封闭的代码块",
+            "循环结构",
+            "异常处理机制"
+          ],
+          "correctAnswer": 0,
+          "explanation": "闭包：函数可以\"记住\"并访问其词法作用域中的变量，即使函数在该作用域外执行。用途：数据封装、工厂函数、回调。JavaScript、Python等支持闭包。"
+        },
+        {
+          "question": "Lambda表达式（Lambda Expression）的特点是？",
+          "type": "single",
+          "options": [
+            "匿名函数，可简洁地表示函数",
+            "必须有名字",
+            "只能用于数学计算",
+            "不能作为参数传递"
+          ],
+          "correctAnswer": 0,
+          "explanation": "Lambda表达式（匿名函数）：简洁地定义函数，常用于高阶函数。例子：Python的lambda x: x*2、Java的(x) -> x*2。来源于Lambda演算（图灵完备的计算模型）。"
+        },
+        {
+          "question": "惰性求值（Lazy Evaluation）的优点是？",
+          "type": "multiple",
+          "options": [
+            "节省计算资源（只计算需要的值）",
+            "支持无限数据结构",
+            "避免不必要的副作用",
+            "总是更快"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "惰性求值（延迟求值）：表达式不在绑定时求值，而在需要时才计算。优点：节省计算、支持无限列表、短路求值。Haskell默认惰性，其他语言需显式支持（如Python的生成器）。"
+        },
+        {
+          "question": "柯里化（Currying）是什么？",
+          "type": "single",
+          "options": [
+            "将多参数函数转换为一系列单参数函数",
+            "一种烹饪技术",
+            "循环优化技术",
+            "数据加密方法"
+          ],
+          "correctAnswer": 0,
+          "explanation": "柯里化：将f(x, y)转换为f(x)(y)。用途：部分应用（固定部分参数）、函数组合。例子：add(x, y) → add(x) → (y) → x+y。以逻辑学家Haskell Curry命名。"
+        },
+        {
+          "question": "递归（Recursion）的必要条件是？",
+          "type": "multiple",
+          "options": [
+            "基线条件（Base Case）",
+            "递归条件（Recursive Case）",
+            "问题规模逐渐缩小",
+            "必须使用循环"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "递归要素：1) 基线条件（终止条件）；2) 递归步骤（调用自身）；3) 问题规模递减（确保收敛）。递归替代循环，在函数式编程中常用。注意栈溢出风险。"
+        },
+        {
+          "question": "尾递归（Tail Recursion）相比普通递归的优势是？",
+          "type": "single",
+          "options": [
+            "可以优化为迭代，避免栈溢出",
+            "代码更短",
+            "更容易理解",
+            "总是更快"
+          ],
+          "correctAnswer": 0,
+          "explanation": "尾递归：递归调用是函数的最后一个操作（返回递归调用的结果）。编译器可优化为跳转（尾调用优化TCO），避免栈增长。Scheme、Scala等保证TCO，JavaScript、Python不保证。"
+        },
+        {
+          "question": "变量的作用域（Scope）类型包括？",
+          "type": "multiple",
+          "options": [
+            "词法作用域（Lexical Scope，静态）",
+            "动态作用域（Dynamic Scope）",
+            "全局作用域",
+            "局部作用域"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "作用域：变量可见性范围。词法作用域（大多数语言）：由代码结构决定。动态作用域（如早期Lisp）：由调用栈决定。全局/局部是作用域范围。"
+        },
+        {
+          "question": "变量的生命周期（Lifetime）是指？",
+          "type": "single",
+          "options": [
+            "变量从创建到销毁的时间段",
+            "变量名的长度",
+            "变量的类型",
+            "变量的作用域"
+          ],
+          "correctAnswer": 0,
+          "explanation": "生命周期：变量存在的时间段。如：局部变量（函数调用时创建，返回时销毁）、全局变量（程序启动到结束）、堆对象（new到GC回收）。作用域≠生命周期。"
+        },
+        {
+          "question": "内存管理的方式包括？",
+          "type": "multiple",
+          "options": [
+            "手动管理（如C的malloc/free）",
+            "垃圾回收（Garbage Collection，如Java、Python）",
+            "引用计数（Reference Counting，如Python、Swift）",
+            "所有权系统（Ownership，如Rust）"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "内存管理：手动（C/C++，灵活但易出错）、GC（自动回收，停顿）、引用计数（即时回收，循环引用问题）、所有权（Rust，编译时检查，零成本抽象）。"
+        },
+        {
+          "question": "垃圾回收的常见算法包括？",
+          "type": "multiple",
+          "options": [
+            "标记-清除（Mark-Sweep）",
+            "复制算法（Copying）",
+            "标记-整理（Mark-Compact）",
+            "分代收集（Generational）"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "GC算法：标记-清除（标记存活对象，清除其他）、复制（存活对象复制到新区）、标记-整理（清除后整理碎片）、分代（年轻代、老年代，利用对象生命周期特点）。"
+        },
+        {
+          "question": "异常处理机制的组成部分包括？",
+          "type": "multiple",
+          "options": [
+            "抛出异常（throw/raise）",
+            "捕获异常（try-catch）",
+            "finally子句（清理资源）",
+            "编译错误"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "异常处理：抛出（throw）→捕获（try-catch）→清理（finally）。目的：分离正常逻辑和错误处理。vs错误码：更清晰、强制处理（checked exception）。编译错误不是异常。"
+        },
+        {
+          "question": "反射（Reflection）的作用是？",
+          "type": "single",
+          "options": [
+            "程序在运行时检查和修改自身的结构和行为",
+            "代码的镜像复制",
+            "递归调用",
+            "性能优化技术"
+          ],
+          "correctAnswer": 0,
+          "explanation": "反射：运行时内省（introspection）和修改类型信息（类、方法、字段）。用途：框架（如Spring）、序列化、ORM。代价：性能损失、破坏封装、类型安全问题。"
+        },
+        {
+          "question": "元编程（Metaprogramming）是什么？",
+          "type": "single",
+          "options": [
+            "编写生成或操作程序的程序",
+            "编写元数据",
+            "高层编程",
+            "并行编程"
+          ],
+          "correctAnswer": 0,
+          "explanation": "元编程：程序把其他程序当作数据处理。形式：宏（C预处理器、Lisp）、模板（C++）、反射（Java）、代码生成。优点：抽象、避免重复。Lisp的\"代码即数据\"是典型。"
+        },
+        {
+          "question": "协程（Coroutine）和线程的区别是？",
+          "type": "single",
+          "options": [
+            "协程是用户态轻量级线程，可以暂停和恢复",
+            "协程比线程更重量级",
+            "协程需要操作系统支持",
+            "线程可以暂停，协程不可以"
+          ],
+          "correctAnswer": 0,
+          "explanation": "协程：用户态，轻量（数千个也可以），协作式调度（yield）。线程：内核态，重量级，抢占式调度。协程适合I/O密集，如异步编程（async/await）。Python、Go、Kotlin支持。"
+        },
+        {
+          "question": "宏（Macro）的作用是？",
+          "type": "single",
+          "options": [
+            "代码生成和转换，在编译前展开",
+            "函数的别名",
+            "性能优化",
+            "错误处理"
+          ],
+          "correctAnswer": 0,
+          "explanation": "宏：编译时代码变换。C预处理器宏（文本替换，不安全）、Lisp宏（操作语法树，强大）、Rust宏（卫生宏）。优点：元编程、DSL。缺点：调试困难、可能滥用。"
+        }
+      ]
+    }
+  ]
+}
+

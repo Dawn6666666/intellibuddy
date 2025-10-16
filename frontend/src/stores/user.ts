@@ -8,6 +8,7 @@ import {
     apiGetChats,
     apiNewChat,
     apiUpdateChat,
+    apiDeleteChat,
     apiGetRecommendedPath
 } from '@/services/apiService';
 import type {KnowledgePoint} from './knowledge';
@@ -18,6 +19,7 @@ export interface UserInfo {
     _id: string;
     username: string;
     email: string;
+    avatarUrl?: string;
 }
 
 export interface UserProgress {
@@ -82,24 +84,31 @@ export const useUserStore = defineStore('user', {
             if (!this.token) return;
             this.isLoading = true;
             const knowledgeStore = useKnowledgeStore();
+            
             try {
-                const [user, progressData, chats] = await Promise.all([
-                    apiGetMyProfile(this.token),
-                    apiGetUserProgress(this.token),
-                    apiGetChats(this.token),
-                    knowledgeStore.fetchKnowledgePoints()
-                ]);
+                // 第一阶段：只获取用户基本信息（快速登录）
+                this.user = await apiGetMyProfile(this.token);
+                
+                // 第二阶段：并行加载其他数据（后台加载，不阻塞登录）
+                Promise.all([
+                    apiGetUserProgress(this.token).then(progressData => {
+                        this.progress = new Map(progressData.map((p: UserProgress) => [p.pointId, p.status]));
+                    }),
+                    apiGetChats(this.token).then(chats => {
+                        this.chatSessions = chats;
+                        if (chats.length > 0) {
+                            this.loadChatSession(chats[0]._id);
+                        } else {
+                            this.startNewChat();
+                        }
+                    }),
+                    knowledgeStore.fetchKnowledgePoints(),
+                    this.fetchRecommendedPath()
+                ]).catch(err => {
+                    console.warn("部分数据加载失败，不影响登录:", err);
+                });
 
-                this.user = user;
-                this.progress = new Map(progressData.map((p: UserProgress) => [p.pointId, p.status]));
-                this.chatSessions = chats;
-
-                if (chats.length > 0) {
-                    this.loadChatSession(chats[0]._id);
-                } else {
-                    this.startNewChat();
-                }
-
+                // 生成模拟数据
                 this.skillMastery = [
                     {name: '编程基础', level: 85},
                     {name: '数据结构', level: 70},
@@ -110,12 +119,9 @@ export const useUserStore = defineStore('user', {
                 ];
                 this.studyActivityData = this.generateMockHeatmapData();
 
-                // 获取推荐路径
-                await this.fetchRecommendedPath();
-
             } catch (err) {
-                console.error("获取初始数据失败:", err);
-                this.logout();
+                console.error("获取用户信息失败:", err);
+                throw err; // 只有关键信息失败才抛出错误
             } finally {
                 this.isLoading = false;
             }
@@ -180,7 +186,17 @@ export const useUserStore = defineStore('user', {
                 const {token, user} = await apiLogin(credentials);
                 await this.handleAuth(token, user);
             } catch (err: any) {
-                this.error = err.response?.data?.message || '登录失败';
+                console.error("登录失败:", err);
+                // 更详细的错误处理
+                if (err.code === 'ECONNABORTED' || err.message?.includes('timeout')) {
+                    this.error = '登录超时，请检查网络连接';
+                } else if (err.code === 'ERR_NETWORK') {
+                    this.error = '网络连接失败，请稍后重试';
+                } else if (err.response?.status === 500) {
+                    this.error = '服务器错误，请稍后重试';
+                } else {
+                    this.error = err.response?.data?.message || '登录失败，请重试';
+                }
                 throw this.error;
             } finally {
                 this.isLoading = false;
@@ -250,6 +266,43 @@ export const useUserStore = defineStore('user', {
                 }
             } catch (error) {
                 console.error("保存聊天记录失败:", error);
+            }
+        },
+
+        async deleteChat(chatId: string) {
+            if (!this.token) {
+                throw new Error('未登录，无法删除聊天记录');
+            }
+
+            // 检查会话是否存在
+            const sessionExists = this.chatSessions.some(s => s._id === chatId);
+            if (!sessionExists) {
+                console.warn(`会话 ${chatId} 不存在，可能已被删除`);
+                return;
+            }
+
+            try {
+                // 调用API删除
+                await apiDeleteChat(this.token, chatId);
+                
+                // 从本地状态中移除该会话
+                this.chatSessions = this.chatSessions.filter(s => s._id !== chatId);
+                
+                // 如果删除的是当前活跃的会话，切换到其他会话或新建
+                if (this.activeChatId === chatId) {
+                    if (this.chatSessions.length > 0) {
+                        // 切换到第一个会话
+                        await this.loadChatSession(this.chatSessions[0]._id);
+                    } else {
+                        // 没有会话了，新建一个
+                        this.startNewChat();
+                    }
+                }
+                
+                console.log(`成功删除聊天记录: ${chatId}`);
+            } catch (error) {
+                console.error("删除聊天记录失败:", error);
+                throw error;
             }
         },
     },

@@ -22,35 +22,105 @@ intellibuddy/
 
 - Node.js >= 18.0.0
 - pnpm >= 8.0.0
-- MongoDB
+- MongoDB Atlas账号（免费）
+- AI API Key（Kimi/通义千问/智谱AI 任选其一）
 
 ### 安装依赖
 
 ```bash
 # 安装所有依赖
 pnpm install
-
-# 或手动安装
-cd frontend && pnpm install
-cd ../backend && pnpm install
 ```
+
+### 配置环境变量
+
+```bash
+# 1. 复制环境变量示例文件
+cd backend
+cp env.example .env
+
+# 2. 编辑 .env 文件，填写必需配置：
+#    - MONGO_URI（MongoDB Atlas 连接串）
+#    - JWT_SECRET（JWT密钥）
+#    - KIMI_API_KEY（或其他AI模型的Key）
+#    - FRONTEND_URL 和 BACKEND_URL
+```
+
+> 📖 详细配置说明见 [backend/env.example](backend/env.example)
 
 ### 开发模式
 
 ```bash
 # 同时启动前后端
-npm run dev
+pnpm dev
 
 # 或分别启动
-npm run dev:frontend  # 前端: http://localhost:5173
-npm run dev:backend   # 后端: http://localhost:5001
+pnpm dev:frontend  # 前端: http://localhost:5173
+pnpm dev:backend   # 后端: http://localhost:5001
+```
+
+### 初始化数据库
+
+```bash
+cd backend
+
+# 创建索引（必需）
+pnpm run db:indexes
+
+# 导入知识点数据（可选）
+pnpm run seed:all
 ```
 
 ### 构建生产版本
 
 ```bash
-npm run build
+pnpm build
 ```
+
+### 部署到 Vercel
+
+> 🚀 本项目已完成 Vercel 部署配置优化！
+
+#### 一键检查部署准备
+
+```bash
+node check-deployment.js
+```
+
+#### 快速部署
+
+1. **推送代码到 Git**
+   ```bash
+   git push origin main
+   ```
+
+2. **导入 Vercel**
+   - 访问 [Vercel](https://vercel.com)
+   - 导入你的仓库
+   - Framework 选择 "Other"
+
+3. **配置环境变量**（必需）
+   ```env
+   MONGO_URI=mongodb+srv://...
+   JWT_SECRET=生成的随机字符串
+   KIMI_API_KEY=your-api-key
+   FRONTEND_URL=https://your-app.vercel.app
+   BACKEND_URL=https://your-app.vercel.app
+   NODE_ENV=production
+   TRUST_PROXY=true
+   ```
+
+4. **部署**
+   - 点击 Deploy
+   - 首次部署后更新 URL 环境变量
+   - 重新部署
+
+#### 完整文档
+
+- 📖 [VERCEL_DEPLOYMENT_GUIDE.md](./VERCEL_DEPLOYMENT_GUIDE.md) - 完整部署指南
+- ⚡ [QUICK_DEPLOY.md](./QUICK_DEPLOY.md) - 快速部署清单
+- 🔧 [backend/env.example](./backend/env.example) - 环境变量说明
+- 📋 [docs/DEPLOYMENT_GUIDE.md](./docs/DEPLOYMENT_GUIDE.md) - 通用部署文档
 
 ## 技术栈
 

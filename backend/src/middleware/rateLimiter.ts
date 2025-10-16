@@ -64,7 +64,7 @@ class RateLimiter {
 // 创建不同类型的限流器
 export const globalLimiter = new RateLimiter(60000, 100); // 全局：每分钟100次
 export const aiLimiter = new RateLimiter(60000, 20); // AI接口：每分钟20次
-export const authLimiter = new RateLimiter(900000, 20); // 认证接口：每15分钟20次（放宽限制）
+export const authLimiter = new RateLimiter(300000, 10); // 认证接口：每5分钟10次（仅限登录/注册，不包括/me）
 
 /**
  * 限流中间件工厂

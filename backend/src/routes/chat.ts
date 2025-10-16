@@ -58,4 +58,21 @@ router.put('/:id', authMiddleware, async (req: Request, res: Response) => {
     }
 });
 
+router.delete('/:id', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const userId = req.user?._id;
+        const chatId = req.params.id;
+
+        const deletedChat = await Chat.findOneAndDelete({_id: chatId, userId});
+
+        if (!deletedChat) {
+            return res.status(404).json({message: '对话未找到或无权限删除'});
+        }
+
+        res.json({message: '对话删除成功', chatId: chatId});
+    } catch (error) {
+        res.status(500).json({message: '删除对话失败'});
+    }
+});
+
 export default router;

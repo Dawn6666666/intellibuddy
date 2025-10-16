@@ -19,7 +19,14 @@
             :class="{ 'active': session._id === userStore.activeChatId }"
             @click="loadChat(session._id)"
         >
-          {{ session.title }}
+          <span class="session-title">{{ session.title }}</span>
+          <button 
+            class="delete-chat-btn" 
+            @click="confirmDelete(session._id, $event)"
+            title="删除对话"
+          >
+            <i class="fa-solid fa-trash"></i>
+          </button>
         </li>
       </ul>
     </aside>
@@ -47,7 +54,7 @@
       <main class="chat-body" ref="chatBodyRef">
         <div class="message-list">
           <div
-              v-for="(message, index) in userStore.messages"
+              v-for="(message, index) in validMessages"
               :key="index"
               class="message"
               :class="message.role === 'user' ? 'sent' : 'received'"
@@ -78,6 +85,24 @@
       </footer>
       <div class="resize-handle"></div>
     </div>
+
+    <!-- 删除确认对话框 -->
+    <div v-if="showDeleteConfirm" class="modal-overlay" @click="cancelDelete">
+      <div class="modal-content" @click.stop>
+        <h3 class="modal-title">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          确认删除
+        </h3>
+        <p class="modal-message">确定要删除这个对话吗？此操作无法撤销。</p>
+        <div class="modal-actions">
+          <button class="btn-cancel" @click="cancelDelete" :disabled="isDeleting">取消</button>
+          <button class="btn-confirm" @click="executeDelete" :disabled="isDeleting">
+            <span v-if="!isDeleting">删除</span>
+            <span v-else><i class="fa-solid fa-spinner fa-spin"></i> 删除中...</span>
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -86,13 +111,50 @@ import { ref, nextTick, computed, onMounted, watch } from 'vue';
 import { useUserStore } from '@/stores/user';
 import { getChatCompletion, type ChatMessage } from '@/services/ai';
 import { marked } from 'marked';
+import markedKatex from 'marked-katex-extension';
 import { useDraggable, useBreakpoints } from '@vueuse/core';
 import aiLogo from '@/assets/images/ai-chat-logo.png';
+import 'katex/dist/katex.min.css';
+
+// 删除确认对话框状态
+const showDeleteConfirm = ref(false);
+const chatToDelete = ref<string | null>(null);
+const isDeleting = ref(false); // 防止重复删除
+
+// 配置 marked 以支持数学公式和 GitHub 风格的 Markdown
+marked.use(markedKatex({
+  throwOnError: false,
+  output: 'html',
+  nonStandard: true,
+  strict: false,
+  trust: true
+}));
+
+marked.setOptions({
+  gfm: true,
+  breaks: true,
+  pedantic: false,
+});
 
 const userStore = useUserStore();
 const userInput = ref('');
 const isLoading = ref(false);
 const chatBodyRef = ref<HTMLElement | null>();
+
+// 过滤掉 null 或 undefined 的消息，以及没有有效 role 或 content 的消息
+const validMessages = computed(() => {
+  return userStore.messages.filter(msg => {
+    // 确保消息对象存在，且有有效的 role 和 content
+    return msg !== null && 
+           msg !== undefined && 
+           typeof msg === 'object' &&
+           msg.role !== null && 
+           msg.role !== undefined &&
+           msg.content !== null && 
+           msg.content !== undefined &&
+           typeof msg.content === 'string';
+  });
+});
 
 const chatWindowRef = ref<HTMLElement | null>(null);
 const chatHeaderRef = ref<HTMLElement | null>(null);
@@ -113,7 +175,19 @@ const toggleMaximize = () => windowState.value = windowState.value === 'maximize
 const minimizeWindow = () => windowState.value = windowState.value === 'minimized' ? 'normal' : 'minimized';
 const closeChat = () => userStore.toggleChat(false);
 
-const renderMarkdown = (text: string) => marked.parse(text);
+const renderMarkdown = (text: string | undefined | null) => {
+  try {
+    // 如果文本为 null 或 undefined，返回空字符串
+    if (text === null || text === undefined || typeof text !== 'string') {
+      console.warn('Markdown 渲染警告: 文本为空或非字符串类型', text);
+      return '';
+    }
+    return marked.parse(text);
+  } catch (error) {
+    console.error('Markdown 渲染错误:', error);
+    return text || '';
+  }
+};
 
 const scrollToBottom = () => {
   nextTick(() => {
@@ -156,6 +230,33 @@ const startNewChat = () => {
 
 const loadChat = (sessionId: string) => {
   userStore.loadChatSession(sessionId);
+};
+
+const confirmDelete = (sessionId: string, event: Event) => {
+  event.stopPropagation(); // 阻止事件冒泡，防止触发 loadChat
+  chatToDelete.value = sessionId;
+  showDeleteConfirm.value = true;
+};
+
+const cancelDelete = () => {
+  showDeleteConfirm.value = false;
+  chatToDelete.value = null;
+};
+
+const executeDelete = async () => {
+  if (chatToDelete.value && !isDeleting.value) {
+    isDeleting.value = true; // 设置删除中状态
+    try {
+      await userStore.deleteChat(chatToDelete.value);
+      showDeleteConfirm.value = false;
+      chatToDelete.value = null;
+    } catch (error) {
+      console.error('删除失败:', error);
+      alert('删除失败，请重试');
+    } finally {
+      isDeleting.value = false; // 无论成功失败都重置状态
+    }
+  }
 };
 </script>
 
@@ -247,11 +348,39 @@ const loadChat = (sessionId: string) => {
   font-size: 14px;
   border-radius: 6px;
   cursor: pointer;
+  color: var(--text-secondary);
+  transition: background-color 0.2s ease, color 0.2s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.history-list li .session-title {
+  flex: 1;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.history-list li .delete-chat-btn {
+  background: none;
+  border: none;
   color: var(--text-secondary);
-  transition: background-color 0.2s ease, color 0.2s ease;
+  cursor: pointer;
+  padding: 4px 6px;
+  font-size: 12px;
+  opacity: 0;
+  transition: opacity 0.2s ease, color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.history-list li:hover .delete-chat-btn {
+  opacity: 1;
+}
+
+.history-list li .delete-chat-btn:hover {
+  color: #ff4444;
 }
 
 .history-list li:hover {
@@ -263,6 +392,15 @@ const loadChat = (sessionId: string) => {
   background: var(--primary-color);
   color: white;
   font-weight: 500;
+}
+
+.history-list li.active .delete-chat-btn {
+  color: rgba(255, 255, 255, 0.7);
+  opacity: 1;
+}
+
+.history-list li.active .delete-chat-btn:hover {
+  color: white;
 }
 
 /* --- 主聊天区域样式 --- */
@@ -357,5 +495,236 @@ const loadChat = (sessionId: string) => {
 
 .chat-window.minimized .chat-main {
   width: 100%;
+}
+
+/* --- Markdown 样式 --- */
+.markdown-body {
+  line-height: 1.7;
+  color: inherit;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.markdown-body :deep(h1),
+.markdown-body :deep(h2),
+.markdown-body :deep(h3),
+.markdown-body :deep(h4) {
+  margin-top: 16px;
+  margin-bottom: 12px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.markdown-body :deep(h1) { font-size: 1.5em; }
+.markdown-body :deep(h2) { font-size: 1.3em; }
+.markdown-body :deep(h3) { font-size: 1.15em; }
+.markdown-body :deep(h4) { font-size: 1em; }
+
+.markdown-body :deep(p) {
+  margin: 0.5em 0;
+  line-height: 1.6;
+}
+
+.markdown-body :deep(ul),
+.markdown-body :deep(ol) {
+  margin: 0.5em 0;
+  padding-left: 1.5em;
+}
+
+.markdown-body :deep(li) {
+  margin: 0.25em 0;
+}
+
+.markdown-body :deep(code) {
+  background: rgba(0, 0, 0, 0.1);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: 'Fira Code', Consolas, 'Courier New', monospace;
+  font-size: 0.9em;
+}
+
+.markdown-body :deep(pre) {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 12px;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin: 0.5em 0;
+}
+
+.markdown-body :deep(pre code) {
+  background: transparent;
+  padding: 0;
+  font-size: 0.85em;
+  display: block;
+}
+
+.markdown-body :deep(blockquote) {
+  border-left: 3px solid var(--primary-color);
+  padding-left: 1em;
+  margin: 0.5em 0;
+  color: var(--text-secondary);
+}
+
+.markdown-body :deep(table) {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 0.5em 0;
+  font-size: 0.9em;
+}
+
+.markdown-body :deep(th),
+.markdown-body :deep(td) {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 6px 10px;
+  text-align: left;
+}
+
+.markdown-body :deep(th) {
+  background: rgba(138, 127, 251, 0.1);
+  font-weight: 600;
+}
+
+.markdown-body :deep(a) {
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+.markdown-body :deep(a:hover) {
+  text-decoration: underline;
+}
+
+/* KaTeX 公式样式 */
+.markdown-body :deep(.katex) {
+  font-size: 1em;
+}
+
+.markdown-body :deep(.katex-display) {
+  margin: 0.8em 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/* 在用户消息中使用浅色代码背景 */
+.message.sent .markdown-body :deep(code) {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.message.sent .markdown-body :deep(pre) {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* --- 模态框样式 --- */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-content {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--border-radius);
+  padding: 24px;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-title {
+  margin: 0 0 16px 0;
+  font-size: 1.25rem;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.modal-title i {
+  color: #ff9800;
+  font-size: 1.5rem;
+}
+
+.modal-message {
+  margin: 0 0 24px 0;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.modal-actions button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.btn-cancel {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+}
+
+.btn-cancel:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.btn-confirm {
+  background: #ff4444;
+  color: white;
+}
+
+.btn-confirm:hover:not(:disabled) {
+  background: #ff2222;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 68, 68, 0.4);
+}
+
+.btn-cancel:disabled,
+.btn-confirm:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-confirm:disabled {
+  background: #cc3333;
 }
 </style>

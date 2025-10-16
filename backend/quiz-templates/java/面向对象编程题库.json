@@ -1,0 +1,360 @@
+{
+  "题库说明": "本题库对应《面向对象编程 (cs202)》知识点，涵盖面向对象基本概念、类与对象、继承、多态、接口、设计模式等内容。",
+  "题库": [
+    {
+      "pointId": "cs202",
+      "pointTitle": "面向对象编程",
+      "quiz": [
+        {
+          "question": "面向对象编程的三大特性是？",
+          "type": "multiple",
+          "options": [
+            "封装（Encapsulation）",
+            "继承（Inheritance）",
+            "多态（Polymorphism）",
+            "递归（Recursion）"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "OOP三大特性：封装（隐藏内部实现）、继承（代码复用）、多态（同一接口不同实现）。递归是编程技术，不是OOP特性。"
+        },
+        {
+          "question": "封装（Encapsulation）的主要目的是？",
+          "type": "single",
+          "options": [
+            "隐藏内部实现细节，只暴露必要接口",
+            "提高代码运行速度",
+            "减少代码行数",
+            "简化语法"
+          ],
+          "correctAnswer": 0,
+          "explanation": "封装将数据和操作数据的方法封装在一起，隐藏内部实现，只通过公共接口访问。优点：降低耦合、提高安全性、便于维护。"
+        },
+        {
+          "question": "类（Class）和对象（Object）的关系是？",
+          "type": "single",
+          "options": [
+            "类是对象的模板，对象是类的实例",
+            "对象是类的模板，类是对象的实例",
+            "类和对象完全相同",
+            "类比对象更具体"
+          ],
+          "correctAnswer": 0,
+          "explanation": "类是抽象的模板（定义属性和方法），对象是类的具体实例（占用内存）。一个类可以创建多个对象。"
+        },
+        {
+          "question": "访问修饰符的作用范围从小到大排序正确的是？",
+          "type": "single",
+          "options": [
+            "private < default(包) < protected < public",
+            "private < protected < default < public",
+            "public < protected < default < private",
+            "default < private < protected < public"
+          ],
+          "correctAnswer": 0,
+          "explanation": "访问范围：private（仅本类）< default/包级（同包）< protected（同包+子类）< public（所有）。"
+        },
+        {
+          "question": "构造函数（Constructor）的特点包括？",
+          "type": "multiple",
+          "options": [
+            "与类名相同",
+            "没有返回类型（连void也没有）",
+            "创建对象时自动调用",
+            "可以重载"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "构造函数特点：与类名同名、无返回类型、创建对象时调用、可重载。若不定义，系统提供默认无参构造函数。"
+        },
+        {
+          "question": "this关键字的作用包括？",
+          "type": "multiple",
+          "options": [
+            "引用当前对象",
+            "区分成员变量和局部变量",
+            "调用本类其他构造函数",
+            "访问父类成员"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "this的用法：1) 引用当前对象；2) 区分同名变量（this.name = name）；3) 构造函数中调用其他构造函数（this()）。访问父类用super。"
+        },
+        {
+          "question": "static关键字修饰的成员有什么特点？",
+          "type": "multiple",
+          "options": [
+            "属于类而非对象",
+            "所有对象共享同一份",
+            "可以通过类名直接访问",
+            "可以访问非静态成员"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "static成员：属于类（类变量/类方法）、所有对象共享、通过类名访问、在类加载时初始化。静态方法不能直接访问非静态成员。"
+        },
+        {
+          "question": "final关键字的作用包括？",
+          "type": "multiple",
+          "options": [
+            "修饰类：不能被继承",
+            "修饰方法：不能被重写",
+            "修饰变量：不能被修改（常量）",
+            "修饰对象：不能被回收"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "final的作用：类→不可继承（如String）、方法→不可重写、变量→常量（基本类型值不变，引用类型引用不变但对象可变）。"
+        },
+        {
+          "question": "继承（Inheritance）的主要优点是？",
+          "type": "multiple",
+          "options": [
+            "代码复用",
+            "提高可扩展性",
+            "建立类之间的层次关系",
+            "减少编译时间"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "继承的优点：代码复用（子类继承父类）、扩展性（添加新功能）、建立is-a关系。缺点：耦合度高、破坏封装。"
+        },
+        {
+          "question": "Java中一个类可以继承多少个父类？",
+          "type": "single",
+          "options": [
+            "1个（单继承）",
+            "2个",
+            "多个（多继承）",
+            "0个"
+          ],
+          "correctAnswer": 0,
+          "explanation": "Java只支持单继承（一个类只能有一个直接父类），避免多继承的菱形问题。但一个类可以实现多个接口（接口多实现）。"
+        },
+        {
+          "question": "super关键字的作用包括？",
+          "type": "multiple",
+          "options": [
+            "调用父类的构造函数",
+            "访问父类的成员变量",
+            "调用父类的方法",
+            "创建父类对象"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "super的用法：1) super()调用父类构造函数（必须在子类构造函数首行）；2) super.变量访问父类成员；3) super.方法()调用父类方法。不能创建对象。"
+        },
+        {
+          "question": "方法重载（Overloading）的条件是？",
+          "type": "single",
+          "options": [
+            "方法名相同，参数列表不同",
+            "方法名不同，参数列表相同",
+            "方法名和参数都相同，返回类型不同",
+            "方法名相同即可"
+          ],
+          "correctAnswer": 0,
+          "explanation": "方法重载：同一类中，方法名相同，参数列表不同（个数、类型或顺序）。返回类型和访问修饰符可以不同，但不能仅凭返回类型区分。"
+        },
+        {
+          "question": "方法重写（Overriding）的规则包括？",
+          "type": "multiple",
+          "options": [
+            "方法签名必须相同（方法名+参数列表）",
+            "访问权限不能更严格",
+            "返回类型相同或是子类型（协变）",
+            "可以抛出更多的异常"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "方法重写规则：1) 签名相同（@Override注解）；2) 访问权限≥父类；3) 返回类型相同或协变；4) 抛出异常≤父类。私有/静态/final方法不能重写。"
+        },
+        {
+          "question": "多态（Polymorphism）的实现方式包括？",
+          "type": "multiple",
+          "options": [
+            "方法重写（运行时多态）",
+            "方法重载（编译时多态）",
+            "接口实现",
+            "构造函数重载"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "多态的实现：1) 重写（运行时/动态多态）；2) 重载（编译时/静态多态）；3) 接口多实现。多态的前提：继承/实现、重写、父类引用指向子类对象。"
+        },
+        {
+          "question": "以下关于多态的说法，哪些是正确的？",
+          "type": "multiple",
+          "options": [
+            "多态可以提高代码的灵活性和可扩展性",
+            "父类引用可以指向子类对象",
+            "通过父类引用可以调用子类特有的方法",
+            "方法调用在运行时动态绑定"
+          ],
+          "correctAnswer": [0, 1, 3],
+          "explanation": "多态特点：提高灵活性、向上转型（父类引用指向子类对象）、动态绑定（运行时确定调用哪个方法）。但不能直接调用子类特有方法（需向下转型）。"
+        },
+        {
+          "question": "向上转型（Upcasting）和向下转型（Downcasting）的区别是？",
+          "type": "single",
+          "options": [
+            "向上转型是子类→父类（自动），向下转型是父类→子类（需强制）",
+            "向上转型是父类→子类，向下转型是子类→父类",
+            "两者完全相同",
+            "向上转型需要强制类型转换"
+          ],
+          "correctAnswer": 0,
+          "explanation": "向上转型：子类→父类（自动、安全）。向下转型：父类→子类（强制、可能ClassCastException，建议用instanceof检查）。"
+        },
+        {
+          "question": "抽象类（Abstract Class）的特点包括？",
+          "type": "multiple",
+          "options": [
+            "不能被实例化",
+            "可以包含抽象方法和具体方法",
+            "可以有构造函数",
+            "子类必须实现所有抽象方法（除非子类也是抽象类）"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "抽象类特点：不能实例化、可以有抽象/具体方法、可以有构造函数（供子类调用）、可以有成员变量。子类必须实现抽象方法或声明为抽象类。"
+        },
+        {
+          "question": "接口（Interface）的特点包括？（Java 8+）",
+          "type": "multiple",
+          "options": [
+            "所有方法默认是public abstract（Java 8前）",
+            "可以包含default方法和static方法（Java 8+）",
+            "成员变量默认是public static final",
+            "一个类可以实现多个接口"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "接口特点：方法默认public abstract（Java 8可有default/static方法）、变量默认public static final、支持多实现。Java 9+支持private方法。"
+        },
+        {
+          "question": "抽象类和接口的主要区别是？",
+          "type": "multiple",
+          "options": [
+            "抽象类可以有构造函数，接口不能",
+            "类只能继承一个抽象类，但可以实现多个接口",
+            "抽象类可以有成员变量，接口只能有常量",
+            "接口更强调\"能做什么\"（has-a），抽象类强调\"是什么\"（is-a）"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "抽象类vs接口：单继承vs多实现、可以有构造函数vs不能、可以有实例变量vs只有常量、is-a关系vs has-a关系。Java 8后接口可有默认方法，差距缩小。"
+        },
+        {
+          "question": "内部类（Inner Class）的类型包括？",
+          "type": "multiple",
+          "options": [
+            "成员内部类",
+            "局部内部类",
+            "匿名内部类",
+            "静态内部类"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "内部类类型：1) 成员内部类（依赖外部对象）；2) 局部内部类（方法中）；3) 匿名内部类（无名字，常用于回调）；4) 静态内部类（不依赖外部对象）。"
+        },
+        {
+          "question": "单例模式（Singleton Pattern）的目的是？",
+          "type": "single",
+          "options": [
+            "确保一个类只有一个实例，并提供全局访问点",
+            "创建一组相关对象",
+            "定义一系列算法",
+            "将对象的创建延迟到子类"
+          ],
+          "correctAnswer": 0,
+          "explanation": "单例模式：保证一个类只有一个实例（私有构造函数+静态实例）。实现方式：饿汉式（类加载时创建）、懒汉式（首次使用时创建）、双检锁、静态内部类。"
+        },
+        {
+          "question": "工厂模式（Factory Pattern）的主要优点是？",
+          "type": "single",
+          "options": [
+            "将对象的创建和使用分离，降低耦合",
+            "确保只有一个实例",
+            "动态地给对象添加功能",
+            "定义对象间的一对多依赖"
+          ],
+          "correctAnswer": 0,
+          "explanation": "工厂模式：封装对象创建过程，客户端通过工厂获取对象，不直接new。优点：解耦、扩展性好。分为简单工厂、工厂方法、抽象工厂。"
+        },
+        {
+          "question": "观察者模式（Observer Pattern）适用于什么场景？",
+          "type": "single",
+          "options": [
+            "一个对象状态改变时，需要通知多个依赖对象",
+            "将复杂对象的构建和表示分离",
+            "为对象提供代理以控制访问",
+            "动态地给对象添加职责"
+          ],
+          "correctAnswer": 0,
+          "explanation": "观察者模式（发布-订阅）：定义对象间的一对多依赖，当主题（Subject）状态改变时，自动通知所有观察者（Observer）。应用：事件监听、MVC。"
+        },
+        {
+          "question": "装饰器模式（Decorator Pattern）的作用是？",
+          "type": "single",
+          "options": [
+            "动态地给对象添加额外的职责",
+            "将对象的创建延迟到子类",
+            "提供对象的代理",
+            "定义算法族"
+          ],
+          "correctAnswer": 0,
+          "explanation": "装饰器模式：动态地给对象添加功能，比继承更灵活（避免类爆炸）。例子：Java的I/O流（BufferedReader包装FileReader）、咖啡加配料。"
+        },
+        {
+          "question": "策略模式（Strategy Pattern）的核心思想是？",
+          "type": "single",
+          "options": [
+            "定义算法族，并使它们可以互换",
+            "将对象的创建和使用分离",
+            "为对象提供代理",
+            "确保只有一个实例"
+          ],
+          "correctAnswer": 0,
+          "explanation": "策略模式：定义一系列算法，封装起来，使它们可以互换。客户端通过接口使用算法，运行时可切换。优点：避免多重条件语句、符合开闭原则。"
+        },
+        {
+          "question": "适配器模式（Adapter Pattern）的目的是？",
+          "type": "single",
+          "options": [
+            "将一个类的接口转换成客户期望的另一个接口",
+            "创建一组相关对象",
+            "动态地给对象添加功能",
+            "定义对象间的依赖关系"
+          ],
+          "correctAnswer": 0,
+          "explanation": "适配器模式：将不兼容的接口转换为兼容的接口，使原本不能一起工作的类可以协同工作。分为类适配器（继承）和对象适配器（组合）。"
+        },
+        {
+          "question": "面向对象设计的SOLID原则包括？",
+          "type": "multiple",
+          "options": [
+            "单一职责原则（Single Responsibility）",
+            "开闭原则（Open/Closed）",
+            "里氏替换原则（Liskov Substitution）",
+            "依赖倒置原则（Dependency Inversion）"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "SOLID原则：S单一职责、O开闭（对扩展开放、对修改关闭）、L里氏替换（子类可替换父类）、I接口隔离、D依赖倒置（依赖抽象不依赖具体）。"
+        },
+        {
+          "question": "组合优于继承（Composition over Inheritance）的原因是？",
+          "type": "multiple",
+          "options": [
+            "降低耦合度",
+            "更灵活（运行时可以改变行为）",
+            "避免继承层次过深",
+            "避免父类修改影响子类"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "组合优于继承：继承是白盒复用（耦合高）、编译时确定，组合是黑盒复用（耦合低）、运行时可变。但继承更直观、能利用多态。两者结合使用。"
+        },
+        {
+          "question": "依赖注入（Dependency Injection）的优点包括？",
+          "type": "multiple",
+          "options": [
+            "降低耦合度",
+            "提高可测试性",
+            "提高可维护性",
+            "符合依赖倒置原则"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "依赖注入（DI）：不在类内部创建依赖对象，而是从外部注入。方式：构造函数注入、setter注入、接口注入。优点：解耦、易测试、易维护。Spring框架核心特性。"
+        }
+      ]
+    }
+  ]
+}
+

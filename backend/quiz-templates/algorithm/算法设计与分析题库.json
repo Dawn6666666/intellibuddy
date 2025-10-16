@@ -1,0 +1,360 @@
+{
+  "题库说明": "本题库对应《算法设计与分析 (cs204)》知识点，涵盖算法分析、分治法、动态规划、贪心算法、图算法等内容。",
+  "题库": [
+    {
+      "pointId": "cs204",
+      "pointTitle": "算法设计与分析",
+      "quiz": [
+        {
+          "question": "算法的时间复杂度主要考察什么？",
+          "type": "single",
+          "options": [
+            "算法执行时间随输入规模增长的趋势",
+            "算法的实际执行时间",
+            "算法的代码行数",
+            "算法使用的内存空间"
+          ],
+          "correctAnswer": 0,
+          "explanation": "时间复杂度用大O表示法描述算法执行时间随输入规模n增长的趋势，关注增长率而非具体时间。"
+        },
+        {
+          "question": "以下排序算法中，哪些是稳定排序？",
+          "type": "multiple",
+          "options": [
+            "冒泡排序",
+            "归并排序",
+            "快速排序",
+            "插入排序"
+          ],
+          "correctAnswer": [0, 1, 3],
+          "explanation": "稳定排序（相同元素相对位置不变）：冒泡、插入、归并、基数排序。不稳定：快速、选择、堆排序。"
+        },
+        {
+          "question": "快速排序的平均时间复杂度是？",
+          "type": "single",
+          "options": [
+            "$O(n\\\\log n)$",
+            "$O(n^2)$",
+            "$O(n)$",
+            "$O(\\\\log n)$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "快速排序平均 $O(n\\\\log n)$，最坏 $O(n^2)$（每次选到最值作pivot）。通过随机选pivot或三数取中可避免最坏情况。"
+        },
+        {
+          "question": "归并排序的时间复杂度和空间复杂度分别是？",
+          "type": "single",
+          "options": [
+            "时间 $O(n\\\\log n)$，空间 $O(n)$",
+            "时间 $O(n^2)$，空间 $O(1)$",
+            "时间 $O(n\\\\log n)$，空间 $O(1)$",
+            "时间 $O(n)$，空间 $O(n)$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "归并排序：时间复杂度始终 $O(n\\\\log n)$（稳定性能），空间复杂度 $O(n)$（需要辅助数组），不是原地排序。"
+        },
+        {
+          "question": "堆排序的时间复杂度是？",
+          "type": "single",
+          "options": [
+            "$O(n\\\\log n)$",
+            "$O(n^2)$",
+            "$O(n)$",
+            "$O(\\\\log n)$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "堆排序：时间复杂度 $O(n\\\\log n)$（建堆 $O(n)$ + n次删除 $O(n\\\\log n)$），空间 $O(1)$（原地排序），不稳定。"
+        },
+        {
+          "question": "分治法（Divide and Conquer）的基本步骤是？",
+          "type": "multiple",
+          "options": [
+            "分解（Divide）- 将问题分解为子问题",
+            "解决（Conquer）- 递归解决子问题",
+            "合并（Combine）- 合并子问题的解",
+            "回溯 - 撤销错误决策"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "分治法三步骤：1) 分解成更小的子问题；2) 递归解决子问题；3) 合并子问题的解。典型应用：归并排序、快速排序、二分查找。"
+        },
+        {
+          "question": "以下哪些算法使用了分治策略？",
+          "type": "multiple",
+          "options": [
+            "归并排序",
+            "快速排序",
+            "二分查找",
+            "冒泡排序"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "分治算法：归并排序（分成两半、递归排序、合并）、快速排序（pivot分区、递归排序）、二分查找。冒泡排序是简单交换排序。"
+        },
+        {
+          "question": "动态规划（Dynamic Programming）的核心思想是？",
+          "type": "single",
+          "options": [
+            "将问题分解为重叠子问题，存储子问题的解避免重复计算",
+            "随机选择解决方案",
+            "总是选择当前最优解",
+            "回溯所有可能的解"
+          ],
+          "correctAnswer": 0,
+          "explanation": "动态规划核心：1) 最优子结构（最优解包含子问题最优解）；2) 重叠子问题（子问题重复出现）；3) 记忆化（存储已解决的子问题）。"
+        },
+        {
+          "question": "动态规划和分治法的主要区别是？",
+          "type": "single",
+          "options": [
+            "动态规划的子问题重叠，分治法的子问题独立",
+            "动态规划更快",
+            "分治法使用递归，动态规划不使用",
+            "两者完全相同"
+          ],
+          "correctAnswer": 0,
+          "explanation": "关键区别：动态规划的子问题重叠（通过存储避免重复计算），分治法的子问题相互独立。动态规划可用递归（自顶向下）或迭代（自底向上）。"
+        },
+        {
+          "question": "以下哪些问题适合用动态规划解决？",
+          "type": "multiple",
+          "options": [
+            "斐波那契数列",
+            "背包问题",
+            "最长公共子序列",
+            "快速排序"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "经典DP问题：斐波那契、背包（0-1、完全）、最长公共子序列/子串、编辑距离、矩阵链乘法、最短路径（Floyd）。快速排序用分治。"
+        },
+        {
+          "question": "0-1背包问题的时间复杂度是？（n个物品，容量W）",
+          "type": "single",
+          "options": [
+            "$O(nW)$",
+            "$O(n^2)$",
+            "$O(n\\\\log n)$",
+            "$O(2^n)$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "0-1背包的动态规划解法：时间复杂度 $O(nW)$，空间可优化到 $O(W)$（滚动数组）。暴力枚举是 $O(2^n)$。"
+        },
+        {
+          "question": "贪心算法（Greedy Algorithm）的特点是？",
+          "type": "single",
+          "options": [
+            "每一步选择当前最优解，不回溯",
+            "考虑所有可能的解",
+            "总能得到全局最优解",
+            "需要存储所有子问题的解"
+          ],
+          "correctAnswer": 0,
+          "explanation": "贪心算法：每步做出当前最优选择（局部最优），不回溯。不一定得到全局最优解，需证明贪心选择性质和最优子结构。"
+        },
+        {
+          "question": "以下哪些问题可以用贪心算法得到最优解？",
+          "type": "multiple",
+          "options": [
+            "活动选择问题",
+            "哈夫曼编码",
+            "最小生成树（Prim、Kruskal）",
+            "0-1背包问题"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "贪心最优的问题：活动选择、哈夫曼编码、最小生成树、单源最短路径（Dijkstra）、分数背包。0-1背包需要动态规划（贪心不保证最优）。"
+        },
+        {
+          "question": "回溯法（Backtracking）的核心思想是？",
+          "type": "single",
+          "options": [
+            "试探性地搜索解空间，遇到不满足约束就回退",
+            "总是选择最优解",
+            "存储所有子问题的解",
+            "随机搜索"
+          ],
+          "correctAnswer": 0,
+          "explanation": "回溯法：在解空间树上进行深度优先搜索，遇到不满足约束的节点就剪枝回退。适用于组合优化问题，如N皇后、图着色。"
+        },
+        {
+          "question": "深度优先搜索（DFS）和广度优先搜索（BFS）的主要区别是？",
+          "type": "single",
+          "options": [
+            "DFS使用栈（或递归），BFS使用队列",
+            "DFS使用队列，BFS使用栈",
+            "DFS更快",
+            "BFS不能遍历所有节点"
+          ],
+          "correctAnswer": 0,
+          "explanation": "DFS：用栈（或递归），先深入到底再回溯，空间 $O(h)$（h是深度）。BFS：用队列，逐层遍历，空间 $O(w)$（w是宽度），可找最短路径。"
+        },
+        {
+          "question": "Dijkstra算法用于解决什么问题？",
+          "type": "single",
+          "options": [
+            "单源最短路径（非负权图）",
+            "最小生成树",
+            "拓扑排序",
+            "最大流"
+          ],
+          "correctAnswer": 0,
+          "explanation": "Dijkstra算法：求单源最短路径（权值非负），贪心策略，时间复杂度 $O((V+E)\\\\log V)$（优先队列）或 $O(V^2)$（邻接矩阵）。"
+        },
+        {
+          "question": "Bellman-Ford算法相比Dijkstra的优势是？",
+          "type": "single",
+          "options": [
+            "可以处理负权边，并检测负权环",
+            "速度更快",
+            "空间复杂度更低",
+            "只能处理无向图"
+          ],
+          "correctAnswer": 0,
+          "explanation": "Bellman-Ford：可处理负权边，能检测负权环，时间复杂度 $O(VE)$（比Dijkstra慢）。Dijkstra不能处理负权边。"
+        },
+        {
+          "question": "Floyd-Warshall算法用于解决什么问题？",
+          "type": "single",
+          "options": [
+            "所有顶点对之间的最短路径",
+            "单源最短路径",
+            "最小生成树",
+            "拓扑排序"
+          ],
+          "correctAnswer": 0,
+          "explanation": "Floyd-Warshall：求所有顶点对的最短路径（全源最短路径），动态规划，时间复杂度 $O(V^3)$，可处理负权边。"
+        },
+        {
+          "question": "Prim算法和Kruskal算法都用于求什么？",
+          "type": "single",
+          "options": [
+            "最小生成树（MST）",
+            "最短路径",
+            "最大流",
+            "拓扑排序"
+          ],
+          "correctAnswer": 0,
+          "explanation": "最小生成树（MST）算法：Prim（从顶点出发，逐步扩展）和Kruskal（从边出发，按权值排序）。都是贪心算法，时间复杂度 $O(E\\\\log V)$。"
+        },
+        {
+          "question": "Prim算法和Kruskal算法的主要区别是？",
+          "type": "single",
+          "options": [
+            "Prim以顶点为中心，Kruskal以边为中心",
+            "Prim用于有向图，Kruskal用于无向图",
+            "Prim比Kruskal快",
+            "两者完全相同"
+          ],
+          "correctAnswer": 0,
+          "explanation": "Prim：从一个顶点开始，逐步加入最近的顶点（适合稠密图）。Kruskal：按边权排序，逐步加入不形成环的边（适合稀疏图，需要并查集）。"
+        },
+        {
+          "question": "拓扑排序适用于什么类型的图？",
+          "type": "single",
+          "options": [
+            "有向无环图（DAG）",
+            "有向有环图",
+            "无向图",
+            "完全图"
+          ],
+          "correctAnswer": 0,
+          "explanation": "拓扑排序：将有向无环图（DAG）的顶点排成线性序列，使得所有边 $(u, v)$ 中 $u$ 在 $v$ 前面。用于任务调度、课程安排等。"
+        },
+        {
+          "question": "判断图中是否存在环，可以使用什么方法？",
+          "type": "multiple",
+          "options": [
+            "深度优先搜索（DFS）",
+            "拓扑排序",
+            "并查集",
+            "广度优先搜索（BFS）"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "检测环：有向图用DFS（检测回边）或拓扑排序（无法完成则有环）；无向图用DFS或并查集（Union-Find）。"
+        },
+        {
+          "question": "二分查找的时间复杂度是？",
+          "type": "single",
+          "options": [
+            "$O(\\\\log n)$",
+            "$O(n)$",
+            "$O(n\\\\log n)$",
+            "$O(1)$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "二分查找（Binary Search）：在有序数组中查找，每次排除一半，时间复杂度 $O(\\\\log n)$。前提是数组已排序。"
+        },
+        {
+          "question": "哈希表的平均查找时间复杂度是？",
+          "type": "single",
+          "options": [
+            "$O(1)$",
+            "$O(\\\\log n)$",
+            "$O(n)$",
+            "$O(n\\\\log n)$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "哈希表（Hash Table）：平均查找/插入/删除时间 $O(1)$，最坏情况 $O(n)$（所有元素哈希到同一位置）。需要好的哈希函数和合适的负载因子。"
+        },
+        {
+          "question": "平衡二叉搜索树（如AVL树、红黑树）的查找时间复杂度是？",
+          "type": "single",
+          "options": [
+            "$O(\\\\log n)$",
+            "$O(n)$",
+            "$O(1)$",
+            "$O(n\\\\log n)$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "平衡BST（AVL、红黑树）：保持树高度 $O(\\\\log n)$，查找/插入/删除都是 $O(\\\\log n)$。普通BST最坏退化为链表 $O(n)$。"
+        },
+        {
+          "question": "字符串匹配的KMP算法相比朴素算法的优势是？",
+          "type": "single",
+          "options": [
+            "利用已匹配信息，避免重复比较，时间复杂度 $O(m+n)$",
+            "空间复杂度更低",
+            "实现更简单",
+            "只能匹配单个字符"
+          ],
+          "correctAnswer": 0,
+          "explanation": "KMP算法：通过next数组（失配函数）利用已匹配信息，避免回溯。时间复杂度 $O(m+n)$（朴素算法 $O(mn)$）。"
+        },
+        {
+          "question": "主定理（Master Theorem）用于什么？",
+          "type": "single",
+          "options": [
+            "分析分治算法的时间复杂度",
+            "计算空间复杂度",
+            "设计动态规划算法",
+            "优化贪心算法"
+          ],
+          "correctAnswer": 0,
+          "explanation": "主定理：用于分析递归关系式 $T(n) = aT(n/b) + f(n)$ 的渐近复杂度。适用于分治算法（如归并排序、快速排序）。"
+        },
+        {
+          "question": "分支限界法（Branch and Bound）与回溯法的区别是？",
+          "type": "single",
+          "options": [
+            "分支限界用广度优先搜索（BFS），回溯法用深度优先搜索（DFS）",
+            "分支限界用DFS，回溯法用BFS",
+            "两者完全相同",
+            "分支限界只能求最优解"
+          ],
+          "correctAnswer": 0,
+          "explanation": "分支限界：用BFS（队列）或最佳优先搜索（优先队列），常用于最优化问题。回溯：用DFS（栈或递归），常用于可行解枚举。"
+        },
+        {
+          "question": "P问题和NP问题的关系是？",
+          "type": "single",
+          "options": [
+            "P问题是NP问题的子集",
+            "NP问题是P问题的子集",
+            "P和NP没有交集",
+            "P = NP已被证明"
+          ],
+          "correctAnswer": 0,
+          "explanation": "P（多项式时间可解）⊆ NP（多项式时间可验证）。P = NP？是计算机科学的千禧年难题，尚未解决。NP完全问题是NP中最难的。"
+        }
+      ]
+    }
+  ]
+}
+

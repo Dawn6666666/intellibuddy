@@ -17,9 +17,6 @@
         <router-link :to="{ name: 'wrong-questions' }" class="nav-item">
           <i class="fa-solid fa-book-bookmark"></i> 错题本
         </router-link>
-        <router-link :to="{ name: 'code-explainer' }" class="nav-item">
-          <i class="fa-solid fa-code"></i> 代码解释器
-        </router-link>
       </nav>
       <div class="user-actions">
         <button class="action-btn" title="切换主题" @click="themeStore.toggleTheme">
@@ -28,11 +25,14 @@
         <button class="action-btn" title="通知"><i class="fa-solid fa-bell"></i></button>
 
         <el-dropdown>
-          <div class="user-avatar" :title="userStore.user?.username || '用户'"></div>
+          <div class="user-avatar" :title="userStore.user?.username || '用户'">
+            <img v-if="userStore.user?.avatarUrl" :src="getAvatarUrl()" alt="头像" />
+            <i v-else class="fa-solid fa-user"></i>
+          </div>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item>个人中心</el-dropdown-item>
-              <el-dropdown-item>设置</el-dropdown-item>
+              <el-dropdown-item @click="$router.push('/app/account')">个人中心</el-dropdown-item>
+              <el-dropdown-item @click="$router.push('/app/settings')">设置</el-dropdown-item>
               <el-dropdown-item divided @click="handleLogout">退出登录</el-dropdown-item>
             </el-dropdown-menu>
           </template>
@@ -42,9 +42,11 @@
     </header>
 
     <main class="main-content">
-      <router-view v-slot="{ Component }">
-        <transition name="fade" mode="out-in">
-          <component :is="Component" :key="$route.name"/>
+      <router-view v-slot="{ Component, route }">
+        <transition :name="route.name === 'knowledge' ? '' : 'fade'" mode="out-in">
+          <keep-alive :include="['KnowledgeBaseView']">
+            <component :is="Component" :key="route.name === 'knowledge' ? undefined : route.name"/>
+          </keep-alive>
         </transition>
       </router-view>
     </main>
@@ -68,6 +70,20 @@ import fabIcon from '@/assets/images/ai-chat-logo.png';
 const userStore = useUserStore();
 const themeStore = useThemeStore();
 const router = useRouter();
+
+const getAvatarUrl = () => {
+  if (!userStore.user?.avatarUrl) return '';
+  
+  // 如果是外部链接（GitHub 等），直接返回
+  if (userStore.user.avatarUrl.startsWith('http://') || 
+      userStore.user.avatarUrl.startsWith('https://')) {
+    return userStore.user.avatarUrl;
+  }
+  
+  // 如果是本地上传的，添加服务器基础 URL（不带 /api 前缀）
+  // 在开发环境中，Vite 会代理 /uploads 到后端服务器
+  return userStore.user.avatarUrl;
+}
 
 const handleLogout = () => {
   userStore.logout();
@@ -178,6 +194,21 @@ const handleLogout = () => {
   border-radius: 50%;
   border: 2px solid var(--card-border);
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.user-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.user-avatar i {
+  color: white;
+  font-size: 1rem;
 }
 
 .main-content {

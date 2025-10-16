@@ -299,7 +299,7 @@ const initGraph = () => {
     }
 
     // 跳转到学习页面
-    router.push(`/learning/${pointId}`);
+    router.push(`/app/learn/${pointId}`);
   });
 
   // 节点悬停效果
@@ -465,6 +465,13 @@ const renderGraph = () => {
   props.knowledgePoints.forEach(point => {
     if (point.prerequisites && point.prerequisites.length > 0) {
       point.prerequisites.forEach(preId => {
+        // 检查源节点是否存在
+        const sourceExists = props.knowledgePoints.some(p => p.id === preId);
+        if (!sourceExists) {
+          console.warn(`前置知识点 ${preId} 不存在，跳过创建边`);
+          return;
+        }
+
         const isRecommendedEdge =
           props.recommendedPath.includes(preId) && props.recommendedPath.includes(point.id);
 

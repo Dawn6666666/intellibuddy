@@ -18,12 +18,14 @@ const router = createRouter({
                 behavior: 'smooth'
             };
         }
-        // 如果是在知识库页面内部导航，保持位置不变
-        if (to.name === 'knowledge' && from.name === 'knowledge') {
-            return false; // 不滚动
+        // 如果从学习页面返回知识库，不处理滚动（由组件自己控制）
+        if (to.name === 'knowledge' && from.name === 'learning') {
+            console.log('🔵 从学习页面返回知识库，由组件控制滚动位置');
+            return false; // 不滚动，让组件自己恢复位置
         }
         // 默认滚动到顶部
-        return { top: 0, behavior: 'smooth' };
+        console.log('🔴 默认行为：滚动到顶部', { to: to.name, from: from.name });
+        return { top: 0 };
     },
     routes: [
         {
@@ -34,6 +36,16 @@ const router = createRouter({
             path: '/login',
             name: 'login',
             component: LoginView
+        },
+        {
+            path: '/forgot-password',
+            name: 'forgot-password',
+            component: () => import('../views/ForgotPasswordView.vue')
+        },
+        {
+            path: '/reset-password',
+            name: 'reset-password',
+            component: () => import('../views/ResetPasswordView.vue')
         },
         // 2. 添加新的回调路由规则
         {
@@ -82,11 +94,6 @@ const router = createRouter({
                     component: () => import('../views/WrongQuestionsView.vue')
                 },
                 {
-                    path: 'code-explainer',
-                    name: 'code-explainer',
-                    component: () => import('../views/CodeExplainerView.vue')
-                },
-                {
                     path: 'achievements',
                     name: 'achievements',
                     component: () => import('../views/AchievementsView.vue')
@@ -95,6 +102,16 @@ const router = createRouter({
                     path: 'transition-demo',
                     name: 'transition-demo',
                     component: () => import('../views/TransitionDemo.vue')
+                },
+                {
+                    path: 'account',
+                    name: 'account',
+                    component: () => import('../views/AccountView.vue')
+                },
+                {
+                    path: 'settings',
+                    name: 'settings',
+                    component: () => import('../views/SettingsView.vue')
                 }
             ]
         }

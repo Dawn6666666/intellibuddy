@@ -175,7 +175,7 @@ const year4KnowledgePoints = [
     "category": "软件工程",
     "difficulty": 5,
     "prerequisites": [
-      "cs303"
+      "cs203"
     ],
     "learningPath": "第四学年 > 第八学期",
     "estimatedHours": 360,
@@ -437,15 +437,20 @@ async function seedYear4() {
     await mongoose.connect(mongoUri);
     console.log('数据库连接成功');
 
-    console.log('正在删除第4学年旧数据...');
-    await KnowledgePoint.deleteMany({
-      id: { $regex: /^(cs|math|data)40/ }
-    });
+    console.log('正在更新第4学年数据...');
+    
+    // 使用 bulkWrite 进行 upsert 操作，如果知识点存在则更新，不存在则插入
+    const bulkOps = year4KnowledgePoints.map((kp: any) => ({
+      updateOne: {
+        filter: { id: kp.id },
+        update: { $set: kp },
+        upsert: true
+      }
+    }));
+    
+    const result = await KnowledgePoint.bulkWrite(bulkOps);
 
-    console.log('正在插入第4学年新数据...');
-    await KnowledgePoint.insertMany(year4KnowledgePoints);
-
-    console.log(`第4学年数据填充成功！共 ${year4KnowledgePoints.length} 个知识点`);
+    console.log(`第4学年数据填充成功！更新: ${result.modifiedCount}, 插入: ${result.upsertedCount}, 总计: ${year4KnowledgePoints.length} 个知识点`);
   } catch (error) {
     console.error('数据填充失败:', error);
     process.exit(1);

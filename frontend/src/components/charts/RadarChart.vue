@@ -121,15 +121,13 @@ const option = computed(() => ({
     })),
     shape: 'polygon',
     splitNumber: 4,
-    name: {
-      textStyle: {
-        color: '#d0d0d0',
-        fontSize: 14,
-        fontWeight: 600,
-        backgroundColor: 'transparent',
-        borderRadius: 4,
-        padding: [4, 8]
-      }
+    axisName: {
+      color: '#d0d0d0',
+      fontSize: 14,
+      fontWeight: 600,
+      backgroundColor: 'transparent',
+      borderRadius: 4,
+      padding: [4, 8]
     },
     splitLine: {
       lineStyle: {

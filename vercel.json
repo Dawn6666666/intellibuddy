@@ -1,22 +1,50 @@
 {
   "version": 2,
+  "buildCommand": "pnpm build",
+  "outputDirectory": "frontend/dist",
+  "installCommand": "pnpm install",
+  "framework": null,
   "builds": [
     {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist"
-      }
-    },
-    {
       "src": "backend/src/index.ts",
-      "use": "@vercel/node"
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": ["backend/dist/**", "backend/uploads/**"]
+      }
     }
   ],
   "routes": [
     {
+      "src": "/api/auth/github",
+      "dest": "backend/src/index.ts"
+    },
+    {
+      "src": "/api/auth/github/callback",
+      "dest": "backend/src/index.ts"
+    },
+    {
+      "src": "/api/auth/qq",
+      "dest": "backend/src/index.ts"
+    },
+    {
+      "src": "/api/auth/qq/callback",
+      "dest": "backend/src/index.ts"
+    },
+    {
       "src": "/api/(.*)",
       "dest": "backend/src/index.ts"
+    },
+    {
+      "src": "/uploads/(.*)",
+      "dest": "backend/src/index.ts"
+    },
+    {
+      "src": "/assets/(.*)",
+      "dest": "/assets/$1"
+    },
+    {
+      "src": "/(.*\\.(js|css|png|jpg|jpeg|gif|svg|ico|json|woff|woff2|ttf|eot))",
+      "dest": "/$1"
     },
     {
       "src": "/(.*)",
@@ -24,6 +52,69 @@
     }
   ],
   "env": {
-    "NODE_ENV": "production"
-  }
+    "NODE_ENV": "production",
+    "TRUST_PROXY": "true"
+  },
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        }
+      ]
+    },
+    {
+      "source": "/assets/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/(.*\\.(js|css))",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/(.*\\.(jpg|jpeg|png|gif|svg|ico|webp))",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400"
+        }
+      ]
+    }
+  ],
+  "functions": {
+    "backend/src/index.ts": {
+      "memory": 1024,
+      "maxDuration": 30
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/((?!api|uploads|assets|_next|static|favicon.ico|.*\\.(js|css|png|jpg|jpeg|gif|svg|ico|json|woff|woff2|ttf|eot)).*)",
+      "destination": "/index.html"
+    }
+  ]
 }

@@ -1,0 +1,360 @@
+{
+  "题库说明": "本题库对应《操作系统 (cs205)》知识点，涵盖进程管理、内存管理、文件系统、I/O管理、死锁等内容。",
+  "题库": [
+    {
+      "pointId": "cs205",
+      "pointTitle": "操作系统",
+      "quiz": [
+        {
+          "question": "操作系统的主要功能包括？",
+          "type": "multiple",
+          "options": [
+            "进程管理",
+            "内存管理",
+            "文件管理",
+            "设备管理"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "操作系统的核心功能：进程（处理器）管理、内存管理、文件管理、设备（I/O）管理。还提供用户界面和安全保护。"
+        },
+        {
+          "question": "进程和线程的主要区别是？",
+          "type": "single",
+          "options": [
+            "进程是资源分配的基本单位，线程是调度的基本单位",
+            "进程是调度的基本单位，线程是资源分配的基本单位",
+            "进程和线程完全相同",
+            "线程不能共享资源"
+          ],
+          "correctAnswer": 0,
+          "explanation": "进程是资源分配的基本单位（独立地址空间），线程是CPU调度的基本单位（共享进程资源）。线程切换开销小于进程。"
+        },
+        {
+          "question": "进程的状态包括哪些？",
+          "type": "multiple",
+          "options": [
+            "就绪态（Ready）",
+            "运行态（Running）",
+            "阻塞态（Blocked/Waiting）",
+            "终止态（Terminated）"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "进程的基本状态：新建态、就绪态（等待CPU）、运行态（正在执行）、阻塞态（等待I/O等事件）、终止态。三态模型包括就绪、运行、阻塞。"
+        },
+        {
+          "question": "进程从运行态转为阻塞态的原因可能是？",
+          "type": "multiple",
+          "options": [
+            "等待I/O操作完成",
+            "等待某个事件发生",
+            "请求资源不可用",
+            "时间片用完"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "运行态→阻塞态：等待I/O、等待事件、等待资源（主动放弃CPU）。时间片用完会转为就绪态，而不是阻塞态。"
+        },
+        {
+          "question": "进程控制块（PCB）包含哪些信息？",
+          "type": "multiple",
+          "options": [
+            "进程标识符（PID）",
+            "进程状态",
+            "程序计数器（PC）",
+            "CPU寄存器值"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "PCB（Process Control Block）包含：进程标识、状态、程序计数器、寄存器、内存指针、打开文件、调度信息等。是进程存在的唯一标志。"
+        },
+        {
+          "question": "CPU调度算法包括哪些？",
+          "type": "multiple",
+          "options": [
+            "先来先服务（FCFS）",
+            "短作业优先（SJF）",
+            "时间片轮转（RR）",
+            "优先级调度"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "常见调度算法：FCFS（简单但可能饥饿）、SJF（最优但需预知）、RR（公平但上下文切换多）、优先级（可能饥饿）、多级反馈队列（综合）。"
+        },
+        {
+          "question": "时间片轮转（RR）调度算法的特点是？",
+          "type": "single",
+          "options": [
+            "每个进程获得固定时间片，用完后排到队尾",
+            "优先执行最短作业",
+            "先来先服务",
+            "根据优先级调度"
+          ],
+          "correctAnswer": 0,
+          "explanation": "RR（Round Robin）：每个进程获得固定时间片（如10ms），用完后被抢占，放到就绪队列队尾。公平但上下文切换频繁。"
+        },
+        {
+          "question": "进程间通信（IPC）的方式包括？",
+          "type": "multiple",
+          "options": [
+            "管道（Pipe）",
+            "消息队列（Message Queue）",
+            "共享内存（Shared Memory）",
+            "信号量（Semaphore）"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "IPC方式：管道（单向、父子进程）、消息队列（异步）、共享内存（最快）、信号量（同步）、套接字（网络）、信号（Signal）。"
+        },
+        {
+          "question": "临界区（Critical Section）是指什么？",
+          "type": "single",
+          "options": [
+            "访问共享资源的代码段",
+            "不可中断的代码段",
+            "操作系统内核代码",
+            "错误处理代码"
+          ],
+          "correctAnswer": 0,
+          "explanation": "临界区是访问共享资源（临界资源）的代码段。同一时刻只允许一个进程进入临界区，以避免竞态条件（Race Condition）。"
+        },
+        {
+          "question": "信号量（Semaphore）的两个原子操作是？",
+          "type": "single",
+          "options": [
+            "P操作（wait）和V操作（signal）",
+            "加锁和解锁",
+            "入队和出队",
+            "读和写"
+          ],
+          "correctAnswer": 0,
+          "explanation": "信号量的两个原子操作：P操作（wait/down，申请资源，S减1）和V操作（signal/up，释放资源，S加1）。用于进程同步和互斥。"
+        },
+        {
+          "question": "互斥量（Mutex）和信号量（Semaphore）的区别是？",
+          "type": "single",
+          "options": [
+            "互斥量只能取0/1（二元信号量），信号量可以取多个值",
+            "互斥量用于同步，信号量用于互斥",
+            "两者完全相同",
+            "互斥量比信号量快"
+          ],
+          "correctAnswer": 0,
+          "explanation": "互斥量（Mutex）是二元信号量（只能0/1），用于互斥访问。信号量（Semaphore）可以是计数信号量（大于1），用于同步和资源计数。"
+        },
+        {
+          "question": "死锁（Deadlock）产生的四个必要条件是？",
+          "type": "multiple",
+          "options": [
+            "互斥条件",
+            "占有和等待条件",
+            "不可剥夺条件",
+            "循环等待条件"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "死锁的四个必要条件（缺一不可）：1) 互斥；2) 占有和等待；3) 不可剥夺（不可抢占）；4) 循环等待。破坏任一条件可预防死锁。"
+        },
+        {
+          "question": "死锁的处理策略包括？",
+          "type": "multiple",
+          "options": [
+            "预防死锁（破坏必要条件）",
+            "避免死锁（银行家算法）",
+            "检测和恢复",
+            "鸵鸟策略（忽略）"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "死锁处理策略：1) 预防（破坏四个条件之一）；2) 避免（银行家算法）；3) 检测+恢复（撤销进程或剥夺资源）；4) 鸵鸟策略（忽略，如UNIX）。"
+        },
+        {
+          "question": "银行家算法用于？",
+          "type": "single",
+          "options": [
+            "避免死锁",
+            "检测死锁",
+            "恢复死锁",
+            "创建进程"
+          ],
+          "correctAnswer": 0,
+          "explanation": "银行家算法（Banker's Algorithm）用于避免死锁。通过检查系统是否处于安全状态来决定是否分配资源。需要预知进程的最大资源需求。"
+        },
+        {
+          "question": "内存管理的主要功能包括？",
+          "type": "multiple",
+          "options": [
+            "内存分配与回收",
+            "地址转换",
+            "内存保护",
+            "内存扩充（虚拟内存）"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "内存管理的功能：分配回收、地址转换（逻辑→物理）、保护（防止越界）、扩充（虚拟内存）、共享。"
+        },
+        {
+          "question": "分页（Paging）和分段（Segmentation）的区别是？",
+          "type": "single",
+          "options": [
+            "分页是固定大小，分段是可变大小",
+            "分页是可变大小，分段是固定大小",
+            "两者完全相同",
+            "分页用于磁盘，分段用于内存"
+          ],
+          "correctAnswer": 0,
+          "explanation": "分页：固定大小（如4KB）、对程序员透明、无外部碎片。分段：可变大小、符合逻辑模块、有外部碎片。现代系统多用段页式。"
+        },
+        {
+          "question": "页面置换算法包括哪些？",
+          "type": "multiple",
+          "options": [
+            "先进先出（FIFO）",
+            "最近最少使用（LRU）",
+            "最优置换（OPT）",
+            "时钟算法（Clock）"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "页面置换算法：FIFO（简单但可能Belady异常）、LRU（性能好但实现复杂）、OPT（理论最优但无法实现）、Clock（LRU近似）、LFU等。"
+        },
+        {
+          "question": "虚拟内存的优点包括？",
+          "type": "multiple",
+          "options": [
+            "允许程序大于物理内存",
+            "提高内存利用率",
+            "支持多道程序设计",
+            "提供内存保护"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "虚拟内存的优点：扩大地址空间（可大于物理内存）、提高内存利用率、支持多道程序、内存保护、便于程序编写。"
+        },
+        {
+          "question": "缺页中断（Page Fault）发生时的处理步骤包括？",
+          "type": "multiple",
+          "options": [
+            "在磁盘中找到所需页面",
+            "选择一个牺牲页（如果内存满）",
+            "将牺牲页写回磁盘（如果被修改）",
+            "将所需页面调入内存"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "缺页中断处理：1) 检查页表，发现缺页；2) 如果内存满，选择牺牲页；3) 如果牺牲页被修改，写回磁盘；4) 从磁盘读入所需页；5) 更新页表。"
+        },
+        {
+          "question": "抖动（Thrashing）是指什么？",
+          "type": "single",
+          "options": [
+            "频繁的页面置换导致系统性能急剧下降",
+            "CPU使用率过高",
+            "内存不足",
+            "磁盘损坏"
+          ],
+          "correctAnswer": 0,
+          "explanation": "抖动（Thrashing）：当进程频繁缺页，大部分时间用于页面置换而不是执行程序，导致CPU利用率急剧下降。原因是工作集太大或内存分配太少。"
+        },
+        {
+          "question": "文件系统的主要功能是？",
+          "type": "multiple",
+          "options": [
+            "文件的逻辑组织和管理",
+            "文件的物理存储管理",
+            "文件的访问控制",
+            "文件的共享和保护"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "文件系统功能：逻辑组织（目录树）、物理管理（磁盘块分配）、访问控制（权限）、共享保护、文件操作接口。"
+        },
+        {
+          "question": "文件的逻辑结构包括哪些类型？",
+          "type": "multiple",
+          "options": [
+            "顺序文件",
+            "索引文件",
+            "索引顺序文件",
+            "直接文件（散列文件）"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "文件逻辑结构：1) 顺序文件（简单但查找慢）；2) 索引文件（快速随机访问）；3) 索引顺序文件（综合）；4) 直接文件（哈希）。"
+        },
+        {
+          "question": "文件的物理结构（磁盘分配方式）包括？",
+          "type": "multiple",
+          "options": [
+            "连续分配",
+            "链接分配",
+            "索引分配",
+            "混合分配"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "磁盘分配方式：1) 连续（快但外部碎片）；2) 链接（无碎片但随机访问慢）；3) 索引（综合优点）；4) 混合（如UNIX的i-node）。"
+        },
+        {
+          "question": "UNIX文件系统的i-node包含什么信息？",
+          "type": "multiple",
+          "options": [
+            "文件属性（权限、所有者、大小等）",
+            "直接指针（指向数据块）",
+            "间接指针（一级、二级、三级）",
+            "文件名"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "i-node（索引节点）包含：文件属性、直接指针（10个）、一级间接指针、二级间接指针、三级间接指针。不包含文件名（文件名在目录项中）。"
+        },
+        {
+          "question": "磁盘调度算法包括哪些？",
+          "type": "multiple",
+          "options": [
+            "先来先服务（FCFS）",
+            "最短寻道时间优先（SSTF）",
+            "扫描算法（SCAN，电梯算法）",
+            "循环扫描（C-SCAN）"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "磁盘调度算法：FCFS（公平但寻道长）、SSTF（短寻道但可能饥饿）、SCAN（电梯，双向扫描）、C-SCAN（单向扫描）、LOOK（改进的SCAN）。"
+        },
+        {
+          "question": "缓冲区（Buffer）的作用包括？",
+          "type": "multiple",
+          "options": [
+            "缓和CPU与I/O设备速度不匹配",
+            "减少I/O次数",
+            "提高CPU和I/O设备的并行性",
+            "暂存数据"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "缓冲区的作用：1) 缓和速度差异；2) 减少I/O中断次数；3) 提高并行性（CPU和I/O可并行）；4) 临时存储数据。"
+        },
+        {
+          "question": "SPOOLing技术（假脱机技术）的特点是？",
+          "type": "single",
+          "options": [
+            "将独占设备改造为共享设备",
+            "提高CPU速度",
+            "增加内存容量",
+            "减少磁盘碎片"
+          ],
+          "correctAnswer": 0,
+          "explanation": "SPOOLing（Simultaneous Peripheral Operations On-Line）：将独占设备（如打印机）改造为虚拟共享设备，通过磁盘缓存实现。提高设备利用率。"
+        },
+        {
+          "question": "中断和轮询的主要区别是？",
+          "type": "single",
+          "options": [
+            "中断是被动响应，轮询是主动查询",
+            "中断比轮询慢",
+            "中断用于输入，轮询用于输出",
+            "两者完全相同"
+          ],
+          "correctAnswer": 0,
+          "explanation": "中断：设备完成后主动通知CPU（异步、高效）。轮询：CPU定期查询设备状态（同步、简单但浪费CPU）。现代系统多用中断。"
+        },
+        {
+          "question": "DMA（Direct Memory Access）的优点是？",
+          "type": "single",
+          "options": [
+            "数据传输不需要CPU干预，减少CPU开销",
+            "提高内存容量",
+            "加快CPU运算速度",
+            "简化编程"
+          ],
+          "correctAnswer": 0,
+          "explanation": "DMA允许外设直接与内存交换数据，无需CPU逐字节传输。优点：减少CPU开销、提高传输速度。适用于大块数据传输。"
+        }
+      ]
+    }
+  ]
+}
+

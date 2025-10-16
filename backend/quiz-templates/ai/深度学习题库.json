@@ -1,0 +1,372 @@
+{
+  "题库说明": "本题库对应《深度学习 (ai2)》知识点，涵盖深度神经网络、CNN、RNN、Transformer、优化技术、深度学习应用等内容。",
+  "题库": [
+    {
+      "pointId": "ai2",
+      "pointTitle": "深度学习",
+      "quiz": [
+        {
+          "question": "深度学习相比传统机器学习的主要优势是？",
+          "type": "multiple",
+          "options": [
+            "自动特征学习，无需手工特征工程",
+            "处理大规模数据的能力强",
+            "在图像、语音等非结构化数据上表现优异",
+            "训练时间更短"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "深度学习优势：端到端学习（自动特征提取）、表示学习、处理非结构化数据（图像、文本、语音）、可扩展性。缺点：需大量数据、计算资源、训练时间长、可解释性差。"
+        },
+        {
+          "question": "卷积神经网络（CNN）的主要组成层包括？",
+          "type": "multiple",
+          "options": [
+            "卷积层（Convolutional Layer）",
+            "池化层（Pooling Layer）",
+            "全连接层（Fully Connected Layer）",
+            "LSTM层"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "CNN架构：卷积层（特征提取）→激活（ReLU）→池化层（降维、增强鲁棒性）→重复→全连接层（分类）。LSTM属于RNN，不是CNN的标准组件。"
+        },
+        {
+          "question": "卷积层的主要作用是？",
+          "type": "single",
+          "options": [
+            "提取局部特征，共享权重减少参数",
+            "降低维度",
+            "分类",
+            "归一化"
+          ],
+          "correctAnswer": 0,
+          "explanation": "卷积层：用卷积核（filter/kernel）在输入上滑动，提取局部特征（边缘、纹理等）。优点：参数共享、平移不变性、局部连接。参数：卷积核大小、stride、padding。"
+        },
+        {
+          "question": "池化层（Pooling）的作用包括？",
+          "type": "multiple",
+          "options": [
+            "降低特征图维度",
+            "增强平移不变性",
+            "减少计算量和参数",
+            "提取更高层特征"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "池化：降采样操作。最大池化（Max Pooling，保留最强特征）、平均池化（Average Pooling）。作用：降维、增强鲁棒性、扩大感受野。通常2×2窗口。"
+        },
+        {
+          "question": "经典CNN架构LeNet-5主要用于什么任务？",
+          "type": "single",
+          "options": [
+            "手写数字识别（MNIST）",
+            "图像分类（ImageNet）",
+            "目标检测",
+            "图像生成"
+          ],
+          "correctAnswer": 0,
+          "explanation": "LeNet-5（1998，Yann LeCun）：最早的CNN之一，用于手写数字识别。结构：Conv→Pool→Conv→Pool→FC→FC→Output。奠定了现代CNN基础。"
+        },
+        {
+          "question": "AlexNet相比LeNet的主要创新包括？",
+          "type": "multiple",
+          "options": [
+            "使用ReLU激活函数",
+            "使用Dropout防止过拟合",
+            "GPU加速训练",
+            "数据增强"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "AlexNet（2012，ImageNet冠军）：深度学习复兴的标志。创新：ReLU（vs Sigmoid）、Dropout、GPU并行、数据增强、LRN。8层网络，6000万参数。"
+        },
+        {
+          "question": "VGGNet的设计理念是？",
+          "type": "single",
+          "options": [
+            "使用小卷积核（3×3）堆叠，增加网络深度",
+            "使用大卷积核（11×11）",
+            "减少网络层数",
+            "去除池化层"
+          ],
+          "correctAnswer": 0,
+          "explanation": "VGGNet（2014）：验证深度的重要性。特点：统一使用3×3卷积核、网络深（16/19层）、结构简洁。两个3×3卷积等效一个5×5，但参数更少、非线性更强。"
+        },
+        {
+          "question": "残差网络（ResNet）的核心思想是？",
+          "type": "single",
+          "options": [
+            "引入跳跃连接（Skip Connection），学习残差而非直接映射",
+            "增加卷积核数量",
+            "使用更大的卷积核",
+            "去除池化层"
+          ],
+          "correctAnswer": 0,
+          "explanation": "ResNet（2015，152层）：解决深层网络退化问题。残差块：$F(x) + x$（跳跃连接）。优点：训练更深网络、梯度流动顺畅、恒等映射易学。Identity Shortcut是关键。"
+        },
+        {
+          "question": "Inception模块（GoogleNet）的设计思想是？",
+          "type": "single",
+          "options": [
+            "同一层使用不同尺寸的卷积核并联，增加宽度",
+            "只使用1×1卷积",
+            "减少网络深度",
+            "去除激活函数"
+          ],
+          "correctAnswer": 0,
+          "explanation": "Inception（GoogLeNet，2014）：Network in Network。Inception模块：并行使用1×1、3×3、5×5卷积和3×3池化，拼接输出。1×1卷积降维减少计算。增加宽度而非深度。"
+        },
+        {
+          "question": "Batch Normalization的作用包括？",
+          "type": "multiple",
+          "options": [
+            "加速训练收敛",
+            "缓解梯度消失/爆炸",
+            "减少对初始化的依赖",
+            "一定程度防止过拟合"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "Batch Normalization（2015）：对每层输入归一化（均值0、方差1），然后缩放平移。优点：加速收敛、更大学习率、减少对初始化敏感、正则化效果。每个mini-batch独立计算。"
+        },
+        {
+          "question": "Dropout的工作原理是？",
+          "type": "single",
+          "options": [
+            "训练时随机丢弃一定比例的神经元，测试时使用所有神经元",
+            "永久删除部分神经元",
+            "只在测试时丢弃神经元",
+            "增加神经元数量"
+          ],
+          "correctAnswer": 0,
+          "explanation": "Dropout（2014）：训练时以概率$p$（如0.5）随机丢弃神经元，防止共适应（co-adaptation）。测试时使用所有神经元（权重乘以$1-p$）。相当于ensemble多个子网络。强正则化技术。"
+        },
+        {
+          "question": "循环神经网络（RNN）适合处理什么类型的数据？",
+          "type": "single",
+          "options": [
+            "序列数据（时间序列、文本、语音）",
+            "图像数据",
+            "表格数据",
+            "图数据"
+          ],
+          "correctAnswer": 0,
+          "explanation": "RNN：处理序列数据，具有记忆能力（隐藏状态）。$h_t = f(h_{t-1}, x_t)$。应用：语言模型、机器翻译、语音识别、时序预测。缺点：梯度消失/爆炸、难以捕捉长期依赖。"
+        },
+        {
+          "question": "LSTM（Long Short-Term Memory）相比标准RNN的优势是？",
+          "type": "single",
+          "options": [
+            "通过门控机制解决长期依赖和梯度消失问题",
+            "参数更少",
+            "训练更快",
+            "结构更简单"
+          ],
+          "correctAnswer": 0,
+          "explanation": "LSTM（1997）：改进RNN，引入细胞状态（cell state）和三个门（遗忘门、输入门、输出门）。优点：捕捉长期依赖、缓解梯度消失。缺点：计算复杂、参数多。"
+        },
+        {
+          "question": "GRU（Gated Recurrent Unit）相比LSTM的特点是？",
+          "type": "single",
+          "options": [
+            "更简单（两个门：重置门和更新门），参数更少",
+            "效果总是更好",
+            "只能处理短序列",
+            "不能解决梯度消失"
+          ],
+          "correctAnswer": 0,
+          "explanation": "GRU（2014）：LSTM的简化版，合并细胞状态和隐藏状态，只有两个门（更新门、重置门）。优点：参数少、训练快。性能与LSTM相当，但更高效。"
+        },
+        {
+          "question": "Seq2Seq（Sequence-to-Sequence）模型的架构是？",
+          "type": "single",
+          "options": [
+            "编码器（Encoder）将输入编码为上下文向量，解码器（Decoder）生成输出序列",
+            "只有编码器",
+            "只有解码器",
+            "并行处理输入和输出"
+          ],
+          "correctAnswer": 0,
+          "explanation": "Seq2Seq（2014）：Encoder-Decoder架构。Encoder（RNN/LSTM）编码输入为固定长度向量，Decoder生成输出序列。应用：机器翻译、对话系统、摘要生成。瓶颈：固定长度向量→引入注意力机制。"
+        },
+        {
+          "question": "注意力机制（Attention Mechanism）的核心思想是？",
+          "type": "single",
+          "options": [
+            "动态聚焦于输入的不同部分，而非使用固定的上下文向量",
+            "只关注输入的第一个词",
+            "平均所有输入",
+            "忽略部分输入"
+          ],
+          "correctAnswer": 0,
+          "explanation": "注意力机制（2015）：Decoder在每个时间步动态计算对Encoder各位置的注意力权重，加权求和得到上下文向量。解决长序列信息瓶颈。计算：Query×Key→Softmax→加权Value。"
+        },
+        {
+          "question": "Transformer的核心创新是？",
+          "type": "single",
+          "options": [
+            "完全基于自注意力机制（Self-Attention），摒弃循环和卷积",
+            "使用更深的RNN",
+            "使用更大的卷积核",
+            "去除注意力机制"
+          ],
+          "correctAnswer": 0,
+          "explanation": "Transformer（2017，\"Attention is All You Need\"）：革命性架构，完全基于注意力。多头自注意力+位置编码+前馈网络。优点：并行化、长距离依赖、可扩展。BERT、GPT基础。"
+        },
+        {
+          "question": "Self-Attention（自注意力）的计算公式是？",
+          "type": "single",
+          "options": [
+            "$\\\\text{Attention}(Q,K,V) = \\\\text{softmax}(\\\\frac{QK^T}{\\\\sqrt{d_k}})V$",
+            "$\\\\text{Attention}(Q,K,V) = QK^TV$",
+            "$\\\\text{Attention}(Q,K,V) = Q + K + V$",
+            "$\\\\text{Attention}(Q,K,V) = \\\\text{softmax}(QKV)$"
+          ],
+          "correctAnswer": 0,
+          "explanation": "自注意力：$\\\\text{Attention}(Q,K,V) = \\\\text{softmax}(\\\\frac{QK^T}{\\\\sqrt{d_k}})V$。Query、Key、Value都来自同一输入。$\\\\sqrt{d_k}$缩放避免梯度过小。计算序列内部关系。"
+        },
+        {
+          "question": "多头注意力（Multi-Head Attention）的作用是？",
+          "type": "single",
+          "options": [
+            "并行计算多组注意力，捕捉不同子空间的信息",
+            "增加计算复杂度",
+            "只使用一个注意力头",
+            "减少参数数量"
+          ],
+          "correctAnswer": 0,
+          "explanation": "多头注意力：将Q、K、V线性投影到多个子空间（如8个头），并行计算注意力，拼接后再投影。优点：捕捉不同位置、不同表示子空间的信息。Transformer核心组件。"
+        },
+        {
+          "question": "位置编码（Positional Encoding）在Transformer中的作用是？",
+          "type": "single",
+          "options": [
+            "为模型提供序列位置信息（Transformer本身无序列概念）",
+            "加速计算",
+            "正则化",
+            "归一化"
+          ],
+          "correctAnswer": 0,
+          "explanation": "位置编码：Transformer无循环结构，无法感知位置。位置编码（正弦/余弦函数或学习）加到输入embedding，注入位置信息。$PE_{(pos,2i)} = \\\\sin(pos/10000^{2i/d})$。"
+        },
+        {
+          "question": "BERT（Bidirectional Encoder Representations from Transformers）的预训练任务包括？",
+          "type": "multiple",
+          "options": [
+            "Masked Language Model（MLM）",
+            "Next Sentence Prediction（NSP）",
+            "自回归语言模型",
+            "图像分类"
+          ],
+          "correctAnswer": [0, 1],
+          "explanation": "BERT（2018）：双向Transformer编码器。预训练：1) MLM（随机mask 15%词，预测）；2) NSP（判断句子B是否跟随A）。微调用于下游任务（分类、NER、QA）。革命性NLP模型。"
+        },
+        {
+          "question": "GPT（Generative Pre-trained Transformer）的特点是？",
+          "type": "single",
+          "options": [
+            "单向（自回归）Transformer，从左到右生成",
+            "双向Transformer",
+            "基于RNN",
+            "不使用注意力"
+          ],
+          "correctAnswer": 0,
+          "explanation": "GPT（OpenAI）：自回归语言模型，Transformer Decoder。单向（只看左侧上文），预训练后微调。GPT-3（175B参数）展示few-shot能力。vs BERT：单向vs双向、生成vs理解。"
+        },
+        {
+          "question": "预训练-微调（Pre-training and Fine-tuning）范式的优势是？",
+          "type": "multiple",
+          "options": [
+            "利用大规模无标注数据学习通用表示",
+            "下游任务只需少量标注数据",
+            "迁移学习，知识复用",
+            "总是需要从头训练"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "预训练-微调：在大规模语料上预训练通用模型（如BERT），然后在特定任务上微调。优点：利用无标注数据、迁移学习、样本高效。NLP和CV的主流范式。"
+        },
+        {
+          "question": "生成对抗网络（GAN）的组成部分是？",
+          "type": "multiple",
+          "options": [
+            "生成器（Generator）",
+            "判别器（Discriminator）",
+            "编码器",
+            "池化层"
+          ],
+          "correctAnswer": [0, 1],
+          "explanation": "GAN（2014，Ian Goodfellow）：零和博弈。生成器（从噪声生成假样本）vs判别器（区分真假）。训练：交替优化，生成器骗过判别器，判别器识别假样本。应用：图像生成、风格迁移。"
+        },
+        {
+          "question": "变分自编码器（VAE）的目标是？",
+          "type": "single",
+          "options": [
+            "学习数据的潜在分布，生成新样本",
+            "分类任务",
+            "目标检测",
+            "强化学习"
+          ],
+          "correctAnswer": 0,
+          "explanation": "VAE（2013）：生成模型。编码器学习潜在分布（均值、方差），解码器从潜在变量生成样本。损失：重构损失+KL散度（正则化）。vs GAN：显式建模分布、训练稳定。"
+        },
+        {
+          "question": "目标检测任务和图像分类的区别是？",
+          "type": "single",
+          "options": [
+            "目标检测需要定位和分类多个对象，图像分类只判断整图类别",
+            "目标检测更简单",
+            "图像分类需要边界框",
+            "两者完全相同"
+          ],
+          "correctAnswer": 0,
+          "explanation": "图像分类：整图一个类别。目标检测：定位（边界框）+分类多个对象。算法：R-CNN系列、YOLO、SSD。更难：多尺度、小目标、密集场景。"
+        },
+        {
+          "question": "迁移学习（Transfer Learning）的核心思想是？",
+          "type": "single",
+          "options": [
+            "将在源任务上学到的知识迁移到目标任务",
+            "从头训练所有层",
+            "忽略源任务",
+            "只适用于同领域任务"
+          ],
+          "correctAnswer": 0,
+          "explanation": "迁移学习：复用预训练模型。方法：1) 特征提取（冻结前层，训练后层）；2) 微调（调整所有层）。优点：样本高效、训练快。ImageNet预训练模型广泛用于CV任务。"
+        },
+        {
+          "question": "过拟合的解决方法包括？",
+          "type": "multiple",
+          "options": [
+            "数据增强（Data Augmentation）",
+            "Dropout",
+            "Early Stopping",
+            "增加模型复杂度"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "防止过拟合：1) 增加数据（增强）；2) 正则化（L1/L2、Dropout）；3) Early Stopping（监控验证集）；4) 简化模型；5) Batch Normalization；6) 集成学习。"
+        },
+        {
+          "question": "学习率衰减（Learning Rate Decay）的作用是？",
+          "type": "single",
+          "options": [
+            "训练后期降低学习率，精细调整参数，提高收敛",
+            "加速训练",
+            "增加学习率",
+            "固定学习率"
+          ],
+          "correctAnswer": 0,
+          "explanation": "学习率衰减：训练过程中逐渐降低学习率。策略：阶梯衰减、指数衰减、余弦衰减。原因：初期大步探索，后期小步精调。Warm-up：开始时学习率从小到大。"
+        },
+        {
+          "question": "Adam优化器的特点是？",
+          "type": "single",
+          "options": [
+            "结合动量（Momentum）和自适应学习率（RMSProp）",
+            "只使用动量",
+            "固定学习率",
+            "不使用梯度"
+          ],
+          "correctAnswer": 0,
+          "explanation": "Adam（Adaptive Moment Estimation，2014）：结合Momentum（一阶矩估计）和RMSProp（二阶矩估计）。自适应学习率、偏差修正。超参数：$\\\\beta_1=0.9, \\\\beta_2=0.999$。最常用优化器。"
+        }
+      ]
+    }
+  ]
+}
+

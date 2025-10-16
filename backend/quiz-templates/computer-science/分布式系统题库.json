@@ -1,0 +1,360 @@
+{
+  "题库说明": "本题库对应《分布式系统 (cs402)》知识点，涵盖分布式系统基础、一致性、分布式事务、容错、分布式存储等内容。",
+  "题库": [
+    {
+      "pointId": "cs402",
+      "pointTitle": "分布式系统",
+      "quiz": [
+        {
+          "question": "分布式系统的主要特征包括？",
+          "type": "multiple",
+          "options": [
+            "并发性（Concurrency）",
+            "缺乏全局时钟",
+            "独立故障（部分失败）",
+            "所有节点同步"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "分布式系统特征：1) 并发执行；2) 无全局时钟（时钟同步困难）；3) 独立故障（部分节点失败不影响整体）；4) 网络通信。挑战：一致性、可用性、容错。"
+        },
+        {
+          "question": "CAP定理指出，分布式系统最多只能同时满足哪三个特性中的两个？",
+          "type": "multiple",
+          "options": [
+            "一致性（Consistency）",
+            "可用性（Availability）",
+            "分区容错性（Partition Tolerance）",
+            "性能（Performance）"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "CAP定理（Brewer定理）：分布式系统无法同时保证C（所有节点看到相同数据）、A（请求总能得到响应）、P（网络分区时仍工作）。实际必须容忍P，在C和A间权衡：CP（如HBase）或AP（如Cassandra）。"
+        },
+        {
+          "question": "BASE理论是什么？",
+          "type": "single",
+          "options": [
+            "基本可用（Basically Available）、软状态（Soft State）、最终一致性（Eventually Consistent）",
+            "强一致性模型",
+            "同步复制模型",
+            "无容错模型"
+          ],
+          "correctAnswer": 0,
+          "explanation": "BASE：CAP定理的延伸，放宽一致性要求。基本可用（部分可用）、软状态（状态可能不一致）、最终一致性（最终达到一致）。vs ACID（强一致），BASE更适合大规模分布式系统。"
+        },
+        {
+          "question": "强一致性（Strong Consistency）和最终一致性（Eventual Consistency）的区别是？",
+          "type": "single",
+          "options": [
+            "强一致性保证读到最新写入，最终一致性允许短暂不一致",
+            "强一致性更慢",
+            "最终一致性更安全",
+            "两者完全相同"
+          ],
+          "correctAnswer": 0,
+          "explanation": "强一致性：任何读操作返回最新写入值（如同单机）。最终一致性：允许短期不一致，最终收敛一致（如DNS、Cassandra）。权衡：一致性vs可用性/性能。"
+        },
+        {
+          "question": "两阶段提交（2PC，Two-Phase Commit）协议的两个阶段是？",
+          "type": "multiple",
+          "options": [
+            "准备阶段（Prepare/Voting）",
+            "提交阶段（Commit）",
+            "回滚阶段",
+            "锁定阶段"
+          ],
+          "correctAnswer": [0, 1],
+          "explanation": "2PC：分布式事务协议。阶段1：协调者询问参与者是否可提交，参与者投票（准备）。阶段2：若全同意则提交，否则回滚。缺点：阻塞（协调者故障）、同步、单点故障。"
+        },
+        {
+          "question": "三阶段提交（3PC）相比2PC的改进是？",
+          "type": "single",
+          "options": [
+            "引入超时机制和预提交阶段，减少阻塞",
+            "更快",
+            "更简单",
+            "完全避免阻塞"
+          ],
+          "correctAnswer": 0,
+          "explanation": "3PC：改进2PC的阻塞问题。三阶段：CanCommit（询问）→PreCommit（预提交）→DoCommit（提交）。引入超时机制，减少阻塞但不能完全避免。网络分区时仍可能不一致。"
+        },
+        {
+          "question": "Paxos算法的主要作用是？",
+          "type": "single",
+          "options": [
+            "在分布式系统中达成共识（一致性）",
+            "负载均衡",
+            "数据加密",
+            "提高性能"
+          ],
+          "correctAnswer": 0,
+          "explanation": "Paxos（1989，Leslie Lamport）：分布式共识算法，容忍少数节点故障。角色：Proposer、Acceptor、Learner。两阶段：Prepare+Accept。复杂但理论完备，Raft是简化版。"
+        },
+        {
+          "question": "Raft共识算法的三个子问题是？",
+          "type": "multiple",
+          "options": [
+            "Leader选举（Leader Election）",
+            "日志复制（Log Replication）",
+            "安全性（Safety）",
+            "性能优化"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "Raft（2013）：更易理解的共识算法。子问题：1) Leader选举（term、投票）；2) 日志复制（Leader接收、复制到多数）；3) 安全性（已提交日志不丢失）。应用：etcd、Consul。"
+        },
+        {
+          "question": "分布式锁的实现方式包括？",
+          "type": "multiple",
+          "options": [
+            "基于数据库（唯一约束）",
+            "基于Redis（SETNX）",
+            "基于ZooKeeper（临时顺序节点）",
+            "基于本地文件"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "分布式锁：多个进程互斥访问共享资源。实现：1) 数据库（唯一索引，性能差）；2) Redis（SETNX+过期时间，需考虑锁释放）；3) ZooKeeper（临时节点，强一致）；4) etcd。本地文件不适用分布式。"
+        },
+        {
+          "question": "Redlock算法是为了解决什么问题？",
+          "type": "single",
+          "options": [
+            "在多个Redis实例上实现更可靠的分布式锁",
+            "提高Redis性能",
+            "备份Redis数据",
+            "Redis集群选主"
+          ],
+          "correctAnswer": 0,
+          "explanation": "Redlock（Redis作者提出）：在多个独立Redis实例（至少5个）上获取锁，过半成功才算获取。解决单Redis实例锁的可靠性问题（如主从切换丢锁）。争议：Martin Kleppmann批评其安全性。"
+        },
+        {
+          "question": "分布式事务的解决方案包括？",
+          "type": "multiple",
+          "options": [
+            "两阶段提交（2PC）",
+            "补偿事务（TCC：Try-Confirm-Cancel）",
+            "消息队列（最终一致性）",
+            "本地事务"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "分布式事务方案：1) 2PC/3PC（强一致，阻塞）；2) TCC（补偿机制，业务侵入）；3) 消息队列（最终一致）；4) Saga（长事务，补偿）；5) 本地消息表。本地事务不适用分布式。"
+        },
+        {
+          "question": "幂等性（Idempotence）在分布式系统中的重要性是？",
+          "type": "single",
+          "options": [
+            "保证重复操作产生相同结果，应对网络重试",
+            "提高性能",
+            "减少代码量",
+            "简化逻辑"
+          ],
+          "correctAnswer": 0,
+          "explanation": "幂等性：多次执行产生相同结果。网络不可靠导致重试，幂等性保证安全。实现：唯一ID（去重）、状态机（检查状态）、版本号、乐观锁。如：HTTP的GET、PUT幂等，POST不幂等。"
+        },
+        {
+          "question": "分布式系统中的时钟同步算法包括？",
+          "type": "multiple",
+          "options": [
+            "NTP（Network Time Protocol）",
+            "Lamport时间戳（逻辑时钟）",
+            "Vector Clock（向量时钟）",
+            "System.currentTimeMillis()"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "时钟同步：物理时钟（NTP，毫秒级精度）、逻辑时钟（Lamport，因果关系）、向量时钟（并发检测）。分布式系统无全局时钟，需同步或逻辑顺序。本地时钟不可靠。"
+        },
+        {
+          "question": "Lamport时间戳的作用是？",
+          "type": "single",
+          "options": [
+            "确定分布式事件的因果顺序（happens-before关系）",
+            "测量物理时间",
+            "加密时间戳",
+            "提高性能"
+          ],
+          "correctAnswer": 0,
+          "explanation": "Lamport时间戳（逻辑时钟）：每个进程维护计数器，发送消息时递增，接收时取max+1。确定因果顺序（happens-before）。缺点：不能判断并发事件。向量时钟改进此问题。"
+        },
+        {
+          "question": "分布式哈希表（DHT）的代表算法是？",
+          "type": "single",
+          "options": [
+            "一致性哈希（Consistent Hashing）",
+            "普通哈希",
+            "加密哈希",
+            "哈希碰撞"
+          ],
+          "correctAnswer": 0,
+          "explanation": "一致性哈希：将节点和数据映射到环上，数据存储在顺时针最近节点。优点：节点增减时只需重新分配少量数据（vs普通哈希重新分配所有）。虚拟节点解决负载不均。应用：Memcached、DynamoDB。"
+        },
+        {
+          "question": "MapReduce的编程模型包括哪两个主要阶段？",
+          "type": "multiple",
+          "options": [
+            "Map阶段（映射）",
+            "Reduce阶段（归约）",
+            "Shuffle阶段",
+            "Filter阶段"
+          ],
+          "correctAnswer": [0, 1],
+          "explanation": "MapReduce（Google，2004）：分布式计算模型。Map（并行处理，输出key-value）→Shuffle（按key分组）→Reduce（聚合）。应用：大数据批处理。Hadoop实现了MapReduce。"
+        },
+        {
+          "question": "HDFS（Hadoop Distributed File System）的特点是？",
+          "type": "multiple",
+          "options": [
+            "高容错（数据副本，默认3份）",
+            "适合大文件存储",
+            "一次写入多次读取（WORM）",
+            "适合随机读写"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "HDFS：分布式文件系统。特点：高容错（副本）、大文件（GB-TB级）、流式读取、一次写入多次读取。架构：NameNode（元数据）+DataNode（数据块）。不适合低延迟、小文件、随机写。"
+        },
+        {
+          "question": "负载均衡算法包括？",
+          "type": "multiple",
+          "options": [
+            "轮询（Round Robin）",
+            "加权轮询（Weighted Round Robin）",
+            "最少连接（Least Connections）",
+            "随机（Random）"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "负载均衡：分配请求到多个服务器。算法：轮询（顺序）、加权轮询（按性能分配）、最少连接（负载最小）、随机、IP哈希（会话保持）、最短响应时间。选择取决于场景。"
+        },
+        {
+          "question": "服务发现（Service Discovery）的实现方式包括？",
+          "type": "multiple",
+          "options": [
+            "客户端发现（如Eureka）",
+            "服务端发现（如Nginx+Consul）",
+            "DNS",
+            "硬编码IP"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "服务发现：动态发现服务实例地址。方式：1) 客户端发现（客户端查询注册中心，如Eureka、Consul）；2) 服务端发现（负载均衡器查询，如Nginx+Consul）；3) DNS。硬编码不适合动态环境。"
+        },
+        {
+          "question": "微服务架构的主要特点是？",
+          "type": "multiple",
+          "options": [
+            "服务按业务功能拆分",
+            "独立部署和扩展",
+            "去中心化（数据、治理）",
+            "单一数据库"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "微服务：将应用拆分为小服务。特点：按业务拆分、独立部署、去中心化（每服务独立数据库）、技术异构、容错。优点：灵活、可扩展。缺点：复杂性、分布式事务、运维成本。"
+        },
+        {
+          "question": "服务网格（Service Mesh）的作用是？",
+          "type": "single",
+          "options": [
+            "管理服务间通信（流量管理、安全、可观测性），与业务逻辑解耦",
+            "替代微服务",
+            "数据存储",
+            "前端框架"
+          ],
+          "correctAnswer": 0,
+          "explanation": "Service Mesh（如Istio、Linkerd）：微服务基础设施层，通过代理（Sidecar，如Envoy）管理服务通信。功能：负载均衡、熔断、重试、加密、监控。将网络功能从应用代码中剥离。"
+        },
+        {
+          "question": "熔断器（Circuit Breaker）模式的作用是？",
+          "type": "single",
+          "options": [
+            "快速失败，防止故障蔓延（雪崩）",
+            "提高性能",
+            "负载均衡",
+            "数据加密"
+          ],
+          "correctAnswer": 0,
+          "explanation": "熔断器：监控服务调用，失败率超阈值时打开熔断器（快速返回错误，不调用服务），一段时间后半开（尝试调用）。防止故障传播。状态：闭合→开启→半开。Hystrix、Resilience4j实现。"
+        },
+        {
+          "question": "限流（Rate Limiting）的常见算法包括？",
+          "type": "multiple",
+          "options": [
+            "令牌桶（Token Bucket）",
+            "漏桶（Leaky Bucket）",
+            "固定窗口计数器",
+            "滑动窗口"
+          ],
+          "correctAnswer": [0, 1, 2, 3],
+          "explanation": "限流算法：1) 令牌桶（固定速率生成令牌，允许突发）；2) 漏桶（固定速率处理，平滑流量）；3) 固定窗口（计数，边界问题）；4) 滑动窗口（更精确）。保护系统免受过载。"
+        },
+        {
+          "question": "分布式追踪（Distributed Tracing）的作用是？",
+          "type": "single",
+          "options": [
+            "跟踪请求在分布式系统中的完整路径和性能",
+            "日志收集",
+            "监控CPU使用率",
+            "数据备份"
+          ],
+          "correctAnswer": 0,
+          "explanation": "分布式追踪：追踪请求跨服务的调用链路。概念：Trace（完整请求）、Span（单个操作）、TraceID（唯一标识）。工具：Zipkin、Jaeger、SkyWalking。用于性能分析、故障定位。"
+        },
+        {
+          "question": "CAP定理中，网络分区（P）发生时，为什么必须容忍？",
+          "type": "single",
+          "options": [
+            "网络故障无法避免，系统必须能在分区时继续工作",
+            "分区可以完全避免",
+            "分区不影响系统",
+            "可以同时保证C和A"
+          ],
+          "correctAnswer": 0,
+          "explanation": "分区容错性（P）：网络分区（节点间无法通信）无法避免（硬件故障、网络拥塞）。现实中必须容忍P，因此只能在C和A之间选择：分区时要么牺牲一致性（AP）、要么牺牲可用性（CP）。"
+        },
+        {
+          "question": "Gossip协议（流言协议）的应用场景是？",
+          "type": "single",
+          "options": [
+            "分布式系统中的信息传播和故障检测",
+            "加密通信",
+            "数据压缩",
+            "负载均衡"
+          ],
+          "correctAnswer": 0,
+          "explanation": "Gossip：节点随机选择邻居交换信息，逐步传播到全网。特点：最终一致性、容错、可扩展。应用：Cassandra（数据同步）、Consul（成员管理）、比特币（交易传播）。收敛时间$O(\\\\log N)$。"
+        },
+        {
+          "question": "分布式系统的可观测性三大支柱是？",
+          "type": "multiple",
+          "options": [
+            "日志（Logs）",
+            "指标（Metrics）",
+            "追踪（Traces）",
+            "代码注释"
+          ],
+          "correctAnswer": [0, 1, 2],
+          "explanation": "可观测性三支柱：1) 日志（事件记录，如ELK）；2) 指标（聚合数值，如Prometheus）；3) 追踪（调用链路，如Jaeger）。帮助理解系统行为、诊断问题。代码注释不属于可观测性。"
+        },
+        {
+          "question": "Quorum机制在分布式系统中的作用是？",
+          "type": "single",
+          "options": [
+            "通过多数派读写保证一致性",
+            "提高性能",
+            "负载均衡",
+            "数据加密"
+          ],
+          "correctAnswer": 0,
+          "explanation": "Quorum（法定人数）：W+R>N，其中W=写副本数、R=读副本数、N=总副本数。保证读能看到最新写（读写集合必有交集）。如：N=3、W=2、R=2。权衡一致性与性能。Dynamo使用。"
+        },
+        {
+          "question": "拜占庭容错（BFT，Byzantine Fault Tolerance）是指什么？",
+          "type": "single",
+          "options": [
+            "容忍恶意节点（任意行为），达成共识",
+            "容忍节点宕机",
+            "容忍网络延迟",
+            "容忍数据丢失"
+          ],
+          "correctAnswer": 0,
+          "explanation": "拜占庭容错：容忍恶意节点（发送矛盾信息、不响应）。拜占庭将军问题：需3f+1个节点才能容忍f个恶意节点。PBFT（Practical BFT）算法。应用：区块链（PoW、PoS）。vs Crash容错（节点只崩溃不作恶）。"
+        }
+      ]
+    }
+  ]
+}
+
