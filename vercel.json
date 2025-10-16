@@ -2,7 +2,7 @@
   "version": 2,
   "buildCommand": "pnpm build",
   "outputDirectory": "frontend/dist",
-  "installCommand": "pnpm install --no-frozen-lockfile",
+  "installCommand": "pnpm install --no-frozen-lockfile --include=dev",
   "framework": null,
   "rewrites": [
     {
