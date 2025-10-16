@@ -1,33 +1,48 @@
 {
   "version": 2,
-  "buildCommand": "pnpm build:frontend && pnpm build:backend",
-  "outputDirectory": "frontend/dist",
-  "installCommand": "pnpm install --no-frozen-lockfile",
-  "framework": null,
-  "rewrites": [
+  "builds": [
     {
-      "source": "/api/auth/github",
-      "destination": "/api/index"
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "frontend/dist"
+      }
     },
     {
-      "source": "/api/auth/github/callback",
-      "destination": "/api/index"
+      "src": "api/index.ts",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": ["backend/dist/**"]
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/auth/github",
+      "dest": "/api/index"
     },
     {
-      "source": "/api/auth/qq",
-      "destination": "/api/index"
+      "src": "/api/auth/github/callback",
+      "dest": "/api/index"
     },
     {
-      "source": "/api/auth/qq/callback",
-      "destination": "/api/index"
+      "src": "/api/auth/qq",
+      "dest": "/api/index"
     },
     {
-      "source": "/api/:path*",
-      "destination": "/api/index"
+      "src": "/api/auth/qq/callback",
+      "dest": "/api/index"
     },
     {
-      "source": "/((?!api).*)",
-      "destination": "/index.html"
+      "src": "/api/(.*)",
+      "dest": "/api/index"
+    },
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ],
   "env": {
