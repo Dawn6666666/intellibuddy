@@ -11,7 +11,7 @@
     "dev:backend": "pnpm --filter backend dev",
     "build": "pnpm build:frontend && pnpm build:backend",
     "vercel-build": "pnpm build:frontend && pnpm build:backend",
-    "build:frontend": "pnpm --filter frontend build",
+    "build:frontend": "cd frontend && pnpm build",
     "build:backend": "pnpm --filter backend build",
     "lint": "pnpm --filter frontend lint && pnpm --filter backend lint",
     "format": "pnpm --filter frontend format && pnpm --filter backend format",
