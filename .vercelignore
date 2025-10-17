@@ -7,10 +7,6 @@
 # 依赖
 node_modules
 
-# 源代码（只需要编译后的文件）
-backend/src
-frontend/src
-
 # 测试和文档
 *.test.ts
 *.test.js
@@ -19,13 +15,6 @@ frontend/src
 __tests__
 tests
 docs
-
-# 配置文件
-.env.local
-.env.development
-.env.test
-tsconfig.json
-tsconfig.*.json
 
 # 日志
 *.log

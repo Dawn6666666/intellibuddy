@@ -39,7 +39,11 @@
         <h3>⚙️ 设置</h3>
         <div class="setting-item">
           <label>持续时间（毫秒）：</label>
-          <input v-model.number="duration" type="number" min="500" max="5000" step="100" />
+          <input v-model.number="duration"
+type="number"
+min="500"
+max="5000"
+step="100" />
         </div>
         <div class="setting-item">
           <label>显示文本：</label>

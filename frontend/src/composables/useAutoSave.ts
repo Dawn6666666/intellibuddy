@@ -7,7 +7,7 @@ import { useNotification } from './useNotification';
  * 用于防止用户意外退出丢失数据
  */
 export function useAutoSave<T>(
-  data: Ref<T>,
+  dataRef: Ref<T>,
   saveCallback: (data: T) => Promise<void>,
   options?: {
     delay?: number; // 延迟保存时间（毫秒）
@@ -65,7 +65,7 @@ export function useAutoSave<T>(
     isSaving.value = true;
     
     try {
-      await saveCallback(data.value);
+      await saveCallback(dataRef.value);
       lastSaved.value = new Date();
       
       // 保存成功后清除本地存储
@@ -114,7 +114,7 @@ export function useAutoSave<T>(
    * 监听数据变化
    */
   watch(
-    data,
+    dataRef,
     (newValue) => {
       // 保存到本地存储（即时）
       saveToStorage(newValue);

@@ -7,9 +7,8 @@ import {IUser} from '../models/User';
 // 这样，在所有路由文件中，TypeScript 都能正确识别出 req.user 上存在 _id, username 等属性。
 declare global {
     namespace Express {
-        // 继承 IUser 接口
-        export interface User extends IUser {
-        }
+        // 使用类型别名继承 IUser 接口，避免空接口规则告警
+        export type User = IUser;
 
         // Multer 文件类型
         export interface Multer {

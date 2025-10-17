@@ -28,7 +28,6 @@ export async function createDatabaseIndexes() {
   ];
 
   let successCount = 0;
-  let failCount = 0;
 
   for (const { name, model } of models) {
     try {
@@ -43,7 +42,6 @@ export async function createDatabaseIndexes() {
       successCount++;
     } catch (error: any) {
       console.warn(`[DB Indexes] ⚠️  ${name} 索引同步失败:`, error.message);
-      failCount++;
       // 继续处理其他模型，不中断整个流程
     }
   }
@@ -89,8 +87,9 @@ export async function listDatabaseIndexes() {
 }
 
 // 如果直接运行此脚本
-if (require.main === module) {
-  require('dotenv').config();
+if (typeof require !== 'undefined' && require.main === module) {
+  // 动态导入 dotenv 以避免 ESM 下的 require 规则告警
+  import('dotenv').then(dotenv => dotenv.config());
   
   const mongoUri = process.env.MONGO_URI;
   if (!mongoUri) {

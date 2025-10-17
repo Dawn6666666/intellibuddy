@@ -94,7 +94,10 @@
           >
             下一题 <i class="fa-solid fa-chevron-right"></i>
           </button>
-          <button v-else class="btn-primary" @click="submitAssessment" :disabled="!allAnswered">
+          <button v-else
+class="btn-primary"
+@click="submitAssessment"
+:disabled="!allAnswered">
             <i class="fa-solid fa-paper-plane"></i> 提交评估
           </button>
         </div>

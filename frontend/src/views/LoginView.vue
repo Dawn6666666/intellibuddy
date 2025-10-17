@@ -74,7 +74,9 @@ const handleRegister = async (formEl: FormInstance | undefined) => {
     <div class="scaler">
       <div class="container" :class="{ 'active': isRegisterActive }">
         <div class="form-container sign-up">
-          <el-form :model="registerForm" :rules="registerRules" ref="registerFormRef"
+          <el-form :model="registerForm"
+:rules="registerRules"
+ref="registerFormRef"
                    @submit.prevent="handleRegister(registerFormRef)">
             <h1>创建账户</h1>
             <div class="social-icons">
@@ -92,7 +94,10 @@ const handleRegister = async (formEl: FormInstance | undefined) => {
               <el-input v-model="registerForm.email" type="email" placeholder="邮箱"/>
             </el-form-item>
             <el-form-item prop="password">
-              <el-input v-model="registerForm.password" type="password" placeholder="密码" show-password/>
+              <el-input v-model="registerForm.password"
+type="password"
+placeholder="密码"
+show-password/>
             </el-form-item>
             <el-form-item>
               <el-button type="primary" native-type="submit" :loading="isLoading">注册</el-button>
@@ -101,7 +106,9 @@ const handleRegister = async (formEl: FormInstance | undefined) => {
         </div>
 
         <div class="form-container sign-in">
-          <el-form :model="loginForm" :rules="loginRules" ref="loginFormRef"
+          <el-form :model="loginForm"
+:rules="loginRules"
+ref="loginFormRef"
                    @submit.prevent="handleLogin(loginFormRef)">
             <h1>登录</h1>
             <div class="social-icons">
@@ -116,7 +123,10 @@ const handleRegister = async (formEl: FormInstance | undefined) => {
               <el-input v-model="loginForm.email" type="email" placeholder="邮箱"/>
             </el-form-item>
             <el-form-item prop="password">
-              <el-input v-model="loginForm.password" type="password" placeholder="密码" show-password/>
+              <el-input v-model="loginForm.password"
+type="password"
+placeholder="密码"
+show-password/>
             </el-form-item>
             <router-link to="/forgot-password" class="forgot-password-link">忘记密码？</router-link>
             <el-form-item>

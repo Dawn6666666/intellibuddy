@@ -93,7 +93,7 @@ const getNodeStyle = (point: KnowledgePoint): {
         gradient: 'linear-gradient(135deg, #ffc53d 0%, #faad14 100%)',
         textColor: '#ffffff',
       };
-    case 'not_started':
+    case 'not_started': {
       // 未开始 - 根据难度使用不同渐变
       const difficulty = point.difficulty || 3;
       if (difficulty <= 2) {
@@ -121,6 +121,7 @@ const getNodeStyle = (point: KnowledgePoint): {
           textColor: '#ffffff',
         };
       }
+    }
     default:
       return {
         fill: '#d9d9d9',

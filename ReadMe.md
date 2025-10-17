@@ -20,7 +20,7 @@ intellibuddy/
 
 ### 前置要求
 
-- Node.js >= 18.0.0
+- Node.js >= 20.0.0（推荐 20.11.1，与项目 .nvmrc 一致）
 - pnpm >= 8.0.0
 - MongoDB Atlas账号（免费）
 - AI API Key（Kimi/通义千问/智谱AI 任选其一）

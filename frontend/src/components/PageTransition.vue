@@ -10,14 +10,22 @@
         <!-- 加载动画 -->
         <div class="loader-container">
           <svg class="circular-loader" viewBox="0 0 50 50">
-            <circle class="loader-path" cx="25" cy="25" r="20" fill="none" stroke-width="3"></circle>
+            <circle class="loader-path"
+cx="25"
+cy="25"
+r="20"
+fill="none"
+stroke-width="3"></circle>
           </svg>
           <div class="pulse-ring"></div>
         </div>
         
         <!-- 加载文本 -->
         <div class="loading-text">
-          <span class="text-char" v-for="(char, index) in loadingText" :key="index" :style="{ animationDelay: `${index * 0.1}s` }">
+          <span class="text-char"
+v-for="(char, index) in loadingText"
+:key="index"
+:style="{ animationDelay: `${index * 0.1}s` }">
             {{ char }}
           </span>
         </div>
@@ -33,7 +41,10 @@
       
       <!-- 装饰性粒子效果 -->
       <div class="particles">
-        <div v-for="i in 20" :key="i" class="particle" :style="getParticleStyle(i)"></div>
+        <div v-for="i in 20"
+:key="i"
+class="particle"
+:style="getParticleStyle(i)"></div>
       </div>
     </div>
   </Transition>

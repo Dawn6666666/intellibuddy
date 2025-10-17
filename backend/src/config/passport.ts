@@ -23,7 +23,7 @@ passport.use(new GitHubStrategy({
     },
     async (accessToken: string, refreshToken: string, profile: any, done: (error: any, user?: any) => void) => {
         try {
-            let user = await User.findOne({githubId: profile.id});
+            const user = await User.findOne({githubId: profile.id});
 
             if (user) {
                 return done(null, user);
@@ -55,7 +55,7 @@ passport.use(new QQStrategy({
     async (accessToken: string, refreshToken: string, profile: any, done: (error: any, user?: any) => void) => {
         try {
             const openid = profile.id;
-            let user = await User.findOne({qqId: openid});
+            const user = await User.findOne({qqId: openid});
 
             if (user) {
                 return done(null, user);

@@ -38,13 +38,19 @@
 
           <el-divider />
 
-          <el-form :model="profileForm" :rules="profileRules" ref="profileFormRef" label-width="100px">
+          <el-form :model="profileForm"
+:rules="profileRules"
+ref="profileFormRef"
+label-width="100px">
             <el-form-item label="用户名" prop="username">
               <el-input v-model="profileForm.username" placeholder="请输入用户名" />
             </el-form-item>
             
             <el-form-item label="邮箱" prop="email">
-              <el-input v-model="profileForm.email" type="email" placeholder="请输入邮箱" disabled />
+              <el-input v-model="profileForm.email"
+type="email"
+placeholder="请输入邮箱"
+disabled />
               <p class="field-tip">邮箱不可修改</p>
             </el-form-item>
 
@@ -63,7 +69,10 @@
           <h2><i class="fa-solid fa-lock"></i> 修改密码</h2>
         </div>
         <div class="card-body">
-          <el-form :model="passwordForm" :rules="passwordRules" ref="passwordFormRef" label-width="100px">
+          <el-form :model="passwordForm"
+:rules="passwordRules"
+ref="passwordFormRef"
+label-width="100px">
             <el-form-item label="当前密码" prop="currentPassword">
               <el-input 
                 v-model="passwordForm.currentPassword" 

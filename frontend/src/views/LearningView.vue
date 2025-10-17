@@ -115,7 +115,10 @@
     </div>
 
     <!-- 回到顶部按钮 -->
-    <button v-if="showBackToTop" @click="scrollToTop" class="back-to-top-btn" title="回到顶部">
+    <button v-if="showBackToTop"
+@click="scrollToTop"
+class="back-to-top-btn"
+title="回到顶部">
       <i class="fa-solid fa-arrow-up"></i>
     </button>
 

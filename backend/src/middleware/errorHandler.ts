@@ -45,7 +45,9 @@ export class AppError extends Error {
 /**
  * 异步错误包装器
  */
-export const asyncHandler = (fn: Function) => {
+export const asyncHandler = (
+  fn: (req: Request, res: Response, next: NextFunction) => unknown | Promise<unknown>
+) => {
   return (req: Request, res: Response, next: NextFunction) => {
     Promise.resolve(fn(req, res, next)).catch(next);
   };
@@ -144,11 +146,13 @@ export const errorHandler = (
     success: false,
     message,
     code,
-    ...(isDevelopment && {
-      error: err.message,
-      stack: err.stack,
-      details: (err as any).details || undefined,
-    }),
+    ...(isDevelopment
+      ? {
+          error: err.message,
+          stack: err.stack,
+          details: (err as any).details || undefined,
+        }
+      : {}),
   });
 };
 

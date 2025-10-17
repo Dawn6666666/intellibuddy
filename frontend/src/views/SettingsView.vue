@@ -186,7 +186,10 @@
 
       <!-- 保存按钮 -->
       <div class="save-actions">
-        <el-button type="primary" size="large" @click="handleSaveSettings" :loading="isSaving">
+        <el-button type="primary"
+size="large"
+@click="handleSaveSettings"
+:loading="isSaving">
           <i class="fa-solid fa-save"></i> 保存设置
         </el-button>
         <el-button size="large" @click="handleResetSettings">
