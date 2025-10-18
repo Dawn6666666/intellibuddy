@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "pnpm vercel-build",
+  "buildCommand": "pnpm run vercel-build",
   "installCommand": "pnpm install --prod=false",
   "outputDirectory": "frontend/dist",
   "framework": null,
