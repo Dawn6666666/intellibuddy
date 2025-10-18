@@ -40,3 +40,6 @@ yarn.lock
 *.tmp
 *.temp
 .cache/
+
+# Vercel
+.vercel
