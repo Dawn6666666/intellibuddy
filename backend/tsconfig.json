@@ -13,10 +13,8 @@
     "strictNullChecks": false,
     "strictPropertyInitialization": false,
     "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "suppressImplicitAnyIndexErrors": true
+    "noUnusedParameters": false
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/types/express.d.ts"],
-  "files": ["src/types/express.d.ts"],
+  "include": ["src/**/*.ts", "src/**/*.d.ts"],
   "exclude": ["node_modules"]
 }
