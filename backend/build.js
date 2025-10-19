@@ -36,7 +36,7 @@ async function build() {
       format: 'cjs',
       target: 'es2020',
       sourcemap: true,
-      bundle: false,
+      bundle: true,
       minify: false,
       external: [
         'express',
@@ -51,7 +51,9 @@ async function build() {
         'dotenv',
         'axios',
         'multer'
-      ]
+      ],
+      // 保持原始目录结构
+      outbase: 'src'
     });
     
     console.log('✅ Backend build completed successfully!');
