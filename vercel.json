@@ -1,7 +1,7 @@
 {
   "version": 2,
   "installCommand": "pnpm install --prod=false",
-  "buildCommand": "cd frontend && pnpm build && cd ../backend && pnpm build",
+  "buildCommand": "pnpm --filter @intellibuddy/frontend build && pnpm --filter @intellibuddy/backend build",
   "outputDirectory": "frontend/dist",
   "rewrites": [
     {
