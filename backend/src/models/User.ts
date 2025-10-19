@@ -1,5 +1,5 @@
 // backend/src/models/User.ts
-import {Schema, model, Document, Types} from 'mongoose';
+import mongoose, { Schema, model, Document, Types } from 'mongoose';
 
 export interface IUser extends Document {
     _id: Types.ObjectId;
@@ -27,6 +27,6 @@ UserSchema.index({ email: 1 }, { unique: true });
 UserSchema.index({ githubId: 1 }, { unique: true, sparse: true });
 UserSchema.index({ qqId: 1 }, { unique: true, sparse: true });
 
-const User = model<IUser>('User', UserSchema);
+const User = (mongoose.models.User as mongoose.Model<IUser>) || model<IUser>('User', UserSchema);
 
 export default User;

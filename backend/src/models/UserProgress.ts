@@ -1,5 +1,5 @@
 // backend/src/models/UserProgress.ts
-import {Schema, model, Document, Types} from 'mongoose';
+import mongoose, { Schema, model, Document, Types } from 'mongoose';
 
 export interface IUserProgress extends Document {
     userId: Types.ObjectId;
@@ -31,6 +31,6 @@ const UserProgressSchema = new Schema<IUserProgress>({
 // 创建复合唯一索引
 UserProgressSchema.index({userId: 1, pointId: 1}, {unique: true});
 
-const UserProgress = model<IUserProgress>('UserProgress', UserProgressSchema);
+const UserProgress = (mongoose.models.UserProgress as mongoose.Model<IUserProgress>) || model<IUserProgress>('UserProgress', UserProgressSchema);
 
 export default UserProgress;

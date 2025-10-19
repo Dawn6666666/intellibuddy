@@ -1,5 +1,5 @@
 // backend/src/models/Chat.ts
-import {Schema, model, Document, Types} from 'mongoose';
+import mongoose, { Schema, model, Document, Types } from 'mongoose';
 
 // 定义单条消息的接口
 export interface IMessage {
@@ -27,6 +27,6 @@ const ChatSchema = new Schema<IChat>({
     timestamps: true
 });
 
-const Chat = model<IChat>('Chat', ChatSchema);
+const Chat = (mongoose.models.Chat as mongoose.Model<IChat>) || model<IChat>('Chat', ChatSchema);
 
 export default Chat;

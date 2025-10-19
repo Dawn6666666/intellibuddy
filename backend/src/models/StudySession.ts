@@ -1,5 +1,5 @@
 // backend/src/models/StudySession.ts
-import { Schema, model, Document, Types } from 'mongoose';
+import mongoose, { Schema, model, Document, Types } from 'mongoose';
 
 export interface IStudySession extends Document {
     userId: Types.ObjectId;
@@ -31,7 +31,7 @@ const StudySessionSchema = new Schema<IStudySession>({
 StudySessionSchema.index({ userId: 1, startTime: -1 });
 StudySessionSchema.index({ userId: 1, pointId: 1 });
 
-const StudySession = model<IStudySession>('StudySession', StudySessionSchema);
+const StudySession = (mongoose.models.StudySession as mongoose.Model<IStudySession>) || model<IStudySession>('StudySession', StudySessionSchema);
 
 export default StudySession;
 

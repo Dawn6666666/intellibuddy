@@ -1,5 +1,5 @@
 // backend/src/models/WrongQuestion.ts
-import { Schema, model, Document, Types } from 'mongoose';
+import mongoose, { Schema, model, Document, Types } from 'mongoose';
 
 export interface IWrongQuestion extends Document {
     userId: Types.ObjectId;
@@ -46,7 +46,7 @@ WrongQuestionSchema.index({ userId: 1, pointId: 1 });
 WrongQuestionSchema.index({ userId: 1, mastered: 1 });
 WrongQuestionSchema.index({ userId: 1, subject: 1 });
 
-const WrongQuestion = model<IWrongQuestion>('WrongQuestion', WrongQuestionSchema);
+const WrongQuestion = (mongoose.models.WrongQuestion as mongoose.Model<IWrongQuestion>) || model<IWrongQuestion>('WrongQuestion', WrongQuestionSchema);
 
 export default WrongQuestion;
 

@@ -1,5 +1,5 @@
 // backend/src/models/KnowledgePoint.ts
-import {Schema, model, Document} from 'mongoose';
+import mongoose, { Schema, model, Document } from 'mongoose';
 
 // 测验题目接口
 export interface IQuizQuestion {
@@ -72,6 +72,6 @@ const KnowledgePointSchema = new Schema<IKnowledgePoint>({
     graphPosition: {type: GraphPositionSchema, required: true},
 });
 
-const KnowledgePoint = model<IKnowledgePoint>('KnowledgePoint', KnowledgePointSchema);
+const KnowledgePoint = (mongoose.models.KnowledgePoint as mongoose.Model<IKnowledgePoint>) || model<IKnowledgePoint>('KnowledgePoint', KnowledgePointSchema);
 
 export default KnowledgePoint;

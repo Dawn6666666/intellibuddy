@@ -1,5 +1,5 @@
 // backend/src/models/Assessment.ts
-import {Schema, model, Document, Types} from 'mongoose';
+import mongoose, { Schema, model, Document, Types } from 'mongoose';
 
 // 用户能力画像
 export interface ISkillProfile {
@@ -49,7 +49,7 @@ const AssessmentSchema = new Schema<IAssessment>({
     timestamps: true,
 });
 
-const Assessment = model<IAssessment>('Assessment', AssessmentSchema);
+const Assessment = (mongoose.models.Assessment as mongoose.Model<IAssessment>) || model<IAssessment>('Assessment', AssessmentSchema);
 
 export default Assessment;
 

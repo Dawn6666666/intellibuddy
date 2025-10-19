@@ -102,7 +102,9 @@ const userAchievementSchema = new Schema<IUserAchievement>({
 userAchievementSchema.index({ userId: 1, achievementId: 1 }, { unique: true });
 userAchievementSchema.index({ userId: 1, completed: 1 });
 
-export default mongoose.model<IUserAchievement>('UserAchievement', userAchievementSchema);
+const UserAchievement = (mongoose.models.UserAchievement as mongoose.Model<IUserAchievement>) || mongoose.model<IUserAchievement>('UserAchievement', userAchievementSchema);
+
+export default UserAchievement;
 
 /**
  * 成就定义列表
