@@ -32,8 +32,28 @@ class Logger {
   private maxFiles: number = 5;
 
   constructor() {
-    this.logDir = path.join(process.cwd(), 'logs');
-    this.ensureLogDir();
+    // Use /tmp in serverless (Vercel) where filesystem is read-only except /tmp
+    const defaultDir = path.join(process.cwd(), 'logs');
+    const fallbackDir = '/tmp/logs';
+
+    // Try defaultDir first; if creation fails, fall back to /tmp
+    try {
+      fs.mkdirSync(defaultDir, { recursive: true });
+      this.logDir = defaultDir;
+    } catch (_) {
+      // eslint-disable-next-line no-console
+      console.warn('[logger] Cannot write to', defaultDir, '– falling back to', fallbackDir);
+      this.logDir = fallbackDir;
+      // Ensure fallback exists
+      try {
+        fs.mkdirSync(this.logDir, { recursive: true });
+      } catch (err) {
+        // If /tmp also fails, last resort: disable file logging
+        // eslint-disable-next-line no-console
+        console.error('[logger] Failed to create log directory', this.logDir, err);
+        this.logDir = '';
+      }
+    }
   }
 
   /**
@@ -57,12 +77,17 @@ class Logger {
    * 写入日志
    */
   private writeLog(entry: LogEntry) {
+    if (!this.logDir) {
+      return; // file logging disabled
+    }
+
     const filePath = this.getLogFilePath(entry.level);
     const logLine = JSON.stringify(entry) + '\n';
 
     // 异步写入
     fs.appendFile(filePath, logLine, (err) => {
       if (err) {
+        // eslint-disable-next-line no-console
         console.error('Failed to write log:', err);
       }
     });
