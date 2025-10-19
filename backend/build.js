@@ -10,7 +10,7 @@ async function build() {
     // 只打包主入口文件 index.ts
     await esbuild.build({
       entryPoints: ['src/index.ts'],
-      outfile: 'api/index.js',
+      outfile: path.join(__dirname, '..', 'api', 'index.js'),
       platform: 'node',
       format: 'cjs',
       target: 'es2020',
@@ -34,7 +34,7 @@ async function build() {
     });
     
     console.log('✅ Backend build completed successfully!');
-    console.log('📁 Output: dist/index.js');
+    console.log('📁 Output: api/index.js');
   } catch (error) {
     console.error('❌ Build failed:', error);
     process.exit(1);
