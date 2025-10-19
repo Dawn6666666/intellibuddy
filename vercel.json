@@ -1,8 +1,7 @@
 {
-  "buildCommand": "cd frontend && pnpm build && cd ../backend && pnpm build",
+  "buildCommand": "pnpm run vercel-build",
   "outputDirectory": "frontend/dist",
   "installCommand": "pnpm install --frozen-lockfile=false",
-  "framework": null,
   "rewrites": [
     {
       "source": "/api/:path*",
@@ -30,7 +29,7 @@
     }
   ],
   "functions": {
-    "api/index.ts": {
+    "api/index.js": {
       "memory": 1024,
       "maxDuration": 30
     }

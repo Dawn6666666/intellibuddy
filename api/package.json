@@ -3,14 +3,12 @@
   "version": "1.0.0",
   "private": true,
   "type": "commonjs",
-  "main": "index.ts",
+  "main": "index.js",
   "engines": {
-    "node": ">=20.0.0",
-    "pnpm": ">=8.0.0"
+    "node": ">=20.0.0"
   },
   "scripts": {
     "dev": "vercel dev",
     "build": "echo 'Vercel functions are built by the platform'"
   }
 }
-
