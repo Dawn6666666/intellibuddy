@@ -1,15 +1,14 @@
 {
-  "version": 2,
-  "installCommand": "pnpm install --prod=false",
-  "buildCommand": "pnpm --filter @intellibuddy/frontend build && pnpm --filter @intellibuddy/backend build",
+  "buildCommand": "cd frontend && pnpm build && cd ../backend && pnpm build",
   "outputDirectory": "frontend/dist",
+  "installCommand": "pnpm install --frozen-lockfile=false",
+  "framework": null,
   "rewrites": [
     {
       "source": "/api/:path*",
       "destination": "/api/index"
     }
   ],
-  "redirects": [],
   "cleanUrls": true,
   "trailingSlash": false,
   "env": {
