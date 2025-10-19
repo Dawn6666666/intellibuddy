@@ -1,7 +1,7 @@
 {
   "version": 2,
   "installCommand": "pnpm install --prod=false",
-  "buildCommand": "pnpm run build",
+  "buildCommand": "cd frontend && pnpm build && cd ../backend && pnpm build",
   "outputDirectory": "frontend/dist",
   "rewrites": [
     {
