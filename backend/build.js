@@ -10,7 +10,7 @@ async function build() {
     // 只打包主入口文件 index.ts
     await esbuild.build({
       entryPoints: ['src/index.ts'],
-      outfile: 'dist/index.js',
+      outfile: 'api/index.js',
       platform: 'node',
       format: 'cjs',
       target: 'es2020',
