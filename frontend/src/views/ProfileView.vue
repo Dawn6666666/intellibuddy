@@ -154,11 +154,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import RadarChart from '@/components/charts/RadarChart.vue';
 import HeatmapChart from '@/components/charts/HeatmapChart.vue';
 import { useUserStore } from '@/stores/user';
-// import { apiGetHeatmapData } from '@/services/apiService';
+import { apiGetMyStats } from '@/services/apiService';
 
 // 雷达图引用
 const radarChartRef = ref();
@@ -168,41 +168,97 @@ const userStore = useUserStore();
 // 当前年份
 const currentYear = ref(new Date().getFullYear());
 
-// 统计卡片数据
-const stats = computed(() => [
-  {
-    label: '总学习时长',
-    value: '128h',
-    icon: 'fa-solid fa-clock',
-    color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    trend: 'up',
-    change: '+12%'
-  },
-  {
-    label: '完成课程',
-    value: '24',
-    icon: 'fa-solid fa-book-open',
-    color: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-    trend: 'up',
-    change: '+8%'
-  },
-  {
-    label: '学习积分',
-    value: '2,850',
-    icon: 'fa-solid fa-star',
-    color: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-    trend: 'up',
-    change: '+15%'
-  },
-  {
-    label: '总排名',
-    value: 'Top 5%',
-    icon: 'fa-solid fa-ranking-star',
-    color: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-    trend: 'up',
-    change: '+3%'
+// 用户统计数据
+const userStats = ref<any>(null);
+const isLoadingStats = ref(true);
+
+// 加载用户统计数据
+onMounted(async () => {
+  try {
+    if (userStore.token) {
+      userStats.value = await apiGetMyStats(userStore.token);
+    }
+  } catch (error) {
+    console.error('加载用户统计数据失败:', error);
+  } finally {
+    isLoadingStats.value = false;
   }
-]);
+});
+
+// 统计卡片数据
+const stats = computed(() => {
+  if (!userStats.value) {
+    return [
+      {
+        label: '总学习时长',
+        value: '0h',
+        icon: 'fa-solid fa-clock',
+        color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        trend: 'up',
+        change: '0%'
+      },
+      {
+        label: '完成课程',
+        value: '0',
+        icon: 'fa-solid fa-book-open',
+        color: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+        trend: 'up',
+        change: '0%'
+      },
+      {
+        label: '学习积分',
+        value: '0',
+        icon: 'fa-solid fa-star',
+        color: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+        trend: 'up',
+        change: '0%'
+      },
+      {
+        label: '总排名',
+        value: 'Top 100%',
+        icon: 'fa-solid fa-ranking-star',
+        color: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+        trend: 'up',
+        change: '0%'
+      }
+    ];
+  }
+
+  return [
+    {
+      label: '总学习时长',
+      value: userStats.value.totalStudyTime.display,
+      icon: 'fa-solid fa-clock',
+      color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      trend: userStats.value.totalStudyTime.change >= 0 ? 'up' : 'down',
+      change: `${userStats.value.totalStudyTime.change >= 0 ? '+' : ''}${userStats.value.totalStudyTime.change}%`
+    },
+    {
+      label: '完成课程',
+      value: userStats.value.completedCourses.count.toString(),
+      icon: 'fa-solid fa-book-open',
+      color: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+      trend: userStats.value.completedCourses.change >= 0 ? 'up' : 'down',
+      change: `${userStats.value.completedCourses.change >= 0 ? '+' : ''}${userStats.value.completedCourses.change}%`
+    },
+    {
+      label: '学习积分',
+      value: userStats.value.points.display,
+      icon: 'fa-solid fa-star',
+      color: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+      trend: userStats.value.points.change >= 0 ? 'up' : 'down',
+      change: `${userStats.value.points.change >= 0 ? '+' : ''}${userStats.value.points.change}%`
+    },
+    {
+      label: '总排名',
+      value: userStats.value.ranking.display,
+      icon: 'fa-solid fa-ranking-star',
+      color: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+      trend: userStats.value.ranking.change >= 0 ? 'up' : 'down',
+      change: `${userStats.value.ranking.change >= 0 ? '+' : ''}${userStats.value.ranking.change}%`
+    }
+  ];
+});
 
 // 热力图统计
 const totalDays = computed(() => {
@@ -210,38 +266,95 @@ const totalDays = computed(() => {
 });
 
 const longestStreak = computed(() => {
+  if (userStore.studyActivityData.length === 0) {
+    return 0;
+  }
+
   let maxStreak = 0;
   let currentStreakCount = 0;
-  const sortedData = [...userStore.studyActivityData].sort((a, b) => 
-    new Date(a[0]).getTime() - new Date(b[0]).getTime()
-  );
   
-  sortedData.forEach(([_, value]) => {
-    if (value > 0) {
-      currentStreakCount++;
-      maxStreak = Math.max(maxStreak, currentStreakCount);
+  // 按日期升序排序（从最旧到最新）
+  const sortedData = [...userStore.studyActivityData]
+    .filter(([_, value]) => value > 0) // 只保留有学习记录的天数
+    .sort((a, b) => new Date(a[0]).getTime() - new Date(b[0]).getTime());
+  
+  if (sortedData.length === 0) {
+    return 0;
+  }
+
+  let lastDate: Date | null = null;
+  
+  for (const [dateStr] of sortedData) {
+    const currentDate = new Date(dateStr);
+    currentDate.setHours(0, 0, 0, 0);
+    
+    if (lastDate === null) {
+      // 第一天
+      currentStreakCount = 1;
+      maxStreak = 1;
     } else {
-      currentStreakCount = 0;
+      // 检查是否是连续的下一天
+      const diffDays = Math.floor((currentDate.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24));
+      
+      if (diffDays === 1) {
+        // 连续的下一天
+        currentStreakCount++;
+        maxStreak = Math.max(maxStreak, currentStreakCount);
+      } else {
+        // 不连续，重新开始计数
+        currentStreakCount = 1;
+      }
     }
-  });
+    
+    lastDate = currentDate;
+  }
   
   return maxStreak;
 });
 
 const currentStreak = computed(() => {
+  if (userStore.studyActivityData.length === 0) {
+    return 0;
+  }
+
   let streak = 0;
   const today = new Date();
+  today.setHours(0, 0, 0, 0); // 重置到当天0点
+
+  // 按日期降序排序（从最新到最旧）
   const sortedData = [...userStore.studyActivityData]
     .sort((a, b) => new Date(b[0]).getTime() - new Date(a[0]).getTime());
   
-  for (const [date, value] of sortedData) {
-    const dataDate = new Date(date);
+  // 从今天或昨天开始计算连续天数
+  for (let i = 0; i < sortedData.length; i++) {
+    const [dateStr, value] = sortedData[i];
+    if (value === 0) continue; // 跳过没有学习的天数
+    
+    const dataDate = new Date(dateStr);
+    dataDate.setHours(0, 0, 0, 0);
+    
     const diffDays = Math.floor((today.getTime() - dataDate.getTime()) / (1000 * 60 * 60 * 24));
     
-    if (diffDays === streak && value > 0) {
-      streak++;
-    } else if (diffDays > streak) {
-      break;
+    // 如果是第一次循环，允许从今天或昨天开始
+    if (streak === 0) {
+      if (diffDays <= 1) {
+        streak = 1;
+        // 更新基准日期为这一天
+        today.setTime(dataDate.getTime());
+      } else {
+        // 如果最近的学习记录距离今天超过1天，说明没有连续学习
+        break;
+      }
+    } else {
+      // 检查是否是连续的前一天
+      const expectedDiffDays = Math.floor((today.getTime() - dataDate.getTime()) / (1000 * 60 * 60 * 24));
+      if (expectedDiffDays === 1) {
+        streak++;
+        today.setTime(dataDate.getTime());
+      } else {
+        // 不连续了，停止计数
+        break;
+      }
     }
   }
   
@@ -371,8 +484,8 @@ const changeYear = async (delta: number) => {
     console.log('切换到年份:', currentYear.value);
     // 加载对应年份的学习数据
     try {
-      // 重新生成对应年份的热力图数据
-      userStore.studyActivityData = userStore.generateMockHeatmapData();
+      // 从后端获取真实的热力图数据
+      await userStore.fetchHeatmapData(currentYear.value);
       showSuccessMessage(`已切换到 ${currentYear.value} 年`);
     } catch (error) {
       console.error('加载年份数据失败:', error);

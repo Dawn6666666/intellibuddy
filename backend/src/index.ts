@@ -27,6 +27,19 @@ import achievementsRoutes from './routes/achievements';
 import learningReportRoutes from './routes/learning-report';
 import analyticsRoutes from './routes/analytics';
 import usersRoutes from './routes/users';
+import diagnosticRoutes from './routes/diagnostic';
+import aiQuizGeneratorRoutes from './routes/ai-quiz-generator';
+import intelligentPathRoutes from './routes/intelligent-path';
+import learningCompanionRoutes from './routes/learning-companion';
+import feedbackRoutes from './routes/feedback';
+import classRoutes from './routes/class';
+import assignmentRoutes from './routes/assignment';
+import analyticsAdvancedRoutes from './routes/analytics-advanced';
+import membershipRoutes from './routes/membership';
+import pointsRoutes from './routes/points';
+import notificationRoutes from './routes/notification';
+import questionRoutes from './routes/question';
+import statsRoutes from './routes/stats';
 import User, {IUser} from './models/User';
 
 // 导入中间件
@@ -115,6 +128,19 @@ app.use('/api/study-time', studyTimeRoutes);
 app.use('/api/achievements', achievementsRoutes);
 app.use('/api/learning-report', learningReportRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/diagnostic', diagnosticRoutes);
+app.use('/api/ai-quiz', aiRateLimitMiddleware, aiQuizGeneratorRoutes);
+app.use('/api/intelligent-path', intelligentPathRoutes);
+app.use('/api/learning-companion', aiRateLimitMiddleware, learningCompanionRoutes);
+app.use('/api/feedback', feedbackRoutes);
+app.use('/api/class', classRoutes);
+app.use('/api/assignment', assignmentRoutes);
+app.use('/api/analytics-advanced', analyticsAdvancedRoutes);
+app.use('/api/membership', membershipRoutes);
+app.use('/api/points', pointsRoutes);
+app.use('/api/notification', notificationRoutes);
+app.use('/api/question', questionRoutes);
+app.use('/api/stats', statsRoutes);
 
 // --- GitHub 认证路由 ---
 app.get('/api/auth/github',
@@ -151,12 +177,34 @@ app.get('/api/auth/qq/callback',
 // --- 其他路由 ---
 app.get('/api/knowledge-points', async (req, res) => {
     try {
-        const points = await KnowledgePoint.find({});
+        // 只返回必要的字段，排除大体积的 content, contentFiles, quiz
+        // 这些字段只在单个知识点详情时才需要
+        const points = await KnowledgePoint.find({})
+            .select('-content -contentFiles -quiz')
+            .lean(); // 使用 lean() 返回纯 JavaScript 对象，提升性能
         res.json(points);
     } catch (error) {
         res.status(500).json({message: '获取知识点时发生错误'});
     }
 });
+
+// 获取单个知识点的完整详情（包含 content, contentFiles, quiz）
+app.get('/api/knowledge-points/:id', async (req, res) => {
+    try {
+        const {id} = req.params;
+        const point = await KnowledgePoint.findOne({id}).lean();
+        
+        if (!point) {
+            return res.status(404).json({message: '知识点不存在'});
+        }
+        
+        res.json(point);
+    } catch (error) {
+        console.error('获取知识点详情失败:', error);
+        res.status(500).json({message: '获取知识点详情时发生错误'});
+    }
+});
+
 app.get('/', (req, res) => {
     res.json({
         success: true,

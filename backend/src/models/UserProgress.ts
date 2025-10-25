@@ -7,8 +7,12 @@ export interface IUserProgress extends Document {
     status: 'not_started' | 'in_progress' | 'completed';
     quizAttempts: number;
     bestScore: number;
+    score?: number; // 别名，指向bestScore
     timeSpent: number; // 学习时长（分钟）
     lastAttemptAt?: Date;
+    completedAt?: Date; // 完成时间
+    updatedAt?: Date; // 更新时间（timestamps提供）
+    createdAt?: Date; // 创建时间（timestamps提供）
 }
 
 const UserProgressSchema = new Schema<IUserProgress>({
@@ -24,8 +28,16 @@ const UserProgressSchema = new Schema<IUserProgress>({
     bestScore: {type: Number, default: 0, min: 0, max: 100},
     timeSpent: {type: Number, default: 0},
     lastAttemptAt: {type: Date},
+    completedAt: {type: Date},
 }, {
     timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+});
+
+// 虚拟属性：score作为bestScore的别名
+UserProgressSchema.virtual('score').get(function() {
+    return this.bestScore;
 });
 
 // 创建复合唯一索引

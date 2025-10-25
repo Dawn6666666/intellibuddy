@@ -24,9 +24,16 @@ router.post('/update', authMiddleware, async (req: Request, res: Response) => {
             return res.status(400).json({message: '缺少 pointId 或 status'});
         }
 
+        const updateData: any = { status };
+        
+        // 如果标记为完成，设置完成时间
+        if (status === 'completed') {
+            updateData.completedAt = new Date();
+        }
+
         const updatedProgress = await UserProgress.findOneAndUpdate(
             {userId, pointId},
-            {status},
+            updateData,
             {new: true, upsert: true}
         );
 

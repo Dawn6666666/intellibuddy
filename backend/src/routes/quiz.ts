@@ -3,6 +3,7 @@ import {Router, Response, Request} from 'express';
 import {authMiddleware} from '../middleware/auth';
 import KnowledgePoint from '../models/KnowledgePoint';
 import UserProgress from '../models/UserProgress';
+import {IUser} from '../models/User';
 
 const router = Router();
 
@@ -38,7 +39,8 @@ router.get('/:pointId', authMiddleware, async (req: Request, res: Response) => {
 router.post('/submit', authMiddleware, async (req: Request, res: Response) => {
     try {
         const {pointId, answers} = req.body;
-        const userId = req.user?._id;
+        const user = req.user as IUser;
+        const userId = user._id;
 
         if (!userId) {
             return res.status(401).json({message: '未授权'});
@@ -68,16 +70,23 @@ router.post('/submit', authMiddleware, async (req: Request, res: Response) => {
         const passed = score >= 60; // 60分及格
 
         // 更新用户进度
+        const updateData: any = {
+            $inc: {quizAttempts: 1},
+            $max: {bestScore: score},
+            $set: {
+                status: passed ? 'completed' : 'in_progress',
+                lastAttemptAt: new Date(),
+            },
+        };
+        
+        // 如果首次完成，设置完成时间
+        if (passed) {
+            updateData.$setOnInsert = { completedAt: new Date() };
+        }
+        
         const progress = await UserProgress.findOneAndUpdate(
             {userId, pointId},
-            {
-                $inc: {quizAttempts: 1},
-                $max: {bestScore: score},
-                $set: {
-                    status: passed ? 'completed' : 'in_progress',
-                    lastAttemptAt: new Date(),
-                },
-            },
+            updateData,
             {upsert: true, new: true}
         );
 

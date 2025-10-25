@@ -9,6 +9,7 @@ export interface IUser extends Document {
     githubId?: string;
     qqId?: string;         // 新增: QQ openid
     avatarUrl?: string;
+    role?: 'student' | 'teacher' | 'admin';  // 用户角色
 }
 
 const UserSchema = new Schema<IUser>({
@@ -18,6 +19,7 @@ const UserSchema = new Schema<IUser>({
     githubId: { type: String },
     qqId: { type: String },
     avatarUrl: { type: String },
+    role: { type: String, enum: ['student', 'teacher', 'admin'], default: 'student' },
 }, {
     timestamps: true
 });

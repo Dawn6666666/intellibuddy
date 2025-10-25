@@ -58,9 +58,9 @@ const ContentFileSchema = new Schema<IContentFile>({
 }, {_id: false});
 
 const KnowledgePointSchema = new Schema<IKnowledgePoint>({
-    id: {type: String, required: true, unique: true},
+    id: {type: String, required: true, unique: true, index: true},
     title: {type: String, required: true},
-    subject: {type: String, required: true},
+    subject: {type: String, required: true, index: true}, // 添加索引，方便按科目查询
     contentSnippet: {type: String, required: true},
     content: {type: String, required: false}, // 完整的Markdown内容（向后兼容）
     contentFiles: {type: [ContentFileSchema], required: false}, // 多个Markdown文件
@@ -70,6 +70,9 @@ const KnowledgePointSchema = new Schema<IKnowledgePoint>({
     difficulty: {type: Number, required: true, min: 1, max: 5, default: 3},
     estimatedTime: {type: Number, required: true, default: 30},
     graphPosition: {type: GraphPositionSchema, required: true},
+}, {
+    // 优化选项
+    timestamps: false, // 不需要 createdAt 和 updatedAt
 });
 
 const KnowledgePoint = (mongoose.models.KnowledgePoint as mongoose.Model<IKnowledgePoint>) || model<IKnowledgePoint>('KnowledgePoint', KnowledgePointSchema);

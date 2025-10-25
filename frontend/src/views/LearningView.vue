@@ -148,9 +148,10 @@ import hljs from 'highlight.js';
 import markedKatex from 'marked-katex-extension';
 import 'katex/dist/katex.min.css';
 import QuizPanel from '@/components/QuizPanel.vue';
-import {apiUpdateProgress} from '@/services/apiService';
+import {apiUpdateProgress, apiGetKnowledgePointDetail} from '@/services/apiService';
 import {useAIIntervention} from '@/composables/useAIIntervention';
 import {useStudyTimer} from '@/composables/useStudyTimer';
+import type {KnowledgePoint} from '@/stores/knowledge';
 
 // 配置 marked 以支持代码高亮
 const renderer = new marked.Renderer();
@@ -290,7 +291,16 @@ const goBackToKnowledgeBase = () => {
 
 const pointId = computed(() => route.params.pointId as string);
 
+// 存储从API获取的完整知识点详情（包含 content, contentFiles, quiz）
+const knowledgePointDetail = ref<KnowledgePoint | null>(null);
+const isLoadingDetail = ref(false);
+
 const knowledgePoint = computed(() => {
+  // 如果已经加载了详情，使用详情数据（包含完整内容）
+  if (knowledgePointDetail.value) {
+    return knowledgePointDetail.value;
+  }
+  // 否则从 store 获取基本信息（不包含内容）
   return knowledgeStore.pointsAsArrayWithProgress.find(p => p.id === pointId.value);
 });
 
@@ -626,7 +636,30 @@ onBeforeRouteUpdate((to, from) => {
   }
 });
 
-watch(pointId, async () => {
+// 加载知识点详情（包含完整内容）
+const loadKnowledgePointDetail = async (id: string) => {
+  if (!id) return;
+  
+  isLoadingDetail.value = true;
+  try {
+    knowledgePointDetail.value = await apiGetKnowledgePointDetail(id);
+  } catch (error) {
+    console.error('加载知识点详情失败:', error);
+    knowledgePointDetail.value = null;
+  } finally {
+    isLoadingDetail.value = false;
+  }
+};
+
+// 监听 pointId 变化，加载对应的知识点详情
+watch(pointId, async (newId) => {
+  if (newId) {
+    await loadKnowledgePointDetail(newId);
+  }
+}, {immediate: true});
+
+// 监听知识点详情加载完成，渲染内容
+watch(knowledgePoint, async () => {
   // 构建章节列表（支持多文件或单文件模式）
   if (knowledgePoint.value) {
     try {

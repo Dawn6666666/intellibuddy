@@ -45,8 +45,9 @@ export function useKeyboard() {
     if (e.altKey) keys.push('alt');
     if (e.shiftKey) keys.push('shift');
     
-    const key = e.key.toLowerCase();
-    if (!['control', 'alt', 'shift', 'meta'].includes(key)) {
+    // 安全地获取按键，避免 undefined
+    const key = e.key?.toLowerCase() || '';
+    if (key && !['control', 'alt', 'shift', 'meta'].includes(key)) {
       keys.push(key);
     }
     

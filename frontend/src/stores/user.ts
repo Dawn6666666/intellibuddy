@@ -9,7 +9,8 @@ import {
     apiNewChat,
     apiUpdateChat,
     apiDeleteChat,
-    apiGetRecommendedPath
+    apiGetRecommendedPath,
+    apiGetHeatmapData
 } from '@/services/apiService';
 import type {KnowledgePoint} from './knowledge';
 import {useKnowledgeStore} from './knowledge';
@@ -20,6 +21,7 @@ export interface UserInfo {
     username: string;
     email: string;
     avatarUrl?: string;
+    role?: 'student' | 'teacher' | 'admin';
 }
 
 export interface UserProgress {
@@ -88,6 +90,8 @@ export const useUserStore = defineStore('user', {
             try {
                 // 第一阶段：只获取用户基本信息（快速登录）
                 this.user = await apiGetMyProfile(this.token);
+                // 更新 localStorage 中的用户信息
+                localStorage.setItem('user', JSON.stringify(this.user));
                 
                 // 第二阶段：并行加载其他数据（后台加载，不阻塞登录）
                 Promise.all([
@@ -108,7 +112,7 @@ export const useUserStore = defineStore('user', {
                     console.warn("部分数据加载失败，不影响登录:", err);
                 });
 
-                // 生成模拟数据
+                // 生成模拟数据（技能掌握度）
                 this.skillMastery = [
                     {name: '编程基础', level: 85},
                     {name: '数据结构', level: 70},
@@ -117,7 +121,12 @@ export const useUserStore = defineStore('user', {
                     {name: '计算机网络', level: 65},
                     {name: '操作系统', level: 55},
                 ];
-                this.studyActivityData = this.generateMockHeatmapData();
+                
+                // 加载真实的学习热力图数据
+                this.fetchHeatmapData().catch(err => {
+                    console.warn("加载热力图数据失败:", err);
+                    this.studyActivityData = [];
+                });
 
             } catch (err) {
                 console.error("获取用户信息失败:", err);
@@ -127,22 +136,23 @@ export const useUserStore = defineStore('user', {
             }
         },
 
-        generateMockHeatmapData(): StudyActivity {
-            const year = new Date().getFullYear().toString();
-            const date = new Date(Number(year), 0, 1);
-            const end = new Date(Number(year) + 1, 0, 1);
-            const data: [string, number][] = [];
-            while (date.getTime() < end.getTime()) {
-                const dayStr = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
-                if (Math.random() > 0.4) {
-                    data.push([
-                        dayStr,
-                        Math.floor(Math.random() * 10) + 1
-                    ]);
-                }
-                date.setDate(date.getDate() + 1);
+        async fetchHeatmapData(year?: number) {
+            if (!this.token) return;
+            
+            try {
+                const response = await apiGetHeatmapData(this.token, year);
+                // 将后端返回的数据转换为前端需要的格式
+                // 后端返回: { year, data: [{date, duration, sessionCount, intensity}], totalDays, longestStreak, currentStreak }
+                // 前端需要: [[date, intensity], ...]
+                this.studyActivityData = response.data.map((item: any) => [
+                    item.date,
+                    item.intensity || 0
+                ]);
+            } catch (err) {
+                console.error("获取热力图数据失败:", err);
+                this.studyActivityData = [];
+                throw err;
             }
-            return data;
         },
 
         async fetchRecommendedPath() {
@@ -162,6 +172,7 @@ export const useUserStore = defineStore('user', {
             this.token = token;
             this.user = user;
             localStorage.setItem('authToken', token);
+            localStorage.setItem('user', JSON.stringify(user));
             await this.fetchInitialData();
         },
 
@@ -210,6 +221,7 @@ export const useUserStore = defineStore('user', {
             this.progress.clear();
             knowledgeStore.$reset();
             localStorage.removeItem('authToken');
+            localStorage.removeItem('user');
             this.skillMastery = [];
             this.studyActivityData = [];
             // 登出时重置聊天状态

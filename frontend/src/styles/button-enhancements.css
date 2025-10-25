@@ -1,0 +1,188 @@
+/**
+ * 按钮增强样式
+ * 为所有按钮添加更好的hover效果和交互反馈
+ */
+
+/* Element Plus 按钮增强 */
+.el-button {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.el-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.el-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* 主要按钮 */
+.el-button--primary {
+  background: linear-gradient(135deg, var(--el-color-primary), var(--el-color-primary-light-3));
+  border: none;
+}
+
+.el-button--primary:hover {
+  background: linear-gradient(135deg, var(--el-color-primary-light-3), var(--el-color-primary-light-5));
+  box-shadow: 0 6px 16px rgba(64, 158, 255, 0.4);
+}
+
+/* 成功按钮 */
+.el-button--success:hover {
+  box-shadow: 0 6px 16px rgba(103, 194, 58, 0.4);
+}
+
+/* 警告按钮 */
+.el-button--warning:hover {
+  box-shadow: 0 6px 16px rgba(230, 162, 60, 0.4);
+}
+
+/* 危险按钮 */
+.el-button--danger:hover {
+  box-shadow: 0 6px 16px rgba(245, 108, 108, 0.4);
+}
+
+/* 信息按钮 */
+.el-button--info:hover {
+  box-shadow: 0 6px 16px rgba(144, 147, 153, 0.4);
+}
+
+/* 文本按钮 */
+.el-button--text {
+  transition: all 0.2s ease;
+}
+
+.el-button--text:hover {
+  transform: none;
+  box-shadow: none;
+  background: var(--el-fill-color-light);
+}
+
+/* 按钮波纹效果 */
+.el-button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.el-button:active::before {
+  width: 300px;
+  height: 300px;
+}
+
+/* 禁用状态不应用动画 */
+.el-button.is-disabled,
+.el-button.is-disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* 加载状态 */
+.el-button.is-loading {
+  transform: none;
+  pointer-events: none;
+}
+
+/* 自定义按钮类 */
+.btn-gradient {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.btn-gradient:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}
+
+.btn-gradient:active {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(102, 126, 234, 0.4);
+}
+
+/* 圆形按钮 */
+.el-button.is-circle:hover {
+  transform: rotate(15deg) scale(1.1);
+}
+
+.el-button.is-circle:active {
+  transform: rotate(0) scale(1);
+}
+
+/* 图标按钮 */
+.el-button.is-icon:hover {
+  transform: scale(1.1);
+}
+
+/* 按钮组 */
+.el-button-group .el-button:hover {
+  transform: translateY(-2px);
+  z-index: 1;
+}
+
+/* 响应式优化 */
+@media (max-width: 768px) {
+  .el-button {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+  
+  .el-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* 深色模式适配 */
+html.dark .el-button {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+html.dark .el-button:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* 成功动画 */
+@keyframes success-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(103, 194, 58, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(103, 194, 58, 0);
+  }
+}
+
+.btn-success-animated {
+  animation: success-pulse 0.6s ease-out;
+}
+
+/* 错误动画 */
+@keyframes error-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-10px); }
+  75% { transform: translateX(10px); }
+}
+
+.btn-error-animated {
+  animation: error-shake 0.4s ease-out;
+}
+

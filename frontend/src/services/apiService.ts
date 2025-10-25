@@ -15,6 +15,21 @@ const apiClient = axios.create({
     }
 });
 
+// 添加请求拦截器，自动添加认证token
+apiClient.interceptors.request.use(
+    config => {
+        // 从localStorage获取token
+        const token = localStorage.getItem('authToken');
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    },
+    error => {
+        return Promise.reject(error);
+    }
+);
+
 // 添加响应拦截器，自动重试
 apiClient.interceptors.response.use(
     response => response,
@@ -42,8 +57,8 @@ apiClient.interceptors.response.use(
     }
 );
 
-// 导出 API_BASE_URL 供其他组件使用
-export {API_BASE_URL};
+// 导出 API_BASE_URL 和 apiClient 供其他组件使用
+export {API_BASE_URL, apiClient};
 
 
 // --- 认证相关 API (保持不变) ---
@@ -62,6 +77,13 @@ export const apiGetMyProfile = async (token: string): Promise<UserInfo> => {
     return response.data;
 };
 
+export const apiGetMyStats = async (token: string) => {
+    const response = await apiClient.get('/users/me/stats', {
+        headers: {'Authorization': `Bearer ${token}`}
+    });
+    return response.data;
+};
+
 // --- 知识库 API (保持不变) ---
 export const apiGetKnowledgePoints = async (): Promise<KnowledgePoint[]> => {
     try {
@@ -70,6 +92,17 @@ export const apiGetKnowledgePoints = async (): Promise<KnowledgePoint[]> => {
     } catch (error) {
         console.error('获取知识点失败:', error);
         throw new Error('无法从服务器加载知识库。');
+    }
+};
+
+// 获取单个知识点的完整详情（包含 content, contentFiles, quiz）
+export const apiGetKnowledgePointDetail = async (id: string): Promise<KnowledgePoint> => {
+    try {
+        const response = await apiClient.get(`/knowledge-points/${id}`);
+        return response.data;
+    } catch (error) {
+        console.error('获取知识点详情失败:', error);
+        throw new Error('无法从服务器加载知识点详情。');
     }
 };
 
@@ -259,6 +292,15 @@ export const apiEndStudySession = async (token: string, sessionId: string) => {
     return response.data;
 };
 
+// 简化版：仅获取总学习时长（用于 Dashboard）
+export const apiGetStudyTimeSimple = async (token: string) => {
+    const response = await apiClient.get('/study-time/stats/simple', {
+        headers: {'Authorization': `Bearer ${token}`}
+    });
+    return response.data;
+};
+
+// 完整版：获取详细学习时长统计（用于统计页面）
 export const apiGetStudyTimeStats = async (token: string, filters?: {
     startDate?: string;
     endDate?: string;
@@ -296,6 +338,11 @@ export const apiGetUserStats = async (token: string) => {
     return response.data;
 };
 
+export const apiClearLearningData = async () => {
+    const response = await apiClient.delete('/users/learning-data');
+    return response.data;
+};
+
 export const apiGetLearningStats = async (token: string) => {
     const response = await apiClient.get('/analytics/learning', {
         headers: {'Authorization': `Bearer ${token}`}
@@ -322,4 +369,88 @@ export const apiTrackEvent = async (token: string, event: string, metadata?: any
         headers: {'Authorization': `Bearer ${token}`}
     });
     return response.data;
+};
+
+// 教师 - 作业管理
+export const apiGetAssignmentSubmissions = async (token: string, assignmentId: string) => {
+    const response = await apiClient.get(`/assignment/${assignmentId}/submissions/stats`, {
+        headers: {'Authorization': `Bearer ${token}`}
+    });
+    return response.data;
+};
+
+// 获取单个学生的提交详情
+export const apiGetSubmissionDetail = async (token: string, submissionId: string) => {
+    const response = await apiClient.get(`/assignment/submission/${submissionId}`, {
+        headers: {'Authorization': `Bearer ${token}`}
+    });
+    return response.data;
+};
+
+// --- 统一的 API 服务对象 ---
+export const apiService = {
+    // 认证
+    register: apiRegister,
+    login: apiLogin,
+    getMyProfile: apiGetMyProfile,
+    getMyStats: apiGetMyStats,
+    
+    // 知识库
+    getKnowledgePoints: apiGetKnowledgePoints,
+    getKnowledgePointDetail: apiGetKnowledgePointDetail,
+    
+    // 学习进度
+    getUserProgress: apiGetUserProgress,
+    updateProgress: apiUpdateProgress,
+    
+    // 聊天
+    getChats: apiGetChats,
+    newChat: apiNewChat,
+    updateChat: apiUpdateChat,
+    deleteChat: apiDeleteChat,
+    
+    // 测验
+    getQuiz: apiGetQuiz,
+    submitQuiz: apiSubmitQuiz,
+    
+    // 评估
+    startAssessment: apiStartAssessment,
+    submitAssessment: apiSubmitAssessment,
+    getAssessmentResult: apiGetAssessmentResult,
+    
+    // 学习路径
+    getRecommendedPath: apiGetRecommendedPath,
+    checkUnlock: apiCheckUnlock,
+    
+    // 错题本
+    getWrongQuestions: apiGetWrongQuestions,
+    getWrongQuestionStats: apiGetWrongQuestionStats,
+    addWrongQuestion: apiAddWrongQuestion,
+    analyzeWrongQuestion: apiAnalyzeWrongQuestion,
+    markQuestionMastered: apiMarkQuestionMastered,
+    resetQuestionMastery: apiResetQuestionMastery,
+    deleteWrongQuestion: apiDeleteWrongQuestion,
+    
+    // 学习时长
+    startStudySession: apiStartStudySession,
+    studyHeartbeat: apiStudyHeartbeat,
+    endStudySession: apiEndStudySession,
+    getStudyTimeSimple: apiGetStudyTimeSimple,
+    getStudyTimeStats: apiGetStudyTimeStats,
+    getHeatmapData: apiGetHeatmapData,
+    
+    // Analytics
+    getSystemAnalytics: apiGetSystemAnalytics,
+    getUserStats: apiGetUserStats,
+    getLearningStats: apiGetLearningStats,
+    getPopularTopics: apiGetPopularTopics,
+    getHourlyActivity: apiGetHourlyActivity,
+    trackEvent: apiTrackEvent,
+    
+    // 教师 - 作业管理
+    getAssignmentSubmissions: apiGetAssignmentSubmissions,
+    getSubmissionDetail: apiGetSubmissionDetail,
+    
+    // 直接导出 apiClient 供通用请求使用
+    client: apiClient
 };

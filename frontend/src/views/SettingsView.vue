@@ -14,25 +14,6 @@
         <div class="card-body">
           <div class="setting-item">
             <div class="setting-info">
-              <h3>主题模式</h3>
-              <p>选择您喜欢的界面主题</p>
-            </div>
-            <div class="setting-control">
-              <el-segmented v-model="themeStore.theme" :options="themeOptions" @change="handleThemeChange">
-                <template #default="{ item }">
-                  <div class="theme-option">
-                    <i :class="item.icon"></i>
-                    <span>{{ item.label }}</span>
-                  </div>
-                </template>
-              </el-segmented>
-            </div>
-          </div>
-
-          <el-divider />
-
-          <div class="setting-item">
-            <div class="setting-info">
               <h3>字体大小</h3>
               <p>调整界面文字大小</p>
             </div>
@@ -95,18 +76,6 @@
           <h2><i class="fa-solid fa-graduation-cap"></i> 学习偏好</h2>
         </div>
         <div class="card-body">
-          <div class="setting-item">
-            <div class="setting-info">
-              <h3>自动播放视频</h3>
-              <p>进入学习页面时自动播放视频</p>
-            </div>
-            <div class="setting-control">
-              <el-switch v-model="preferences.autoPlayVideo" />
-            </div>
-          </div>
-
-          <el-divider />
-
           <div class="setting-item">
             <div class="setting-info">
               <h3>难度偏好</h3>
@@ -201,77 +170,42 @@ size="large"
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { useThemeStore } from '@/stores/theme'
+import { useRouter } from 'vue-router'
+import { useSettingsStore } from '@/stores/settings'
+import { useUserStore } from '@/stores/user'
+import { apiClearLearningData } from '@/services/apiService'
 
-const themeStore = useThemeStore()
+const router = useRouter()
+const settingsStore = useSettingsStore()
+const userStore = useUserStore()
 const isSaving = ref(false)
 
-const themeOptions = [
-  { label: '浅色', value: 'light', icon: 'fa-solid fa-sun' },
-  { label: '深色', value: 'dark', icon: 'fa-solid fa-moon' }
-]
-
-const fontSize = ref('medium')
-
-const notifications = reactive({
-  study: true,
-  system: true,
-  email: false
+// 使用 computed 来双向绑定 store 的值
+const fontSize = computed({
+  get: () => settingsStore.fontSize,
+  set: (value: 'small' | 'medium' | 'large') => settingsStore.setFontSize(value)
 })
 
-const preferences = reactive({
-  autoPlayVideo: false,
-  difficulty: 'medium',
-  dailyGoal: 60
-})
-
-const privacy = reactive({
-  analytics: true,
-  showProgress: true
-})
-
-onMounted(() => {
-  loadSettings()
-})
-
-const loadSettings = () => {
-  // 从 localStorage 加载设置
-  const savedSettings = localStorage.getItem('userSettings')
-  if (savedSettings) {
-    try {
-      const settings = JSON.parse(savedSettings)
-      fontSize.value = settings.fontSize || 'medium'
-      Object.assign(notifications, settings.notifications || notifications)
-      Object.assign(preferences, settings.preferences || preferences)
-      Object.assign(privacy, settings.privacy || privacy)
-    } catch (error) {
-      console.error('加载设置失败:', error)
-    }
-  }
-}
-
-const handleThemeChange = (value: string) => {
-  ElMessage.success(`已切换到${value === 'dark' ? '深色' : '浅色'}模式`)
-}
+const notifications = computed(() => settingsStore.notifications)
+const preferences = computed(() => settingsStore.preferences)
+const privacy = computed(() => settingsStore.privacy)
 
 const handleSaveSettings = () => {
   isSaving.value = true
   
-  const settings = {
-    fontSize: fontSize.value,
-    notifications: { ...notifications },
-    preferences: { ...preferences },
-    privacy: { ...privacy }
-  }
-  
-  localStorage.setItem('userSettings', JSON.stringify(settings))
-  
-  setTimeout(() => {
+  try {
+    settingsStore.saveSettings()
+    setTimeout(() => {
+      isSaving.value = false
+      ElMessage.success('设置保存成功')
+    }, 500)
+  } catch (error) {
     isSaving.value = false
-    ElMessage.success('设置保存成功')
-  }, 500)
+    ElMessage.error('保存设置失败')
+    console.error('保存设置失败:', error)
+  }
 }
 
 const handleResetSettings = () => {
@@ -280,34 +214,51 @@ const handleResetSettings = () => {
     cancelButtonText: '取消',
     type: 'warning'
   }).then(() => {
-    fontSize.value = 'medium'
-    notifications.study = true
-    notifications.system = true
-    notifications.email = false
-    preferences.autoPlayVideo = false
-    preferences.difficulty = 'medium'
-    preferences.dailyGoal = 60
-    privacy.analytics = true
-    privacy.showProgress = true
-    
-    localStorage.removeItem('userSettings')
+    settingsStore.resetSettings()
     ElMessage.success('已恢复默认设置')
   }).catch(() => {})
 }
 
-const handleClearData = () => {
-  ElMessageBox.confirm(
-    '此操作将清除所有学习进度和答题记录，且不可恢复。确定要继续吗？',
-    '危险操作',
-    {
-      confirmButtonText: '确定清除',
-      cancelButtonText: '取消',
-      type: 'error',
-      confirmButtonClass: 'el-button--danger'
+const handleClearData = async () => {
+  try {
+    await ElMessageBox.confirm(
+      '此操作将清除所有学习进度和答题记录，且不可恢复。确定要继续吗？',
+      '危险操作',
+      {
+        confirmButtonText: '确定清除',
+        cancelButtonText: '取消',
+        type: 'error',
+        confirmButtonClass: 'el-button--danger'
+      }
+    )
+    
+    // 显示加载状态
+    const loading = ElMessage({
+      message: '正在清除学习数据...',
+      type: 'info',
+      duration: 0
+    })
+    
+    try {
+      // 调用后端 API 清除学习数据
+      await apiClearLearningData()
+      
+      // 重新加载用户数据
+      await userStore.fetchInitialData()
+      
+      loading.close()
+      ElMessage.success('学习数据已清除')
+      
+      // 跳转到首页
+      router.push('/app/dashboard')
+    } catch (error: any) {
+      loading.close()
+      console.error('清除学习数据失败:', error)
+      ElMessage.error(error.response?.data?.message || '清除失败，请稍后重试')
     }
-  ).then(() => {
-    ElMessage.info('此功能暂未实现')
-  }).catch(() => {})
+  } catch {
+    // 用户取消操作
+  }
 }
 </script>
 

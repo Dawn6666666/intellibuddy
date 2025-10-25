@@ -94,33 +94,39 @@ router.get('/stats', authMiddleware, async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user._id;
 
-    const [completedCount, totalPoints, sessions, wrongQuestionsCount] = await Promise.all([
-      UserProgress.countDocuments({ userId, status: 'completed' }),
-      KnowledgePoint.countDocuments(),
-      StudySession.find({ userId, endTime: { $ne: null } }),
-      WrongQuestion.countDocuments({ userId, mastered: false }),
-    ]);
-
-    const totalTime = sessions.reduce((sum, session) => sum + session.duration, 0);
-
-    // 最近7天的学习时长
+    // 最近7天的时间范围
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
-    const recentSessions = sessions.filter(
-      session => new Date(session.startTime) >= sevenDaysAgo
-    );
+    const [completedCount, totalPoints, totalTimeResult, recentTimeResult, sessionCount, wrongQuestionsCount] = await Promise.all([
+      UserProgress.countDocuments({ userId, status: 'completed' }),
+      KnowledgePoint.countDocuments(),
+      // 使用聚合计算总学习时长，而不是获取所有记录
+      StudySession.aggregate([
+        { $match: { userId, endTime: { $ne: null } } },
+        { $group: { _id: null, totalDuration: { $sum: '$duration' } } }
+      ]),
+      // 使用聚合计算最近7天的学习时长
+      StudySession.aggregate([
+        { $match: { userId, endTime: { $ne: null }, startTime: { $gte: sevenDaysAgo } } },
+        { $group: { _id: null, totalDuration: { $sum: '$duration' } } }
+      ]),
+      // 计算总会话数
+      StudySession.countDocuments({ userId, endTime: { $ne: null } }),
+      WrongQuestion.countDocuments({ userId, mastered: false }),
+    ]);
 
-    const recentTime = recentSessions.reduce((sum, session) => sum + session.duration, 0);
+    const totalTime = totalTimeResult.length > 0 ? totalTimeResult[0].totalDuration : 0;
+    const recentTime = recentTimeResult.length > 0 ? recentTimeResult[0].totalDuration : 0;
 
     return successResponse(res, {
       totalTime,
       recentTime,
       completedPoints: completedCount,
       totalPoints,
-      completionRate: Math.round((completedCount / totalPoints) * 100),
+      completionRate: totalPoints > 0 ? Math.round((completedCount / totalPoints) * 100) : 0,
       pendingWrongQuestions: wrongQuestionsCount,
-      totalSessions: sessions.length,
+      totalSessions: sessionCount,
     });
   } catch (error: any) {
     console.error('[Learning Report] 获取统计失败:', error.message);

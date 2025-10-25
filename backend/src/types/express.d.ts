@@ -1,6 +1,7 @@
 // backend/src/types/express.d.ts
 
 import {IUser} from '../models/User';
+import { Types } from 'mongoose';
 
 // 这段代码通过"声明合并"的方式，扩展了 Express 和 Passport 使用的全局 User 类型。
 // 它告诉 TypeScript：在这个项目中，所有 req.user 对象的类型都应该是我们的 IUser 接口类型。
@@ -8,7 +9,9 @@ import {IUser} from '../models/User';
 declare global {
     namespace Express {
         // 使用类型别名继承 IUser 接口，避免空接口规则告警
-        export type User = IUser;
+        export interface User extends IUser {
+            _id: Types.ObjectId;
+        }
 
         // Multer 文件类型
         export interface Multer {

@@ -1,43 +1,47 @@
 // backend/src/routes/learning-path.ts
 import {Router, Response, Request} from 'express';
 import {authMiddleware} from '../middleware/auth';
-import {generateRecommendedPath, canUnlockPoint} from '../utils/pathRecommender';
+import {canUnlockPoint} from '../utils/pathRecommender';
+import {generateIntelligentPath} from '../utils/intelligentPathRecommender';
 import KnowledgePoint from '../models/KnowledgePoint';
+import {IUser} from '../models/User';
 import { Types } from 'mongoose';
 
 const router = Router();
 
-// 获取推荐学习路径
+// 获取推荐学习路径 (智能版本)
 router.get('/recommend', authMiddleware, async (req: Request, res: Response) => {
     try {
-        const userId = req.user?._id as Types.ObjectId;
+        const user = req.user as IUser;
+        const userId = user._id;
 
         if (!userId) {
             return res.status(401).json({message: '未授权'});
         }
 
-        const recommendedPath = await generateRecommendedPath(userId);
+        // 使用智能推荐算法
+        const intelligentPath = await generateIntelligentPath(userId);
 
         // 获取前10个推荐
-        const topRecommendations = recommendedPath.slice(0, 10);
+        const topRecommendations = intelligentPath.slice(0, 10);
 
-        // 获取详细信息
+        // 获取详细信息（只查询必要字段）
         const detailedRecommendations = await Promise.all(
             topRecommendations.map(async (rec) => {
-                const point = await KnowledgePoint.findOne({id: rec.pointId});
+                const point = await KnowledgePoint.findOne({id: rec.pointId})
+                    .select('title subject difficulty estimatedTime')
+                    .lean();
                 return {
                     ...rec,
                     title: point?.title,
                     subject: point?.subject,
-                    difficulty: point?.difficulty,
-                    estimatedTime: point?.estimatedTime,
                 };
             })
         );
 
         res.json({
             recommendations: detailedRecommendations,
-            totalCount: recommendedPath.length,
+            totalCount: intelligentPath.length,
         });
     } catch (error) {
         console.error('生成推荐路径失败:', error);
@@ -49,7 +53,8 @@ router.get('/recommend', authMiddleware, async (req: Request, res: Response) => 
 router.post('/unlock-check', authMiddleware, async (req: Request, res: Response) => {
     try {
         const {pointId} = req.body;
-        const userId = req.user?._id as Types.ObjectId;
+        const user = req.user as IUser;
+        const userId = user._id;
 
         if (!userId) {
             return res.status(401).json({message: '未授权'});
@@ -63,10 +68,12 @@ router.post('/unlock-check', authMiddleware, async (req: Request, res: Response)
                 message: '可以开始学习',
             });
         } else {
-            // 获取缺失前置课程的详细信息
+            // 获取缺失前置课程的详细信息（只查询必要字段）
             const missingPoints = await KnowledgePoint.find({
                 id: {$in: unlockStatus.missingPrerequisites},
-            });
+            })
+                .select('id title subject')
+                .lean();
 
             res.json({
                 canUnlock: false,

@@ -23,8 +23,10 @@ export async function generateRecommendedPath(userId: Types.ObjectId): Promise<R
         return await getDefaultPath();
     }
 
-    // 2. 获取所有知识点
-    const allPoints = await KnowledgePoint.find({});
+    // 2. 获取所有知识点（只查询必要字段，提升性能）
+    const allPoints = await KnowledgePoint.find({})
+        .select('id title subject difficulty prerequisites')
+        .lean();
 
     // 3. 获取用户进度
     const userProgress = await UserProgress.find({userId});
@@ -139,7 +141,10 @@ function dfs(
  * 获取默认学习路径（未完成评估时）
  */
 async function getDefaultPath(): Promise<RecommendedPoint[]> {
-    const allPoints = await KnowledgePoint.find({}).sort({difficulty: 1});
+    const allPoints = await KnowledgePoint.find({})
+        .select('id difficulty')
+        .sort({difficulty: 1})
+        .lean();
 
     return allPoints.map((point, index) => ({
         pointId: point.id,
@@ -155,7 +160,9 @@ export async function canUnlockPoint(
     userId: Types.ObjectId,
     pointId: string
 ): Promise<{canUnlock: boolean; missingPrerequisites: string[]}> {
-    const point = await KnowledgePoint.findOne({id: pointId});
+    const point = await KnowledgePoint.findOne({id: pointId})
+        .select('prerequisites')
+        .lean();
     if (!point) {
         return {canUnlock: false, missingPrerequisites: []};
     }

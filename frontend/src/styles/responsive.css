@@ -1,331 +1,469 @@
-/**
- * 响应式设计样式
- */
+/* 移动端响应式优化 */
 
-/* 断点定义 */
+/* ========== 全局响应式变量 ========== */
 :root {
-  --breakpoint-mobile: 768px;
-  --breakpoint-tablet: 1024px;
-  --breakpoint-desktop: 1280px;
+  --mobile-padding: 1rem;
+  --tablet-padding: 1.5rem;
+  --desktop-padding: 2rem;
+  
+  --mobile-font-size: 14px;
+  --tablet-font-size: 15px;
+  --desktop-font-size: 16px;
+  
+  --mobile-header-height: 56px;
+  --tablet-header-height: 60px;
+  --desktop-header-height: 64px;
 }
 
-/* 移动端优化 */
+/* ========== 移动端基础样式 (320px - 767px) ========== */
 @media (max-width: 767px) {
-  /* 隐藏桌面端元素 */
+  /* 全局字体大小调整 */
+  html {
+    font-size: var(--mobile-font-size);
+  }
+  
+  body {
+    overflow-x: hidden;
+  }
+  
+  /* 容器内边距 */
+  .container,
+  .dashboard-container,
+  .learning-container,
+  .knowledge-base-container {
+    padding: var(--mobile-padding);
+  }
+  
+  /* 卡片样式 */
+  .card {
+    padding: 1rem !important;
+    margin-bottom: 1rem;
+    border-radius: 12px;
+  }
+  
+  /* 网格布局改为单列 */
+  .dashboard-grid,
+  .stats-grid,
+  .content-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+  
+  /* 按钮优化 */
+  .btn,
+  .el-button {
+    padding: 0.75rem 1.5rem;
+    font-size: 15px;
+    min-height: 44px; /* iOS触摸最小尺寸 */
+  }
+  
+  .btn-group {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .btn-group .btn {
+    width: 100%;
+  }
+  
+  /* 表单元素 */
+  .el-input,
+  .el-select,
+  .el-textarea {
+    font-size: 16px; /* 防止iOS自动缩放 */
+  }
+  
+  /* 标题大小调整 */
+  h1 { font-size: 1.75rem; }
+  h2 { font-size: 1.5rem; }
+  h3 { font-size: 1.25rem; }
+  h4 { font-size: 1.1rem; }
+  h5 { font-size: 1rem; }
+  
+  /* 导航栏优化 */
+  .navbar {
+    height: var(--mobile-header-height);
+    padding: 0 var(--mobile-padding);
+  }
+  
+  .navbar .logo {
+    font-size: 1.2rem;
+  }
+  
+  .navbar .nav-links {
+    position: fixed;
+    top: var(--mobile-header-height);
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--bg-color);
+    flex-direction: column;
+    padding: 1rem;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: 999;
+  }
+  
+  .navbar .nav-links.active {
+    transform: translateX(0);
+  }
+  
+  /* 移动端菜单按钮 */
+  .mobile-menu-btn {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: var(--text-primary);
+  }
+  
+  /* 侧边栏优化 */
+  .sidebar {
+    position: fixed;
+    left: -100%;
+    top: var(--mobile-header-height);
+    bottom: 0;
+    width: 280px;
+    background: var(--bg-secondary);
+    transition: left 0.3s ease;
+    z-index: 998;
+    overflow-y: auto;
+  }
+  
+  .sidebar.open {
+    left: 0;
+  }
+  
+  /* 遮罩层 */
+  .mobile-overlay {
+    display: none;
+    position: fixed;
+    top: var(--mobile-header-height);
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 997;
+  }
+  
+  .mobile-overlay.active {
+    display: block;
+  }
+  
+  /* 知识图谱优化 */
+  .knowledge-graph-card {
+    height: 400px !important;
+  }
+  
+  .graph-container {
+    height: 350px !important;
+  }
+  
+  /* 对话框优化 */
+  .el-dialog {
+    width: 95% !important;
+    margin: 5vh auto !important;
+  }
+  
+  .el-dialog__body {
+    padding: 1rem !important;
+  }
+  
+  /* AI聊天窗口 */
+  .ai-chat-window {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 0 !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+  }
+  
+  .chat-messages {
+    max-height: calc(100vh - 200px) !important;
+  }
+  
+  /* 测验面板 */
+  .quiz-panel {
+    padding: 1rem;
+  }
+  
+  .quiz-options {
+    flex-direction: column;
+  }
+  
+  /* 表格优化 */
+  .el-table {
+    font-size: 14px;
+  }
+  
+  .el-table th,
+  .el-table td {
+    padding: 8px 4px;
+  }
+  
+  /* 隐藏桌面元素 */
   .desktop-only {
     display: none !important;
   }
-
-  /* 全宽布局 */
-  .mobile-full-width {
-    width: 100%;
-    margin: 0 -12px;
-    padding: 0 12px;
+  
+  /* 显示移动端元素 */
+  .mobile-only {
+    display: block !important;
   }
-
-  /* 导航栏移动端优化 */
-  .el-menu--horizontal {
-    flex-direction: column;
+  
+  /* 统计卡片堆叠 */
+  .stats-card {
+    min-width: 100%;
   }
-
-  /* 表格移动端优化 */
-  .el-table {
-    font-size: 13px;
-  }
-
-  .el-table th,
-  .el-table td {
-    padding: 8px 6px;
-  }
-
-  /* 卡片移动端优化 */
-  .el-card {
-    margin-bottom: 12px;
-  }
-
-  .el-card__header {
-    padding: 12px;
-  }
-
-  .el-card__body {
-    padding: 12px;
-  }
-
-  /* 按钮组优化 */
-  .el-button-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .el-button-group .el-button {
-    width: 100%;
-    margin: 0;
-  }
-
-  /* 表单优化 */
-  .el-form-item {
-    margin-bottom: 16px;
-  }
-
-  .el-form-item__label {
-    padding-bottom: 4px;
-  }
-
-  /* 对话框优化 */
-  .el-dialog {
-    width: 90% !important;
-    margin-top: 5vh !important;
-  }
-
-  .el-dialog__header {
-    padding: 16px;
-  }
-
-  .el-dialog__body {
-    padding: 16px;
-    max-height: 70vh;
-    overflow-y: auto;
-  }
-
-  /* 知识图谱移动端优化 */
-  .knowledge-graph-container {
-    height: 400px !important;
-  }
-
-  /* 图表移动端优化 */
+  
+  /* 图表容器 */
   .chart-container {
     height: 250px !important;
   }
+  
+  /* 学习页面内容 */
+  .learning-content {
+    padding: 1rem;
+  }
+  
+  .content-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  /* Markdown内容 */
+  .markdown-body {
+    font-size: 15px;
+    padding: 1rem;
+  }
+  
+  .markdown-body pre {
+    overflow-x: auto;
+    font-size: 13px;
+  }
+  
+  .markdown-body table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  
+  /* 底部导航 (移动端特有) */
+  .bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 56px;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border-color);
+    justify-content: space-around;
+    align-items: center;
+    z-index: 996;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  .bottom-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    flex: 1;
+    height: 100%;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 12px;
+    transition: color 0.3s;
+  }
+  
+  .bottom-nav-item i {
+    font-size: 20px;
+  }
+  
+  .bottom-nav-item.active {
+    color: var(--primary-color);
+  }
+  
+  /* 成就卡片 */
+  .achievement-card {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  /* 进度条 */
+  .progress-bar {
+    height: 8px;
+  }
+  
+  /* 标签云 */
+  .tag-cloud {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .tag {
+    font-size: 12px;
+    padding: 4px 8px;
+  }
 }
 
-/* 平板优化 */
+/* ========== 平板样式 (768px - 1023px) ========== */
 @media (min-width: 768px) and (max-width: 1023px) {
-  /* 隐藏移动端元素 */
-  .mobile-only {
+  html {
+    font-size: var(--tablet-font-size);
+  }
+  
+  .container,
+  .dashboard-container {
+    padding: var(--tablet-padding);
+  }
+  
+  .dashboard-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+  
+  .knowledge-graph-card {
+    grid-column: 1 / -1;
+  }
+  
+  .navbar {
+    height: var(--tablet-header-height);
+  }
+  
+  .card {
+    padding: 1.5rem;
+  }
+  
+  /* 平板也显示底部导航 */
+  .bottom-nav {
+    display: flex;
+  }
+  
+  .mobile-menu-btn {
     display: none !important;
   }
+}
 
-  /* 两列布局 */
-  .tablet-two-columns {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
+/* ========== 桌面样式 (1024px+) ========== */
+@media (min-width: 1024px) {
+  html {
+    font-size: var(--desktop-font-size);
   }
-
-  /* 卡片优化 */
-  .el-card {
-    margin-bottom: 16px;
+  
+  .mobile-only,
+  .mobile-menu-btn,
+  .bottom-nav {
+    display: none !important;
   }
-
-  /* 知识图谱平板优化 */
-  .knowledge-graph-container {
-    height: 500px !important;
+  
+  .desktop-only {
+    display: block !important;
   }
+  
+  .sidebar {
+    position: static;
+    width: 250px;
+  }
+}
 
-  /* 图表平板优化 */
-  .chart-container {
+/* ========== 超大屏幕 (1440px+) ========== */
+@media (min-width: 1440px) {
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+}
+
+/* ========== 横屏优化 ========== */
+@media (max-width: 767px) and (orientation: landscape) {
+  .knowledge-graph-card {
     height: 300px !important;
   }
-}
-
-/* 桌面端优化 */
-@media (min-width: 1024px) {
-  /* 隐藏移动端和平板元素 */
-  .mobile-only,
-  .tablet-only {
-    display: none !important;
+  
+  .graph-container {
+    height: 250px !important;
   }
-
-  /* 三列布局 */
-  .desktop-three-columns {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-  }
-
-  /* 侧边栏布局 */
-  .desktop-sidebar-layout {
-    display: grid;
-    grid-template-columns: 250px 1fr;
-    gap: 24px;
+  
+  .chat-messages {
+    max-height: calc(100vh - 150px) !important;
   }
 }
 
-/* 触摸设备优化 */
+/* ========== 触摸设备优化 ========== */
 @media (hover: none) and (pointer: coarse) {
-  /* 增大可点击区域 */
-  .touchable {
+  /* 增加触摸目标大小 */
+  button,
+  a,
+  .clickable {
     min-height: 44px;
     min-width: 44px;
   }
-
-  /* 按钮优化 */
-  .el-button {
-    min-height: 40px;
-    padding: 10px 20px;
+  
+  /* 禁用hover效果 */
+  .card:hover,
+  .btn:hover {
+    transform: none !important;
   }
-
-  /* 输入框优化 */
-  .el-input__inner {
-    min-height: 44px;
-    font-size: 16px; /* 防止 iOS 自动缩放 */
-  }
-
-  /* 移除 hover 效果 */
-  .hover-only {
-    display: none !important;
-  }
-
-  /* 滚动优化 */
-  * {
-    -webkit-overflow-scrolling: touch;
+  
+  /* 添加触摸反馈 */
+  button:active,
+  a:active,
+  .clickable:active {
+    opacity: 0.7;
+    transform: scale(0.98);
   }
 }
 
-/* 横屏优化 */
-@media (max-width: 767px) and (orientation: landscape) {
-  /* 减小垂直间距 */
-  .page-header {
-    padding: 12px 0;
+/* ========== 安全区域适配 (刘海屏) ========== */
+@supports (padding: env(safe-area-inset-top)) {
+  .navbar {
+    padding-top: env(safe-area-inset-top);
+    height: calc(var(--mobile-header-height) + env(safe-area-inset-top));
   }
-
-  .section-spacing {
-    margin-bottom: 16px;
+  
+  .bottom-nav {
+    padding-bottom: env(safe-area-inset-bottom);
+    height: calc(56px + env(safe-area-inset-bottom));
   }
-
-  /* 对话框高度优化 */
-  .el-dialog__body {
-    max-height: 50vh;
-  }
-}
-
-/* 高分辨率屏幕优化 */
-@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-  /* 使用高清图片 */
-  .retina-image {
-    image-rendering: -webkit-optimize-contrast;
+  
+  .sidebar {
+    top: calc(var(--mobile-header-height) + env(safe-area-inset-top));
   }
 }
 
-/* 打印样式 */
-@media print {
-  /* 隐藏导航和侧边栏 */
-  .no-print,
-  .el-menu,
-  .el-aside,
-  .el-footer {
-    display: none !important;
-  }
-
-  /* 优化打印布局 */
-  .el-main {
-    margin: 0;
-    padding: 0;
-  }
-
-  /* 移除阴影和背景 */
-  .el-card {
-    box-shadow: none !important;
-    border: 1px solid #ddd;
-  }
-}
-
-/* 工具类 */
-.hide-mobile {
-  display: block;
-}
-
-.show-mobile {
-  display: none;
-}
-
+/* ========== 暗色模式下的移动端优化 ========== */
 @media (max-width: 767px) {
-  .hide-mobile {
-    display: none !important;
+  .dark .navbar,
+  .dark .bottom-nav,
+  .dark .sidebar {
+    background: rgba(17, 24, 39, 0.95);
+    backdrop-filter: blur(10px);
   }
-
-  .show-mobile {
-    display: block !important;
-  }
-}
-
-/* 文本截断 */
-.text-truncate {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.text-truncate-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.text-truncate-3 {
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-/* 间距工具类 */
-.spacing-xs {
-  margin-bottom: 8px;
-}
-
-.spacing-sm {
-  margin-bottom: 12px;
-}
-
-.spacing-md {
-  margin-bottom: 16px;
-}
-
-.spacing-lg {
-  margin-bottom: 24px;
-}
-
-.spacing-xl {
-  margin-bottom: 32px;
-}
-
-/* 栅格系统 */
-.grid {
-  display: grid;
-  gap: 16px;
-}
-
-.grid-cols-1 {
-  grid-template-columns: repeat(1, 1fr);
-}
-
-.grid-cols-2 {
-  grid-template-columns: repeat(2, 1fr);
-}
-
-.grid-cols-3 {
-  grid-template-columns: repeat(3, 1fr);
-}
-
-.grid-cols-4 {
-  grid-template-columns: repeat(4, 1fr);
-}
-
-@media (max-width: 767px) {
-  .grid-cols-2,
-  .grid-cols-3,
-  .grid-cols-4 {
-    grid-template-columns: repeat(1, 1fr);
+  
+  .dark .mobile-overlay {
+    background: rgba(0, 0, 0, 0.7);
   }
 }
 
-@media (min-width: 768px) and (max-width: 1023px) {
-  .grid-cols-3,
-  .grid-cols-4 {
-    grid-template-columns: repeat(2, 1fr);
+/* ========== 减少动画 (系统设置) ========== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
-

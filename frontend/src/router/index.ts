@@ -112,10 +112,59 @@ const router = createRouter({
                     path: 'settings',
                     name: 'settings',
                     component: () => import('../views/SettingsView.vue')
+                },
+                {
+                    path: 'teacher',
+                    name: 'teacher',
+                    component: () => import('../views/TeacherView.vue'),
+                    meta: { requiresTeacher: true }
+                },
+                {
+                    path: 'my-classes',
+                    name: 'my-classes',
+                    component: () => import('../views/MyClassesView.vue')
+                },
+                {
+                    path: 'analytics',
+                    name: 'analytics',
+                    component: () => import('../views/AnalyticsView.vue')
                 }
             ]
         }
     ]
 })
+
+// 路由守卫
+router.beforeEach((to, from, next) => {
+    const token = localStorage.getItem('authToken');
+    
+    // 需要认证的路由
+    if (to.meta.requiresAuth && !token) {
+        next('/login');
+        return;
+    }
+    
+    // 需要教师权限的路由
+    if (to.meta.requiresTeacher) {
+        // 从 localStorage 获取用户信息
+        const userStr = localStorage.getItem('user');
+        if (userStr) {
+            try {
+                const user = JSON.parse(userStr);
+                if (user.role === 'teacher' || user.role === 'admin') {
+                    next();
+                    return;
+                }
+            } catch (e) {
+                console.error('解析用户信息失败:', e);
+            }
+        }
+        // 没有权限，返回首页
+        next('/app');
+        return;
+    }
+    
+    next();
+});
 
 export default router

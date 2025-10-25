@@ -115,7 +115,30 @@ router.post('/end', authMiddleware, async (req: Request, res: Response) => {
     }
 });
 
-// 获取学习时长统计
+// 获取简单的学习时长统计（仅总时长，用于 Dashboard）
+router.get('/stats/simple', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const userId = req.user?._id;
+
+        // 只计算总学习时长，使用索引优化
+        const totalResult = await StudySession.aggregate([
+            { $match: { userId, active: true } },
+            { $group: { _id: null, totalDuration: { $sum: '$duration' } } }
+        ]);
+        const totalDuration = totalResult.length > 0 ? totalResult[0].totalDuration : 0;
+
+        res.json({
+            totalDuration,
+            totalHours: Math.floor(totalDuration / 3600),
+            totalMinutes: Math.floor((totalDuration % 3600) / 60),
+        });
+    } catch (error) {
+        console.error('获取学习时长统计失败:', error);
+        res.status(500).json({ message: '获取学习时长统计时发生错误' });
+    }
+});
+
+// 获取学习时长统计（完整版，包含详细分析）
 router.get('/stats', authMiddleware, async (req: Request, res: Response) => {
     try {
         const userId = req.user?._id;

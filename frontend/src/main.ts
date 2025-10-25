@@ -6,10 +6,14 @@ import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 
 import './style.css'
 import './styles/responsive.css'
+import './styles/button-enhancements.css'
 import App from './App.vue'
 import router from './router'
 import {useUserStore} from './stores/user'
+import {useThemeStore} from './stores/theme'
+import {useSettingsStore} from './stores/settings'
 import { createPersistedState } from './plugins/pinia-persist'
+import { studyReminderService } from './utils/study-reminder'
 
 
 const app = createApp(App)
@@ -23,10 +27,21 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
     app.component(key, component)
 }
 
-app.use(ElementPlus)
+// 配置 Element Plus，设置 z-index 基础值
+app.use(ElementPlus, {
+    zIndex: 2000
+})
 app.use(pinia)
 
 const userStore = useUserStore()
+const themeStore = useThemeStore()
+const settingsStore = useSettingsStore()
+
+// 初始化主题
+themeStore.initTheme()
+
+// 初始化设置
+settingsStore.loadSettings()
 
 // 使用 .then() 代替 top-level await 以支持更多浏览器
 userStore.tryLoginFromLocalStorage().then(() => {
@@ -39,6 +54,11 @@ userStore.tryLoginFromLocalStorage().then(() => {
             next()
         }
     })
+
+    // 如果用户已登录，启动学习提醒服务
+    if (userStore.isLoggedIn && settingsStore.notifications.study) {
+        studyReminderService.start()
+    }
 
     app.use(router)
     app.mount('#app')

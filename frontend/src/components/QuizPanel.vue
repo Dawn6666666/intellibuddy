@@ -594,6 +594,7 @@ html.dark-theme .explanation :deep(.katex) {
 .option-label {
   width: 32px;
   height: 32px;
+  min-width: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -610,7 +611,9 @@ html.dark-theme .explanation :deep(.katex) {
 }
 
 .option-text {
-  flex-grow: 1;
+  flex: 1;
+  text-align: left;
+  line-height: 1.5;
 }
 
 .option i {

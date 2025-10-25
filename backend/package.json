@@ -29,6 +29,8 @@
     "quiz:import": "ts-node src/import-quiz-from-json.ts",
     "quiz:import:python": "ts-node src/merge-python-quiz-to-cs104.ts",
     "quiz:structure": "ts-node src/query-knowledge-structure.ts",
+    "demo:create": "ts-node src/create-demo-accounts.ts",
+    "migrate:scores": "ts-node src/scripts/migrate-progress-scores.ts",
     "clean": "rimraf dist node_modules/.cache"
   },
   "keywords": [],

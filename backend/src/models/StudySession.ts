@@ -11,6 +11,8 @@ export interface IStudySession extends Document {
     duration: number; // 秒
     active: boolean; // 是否为活跃学习（非挂机）
     activityCount: number; // 活动次数（用于判断是否挂机）
+    createdAt?: Date; // Mongoose timestamps 自动添加
+    updatedAt?: Date; // Mongoose timestamps 自动添加
 }
 
 const StudySessionSchema = new Schema<IStudySession>({
@@ -30,6 +32,8 @@ const StudySessionSchema = new Schema<IStudySession>({
 // 复合索引：用于快速查询用户的学习记录
 StudySessionSchema.index({ userId: 1, startTime: -1 });
 StudySessionSchema.index({ userId: 1, pointId: 1 });
+// 优化统计查询的复合索引
+StudySessionSchema.index({ userId: 1, endTime: 1 });
 
 const StudySession = (mongoose.models.StudySession as mongoose.Model<IStudySession>) || model<IStudySession>('StudySession', StudySessionSchema);
 

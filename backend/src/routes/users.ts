@@ -4,6 +4,8 @@ import path from 'path';
 import fs from 'fs';
 import bcrypt from 'bcryptjs';
 import User from '../models/User';
+import StudySession from '../models/StudySession';
+import UserProgress from '../models/UserProgress';
 import { authMiddleware } from '../middleware/auth';
 
 const router = express.Router();
@@ -174,6 +176,146 @@ router.put('/password', authMiddleware, async (req: Request, res: Response) => {
             errorMessage: error.message
         });
         res.status(500).json({ message: '修改失败，请稍后重试' });
+    }
+});
+
+// 清除用户学习数据
+router.delete('/learning-data', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const userId = req.user?._id;
+        
+        // 删除学习记录
+        await StudySession.deleteMany({ userId });
+        
+        // 重置学习进度
+        await UserProgress.updateMany(
+            { userId },
+            { 
+                status: 'not_started',
+                masteryLevel: 0,
+                lastStudiedAt: null,
+                completedAt: null
+            }
+        );
+        
+        console.log('用户清除学习数据', { userId });
+        
+        res.json({ message: '学习数据已清除' });
+    } catch (error: any) {
+        console.error('清除学习数据失败', error, {
+            userId: req.user?._id,
+            errorMessage: error.message
+        });
+        res.status(500).json({ message: '清除失败，请稍后重试' });
+    }
+});
+
+// 获取用户个人统计数据
+router.get('/me/stats', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const userId = req.user?._id;
+
+        // 获取总学习时长（秒）
+        const totalDuration = await StudySession.aggregate([
+            { $match: { userId } },
+            { $group: { _id: null, total: { $sum: '$duration' } } },
+        ]).then(result => result[0]?.total || 0);
+
+        // 转换为小时
+        const totalHours = Math.floor(totalDuration / 3600);
+
+        // 获取完成的知识点数（作为"完成课程"）
+        const completedCourses = await UserProgress.countDocuments({
+            userId,
+            status: 'completed'
+        });
+
+        // 计算学习积分（基于学习时长和完成的课程）
+        // 规则：每小时10分，每完成一个知识点50分
+        const points = Math.floor(totalDuration / 360) + (completedCourses * 50);
+
+        // 获取所有用户的总积分来计算排名
+        const allUsersStats = await Promise.all(
+            (await User.find().select('_id')).map(async (user) => {
+                const userDuration = await StudySession.aggregate([
+                    { $match: { userId: user._id } },
+                    { $group: { _id: null, total: { $sum: '$duration' } } },
+                ]).then(result => result[0]?.total || 0);
+
+                const userCompleted = await UserProgress.countDocuments({
+                    userId: user._id,
+                    status: 'completed'
+                });
+
+                return Math.floor(userDuration / 360) + (userCompleted * 50);
+            })
+        );
+
+        // 计算排名百分比
+        const totalUsers = allUsersStats.length;
+        const betterThanCount = allUsersStats.filter(p => p < points).length;
+        const rankPercentage = totalUsers > 0 ? Math.round((betterThanCount / totalUsers) * 100) : 0;
+
+        // 获取上月的统计数据来计算增长趋势
+        const lastMonthStart = new Date();
+        lastMonthStart.setMonth(lastMonthStart.getMonth() - 1);
+        lastMonthStart.setDate(1);
+        lastMonthStart.setHours(0, 0, 0, 0);
+
+        const thisMonthStart = new Date();
+        thisMonthStart.setDate(1);
+        thisMonthStart.setHours(0, 0, 0, 0);
+
+        const lastMonthDuration = await StudySession.aggregate([
+            { 
+                $match: { 
+                    userId,
+                    startTime: { $gte: lastMonthStart, $lt: thisMonthStart }
+                } 
+            },
+            { $group: { _id: null, total: { $sum: '$duration' } } },
+        ]).then(result => result[0]?.total || 0);
+
+        const thisMonthDuration = await StudySession.aggregate([
+            { 
+                $match: { 
+                    userId,
+                    startTime: { $gte: thisMonthStart }
+                } 
+            },
+            { $group: { _id: null, total: { $sum: '$duration' } } },
+        ]).then(result => result[0]?.total || 0);
+
+        // 计算增长百分比
+        const durationChange = lastMonthDuration > 0 
+            ? Math.round(((thisMonthDuration - lastMonthDuration) / lastMonthDuration) * 100)
+            : 0;
+
+        res.json({
+            totalStudyTime: {
+                hours: totalHours,
+                seconds: totalDuration,
+                display: `${totalHours}h`,
+                change: durationChange
+            },
+            completedCourses: {
+                count: completedCourses,
+                change: 0 // TODO: 实现课程完成数的月度对比
+            },
+            points: {
+                total: points,
+                display: points.toLocaleString(),
+                change: 0 // TODO: 实现积分的月度对比
+            },
+            ranking: {
+                percentage: rankPercentage,
+                display: `Top ${100 - rankPercentage}%`,
+                change: 0 // TODO: 实现排名的月度对比
+            }
+        });
+    } catch (error: any) {
+        console.error('获取用户统计数据失败', error);
+        res.status(500).json({ message: '获取统计数据失败' });
     }
 });
 
