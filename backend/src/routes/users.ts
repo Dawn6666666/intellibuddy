@@ -11,20 +11,25 @@ import { authMiddleware } from '../middleware/auth';
 const router = express.Router();
 
 // 配置文件上传
-const storage = multer.diskStorage({
-    destination: function (req: Request, file: Express.Multer.File, cb: (error: Error | null, destination: string) => void) {
-        const uploadDir = path.join(__dirname, '../../uploads/avatars');
-        if (!fs.existsSync(uploadDir)) {
-            fs.mkdirSync(uploadDir, { recursive: true });
+// 检测环境：Serverless 使用内存存储，本地使用磁盘存储
+const isServerless = process.env.VERCEL === '1' || process.env.AWS_LAMBDA_FUNCTION_NAME;
+
+const storage = isServerless 
+    ? multer.memoryStorage()
+    : multer.diskStorage({
+        destination: function (req: Request, file: Express.Multer.File, cb: (error: Error | null, destination: string) => void) {
+            const uploadDir = path.join(__dirname, '../../uploads/avatars');
+            if (!fs.existsSync(uploadDir)) {
+                fs.mkdirSync(uploadDir, { recursive: true });
+            }
+            cb(null, uploadDir);
+        },
+        filename: function (req: Request, file: Express.Multer.File, cb: (error: Error | null, filename: string) => void) {
+            const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+            const ext = path.extname(file.originalname);
+            cb(null, `avatar-${req.user?._id}-${uniqueSuffix}${ext}`);
         }
-        cb(null, uploadDir);
-    },
-    filename: function (req: Request, file: Express.Multer.File, cb: (error: Error | null, filename: string) => void) {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        const ext = path.extname(file.originalname);
-        cb(null, `avatar-${req.user?._id}-${uniqueSuffix}${ext}`);
-    }
-});
+    });
 
 const upload = multer({
     storage: storage,
@@ -46,29 +51,61 @@ const upload = multer({
 
 // 上传头像
 router.post('/avatar', authMiddleware, upload.single('avatar'), async (req: Request, res: Response) => {
+    const startTime = Date.now();
+    console.log('📸 [头像上传] 开始处理...');
+    
     try {
         if (!req.file) {
+            console.error('📸 [头像上传] 错误: 未收到文件');
             return res.status(400).json({ message: '请选择要上传的图片' });
         }
         
-        const userId = req.user?._id;
-        const avatarUrl = `/uploads/avatars/${req.file.filename}`;
+        console.log('📸 [头像上传] 文件信息:', {
+            filename: req.file.filename,
+            size: req.file.size,
+            mimetype: req.file.mimetype
+        });
         
-        // 删除旧头像（如果存在且不是第三方头像）
-        const user = await User.findById(userId);
-        if (user?.avatarUrl && user.avatarUrl.startsWith('/uploads/')) {
-            const oldAvatarPath = path.join(__dirname, '../../', user.avatarUrl);
-            if (fs.existsSync(oldAvatarPath)) {
-                fs.unlinkSync(oldAvatarPath);
+        const userId = req.user?._id;
+        
+        let avatarUrl: string;
+        
+        if (req.file.buffer) {
+            // 内存存储（Serverless 环境）：将图片转换为 Base64 存储在数据库中
+            console.log('📸 [头像上传] 使用内存存储，转换为 Base64');
+            const base64Image = req.file.buffer.toString('base64');
+            const dataUri = `data:${req.file.mimetype};base64,${base64Image}`;
+            avatarUrl = dataUri;
+        } else {
+            // 磁盘存储（本地环境）：使用文件系统存储
+            console.log('📸 [头像上传] 使用文件系统存储');
+            avatarUrl = `/uploads/avatars/${req.file.filename}`;
+            
+            // 删除旧头像（如果存在且不是第三方头像或 Base64）
+            const user = await User.findById(userId);
+            if (user?.avatarUrl && 
+                user.avatarUrl.startsWith('/uploads/') && 
+                !user.avatarUrl.startsWith('data:')) {
+                const oldAvatarPath = path.join(__dirname, '../../', user.avatarUrl);
+                if (fs.existsSync(oldAvatarPath)) {
+                    try {
+                        fs.unlinkSync(oldAvatarPath);
+                        console.log('📸 [头像上传] 已删除旧头像:', oldAvatarPath);
+                    } catch (deleteError: any) {
+                        console.warn('📸 [头像上传] 删除旧头像失败（可忽略）:', deleteError.message);
+                    }
+                }
             }
         }
         
         // 更新数据库
         await User.findByIdAndUpdate(userId, { avatarUrl });
         
-        console.log('用户上传头像', {
+        const elapsed = Date.now() - startTime;
+        console.log(`✅ [头像上传] 成功 - 耗时: ${elapsed}ms`, {
             userId,
-            filename: req.file.filename
+            avatarUrl: avatarUrl.substring(0, 50) + '...',
+            isServerless
         });
         
         res.json({
@@ -76,9 +113,11 @@ router.post('/avatar', authMiddleware, upload.single('avatar'), async (req: Requ
             avatarUrl
         });
     } catch (error: any) {
-        console.error('头像上传失败', error, {
+        const elapsed = Date.now() - startTime;
+        console.error(`❌ [头像上传] 失败 - 耗时: ${elapsed}ms`, {
             userId: req.user?._id,
-            errorMessage: error.message
+            errorMessage: error.message,
+            errorStack: error.stack
         });
         res.status(500).json({ message: error.message || '头像上传失败' });
     }

@@ -314,6 +314,11 @@ onUnmounted(() => {
 const getAvatarUrl = () => {
   if (!userStore.user?.avatarUrl) return '';
   
+  // 如果是 Base64 数据（Vercel serverless 环境），直接返回
+  if (userStore.user.avatarUrl.startsWith('data:')) {
+    return userStore.user.avatarUrl;
+  }
+  
   // 如果是外部链接（GitHub 等），直接返回
   if (userStore.user.avatarUrl.startsWith('http://') || 
       userStore.user.avatarUrl.startsWith('https://')) {
