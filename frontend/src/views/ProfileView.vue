@@ -177,6 +177,8 @@ onMounted(async () => {
   try {
     if (userStore.token) {
       userStats.value = await apiGetMyStats(userStore.token);
+      // 加载成就数据
+      await loadAchievements();
     }
   } catch (error) {
     console.error('加载用户统计数据失败:', error);
@@ -370,62 +372,56 @@ const topSkills = computed(() => {
 });
 
 // 成就系统
-const achievements = ref([
-  {
-    id: 1,
-    name: '初学者',
-    description: '完成第一个课程',
-    icon: 'fa-solid fa-seedling',
-    color: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
-    unlocked: true,
-    progress: 100
-  },
-  {
-    id: 2,
-    name: '连续学习者',
-    description: '连续学习7天',
-    icon: 'fa-solid fa-fire',
-    color: 'linear-gradient(135deg, #ff9a56 0%, #ff6a88 100%)',
-    unlocked: true,
-    progress: 100
-  },
-  {
-    id: 3,
-    name: '知识探索者',
-    description: '学习10个不同主题',
-    icon: 'fa-solid fa-compass',
-    color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    unlocked: true,
-    progress: 100
-  },
-  {
-    id: 4,
-    name: '编程大师',
-    description: '完成50个编程练习',
-    icon: 'fa-solid fa-code',
-    color: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
-    unlocked: false,
-    progress: 68
-  },
-  {
-    id: 5,
-    name: '学习狂人',
-    description: '累计学习100小时',
-    icon: 'fa-solid fa-bolt',
-    color: 'linear-gradient(135deg, #30cfd0 0%, #330867 100%)',
-    unlocked: true,
-    progress: 100
-  },
-  {
-    id: 6,
-    name: '完美主义者',
-    description: '获得10个满分测验',
-    icon: 'fa-solid fa-medal',
-    color: 'linear-gradient(135deg, #ffd89b 0%, #19547b 100%)',
-    unlocked: false,
-    progress: 40
+const achievements = ref<any[]>([]);
+const isLoadingAchievements = ref(true);
+
+// 成就图标和颜色映射
+const achievementStyles: Record<string, { icon: string; color: string }> = {
+  study_time: { icon: 'fa-solid fa-clock', color: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)' },
+  knowledge_master: { icon: 'fa-solid fa-book', color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' },
+  streak: { icon: 'fa-solid fa-fire', color: 'linear-gradient(135deg, #ff9a56 0%, #ff6a88 100%)' },
+  quiz_perfect: { icon: 'fa-solid fa-medal', color: 'linear-gradient(135deg, #ffd89b 0%, #19547b 100%)' },
+  early_bird: { icon: 'fa-solid fa-sun', color: 'linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%)' },
+  night_owl: { icon: 'fa-solid fa-moon', color: 'linear-gradient(135deg, #30cfd0 0%, #330867 100%)' },
+  explorer: { icon: 'fa-solid fa-compass', color: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)' },
+  fast_learner: { icon: 'fa-solid fa-bolt', color: 'linear-gradient(135deg, #ff6b6b 0%, #feca57 100%)' },
+};
+
+// 加载成就数据
+const loadAchievements = async () => {
+  try {
+    isLoadingAchievements.value = true;
+    const response = await fetch('/api/achievements', {
+      headers: {
+        'Authorization': `Bearer ${userStore.token}`
+      }
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      if (data.success) {
+        // 转换后端数据为前端格式
+        achievements.value = data.data.achievements.map((ach: any) => {
+          const style = achievementStyles[ach.achievementType] || achievementStyles.study_time;
+          return {
+            id: ach.achievementId,
+            name: ach.definition?.name || '未知成就',
+            description: ach.definition?.description || '',
+            icon: style.icon,
+            color: style.color,
+            unlocked: ach.completed,
+            progress: ach.completed ? 100 : Math.round((ach.progress / ach.maxProgress) * 100)
+          };
+        });
+      }
+    }
+  } catch (error) {
+    console.error('加载成就数据失败:', error);
+    achievements.value = [];
+  } finally {
+    isLoadingAchievements.value = false;
   }
-]);
+};
 
 const unlockedAchievements = computed(() => 
   achievements.value.filter(a => a.unlocked).length

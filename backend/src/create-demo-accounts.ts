@@ -1,5 +1,23 @@
 // backend/src/create-demo-accounts.ts
 // 创建演示账号并填充示例数据
+// 
+// 使用方法:
+//   cd backend
+//   pnpm run demo:create
+// 
+// 功能说明:
+//   - 自动创建6个演示账号（学生、高级学生、新手、教师、VIP、管理员）
+//   - 生成真实的学习数据（进度、错题、AI对话、成就、积分等）
+//   - 如果账号已存在，会更新数据而不是重复创建
+//   - 所有账号密码统一为: Demo2025
+// 
+// 注意事项:
+//   - 需要先配置 .env 文件中的 MONGO_URI
+//   - 建议先运行 pnpm run seed:all 导入知识点数据
+//   - 详细文档请查看 DEMO_ACCOUNTS.md
+// 
+// 版本: v2.2.0
+// 最后更新: 2025-10-26
 
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
@@ -7,14 +25,21 @@ import dotenv from 'dotenv';
 import User from './models/User';
 import UserProgress from './models/UserProgress';
 import StudySession from './models/StudySession';
-import Achievement from './models/Achievement';
 import WrongQuestion from './models/WrongQuestion';
 import Chat from './models/Chat';
 import KnowledgePoint from './models/KnowledgePoint';
+import UserAchievement, { ACHIEVEMENT_DEFINITIONS } from './models/Achievement';
+import { Notification } from './models/Notification';
+import Points from './models/Points';
 
 dotenv.config();
 
 // 演示账号配置
+// 会员等级说明:
+// - 免费版 (¥0): 50个知识点, 20次AI提问/月
+// - 基础版 (¥19/月): 200个知识点, 100次AI提问/月
+// - 高级版 (¥49/月): 1000个知识点, 500次AI提问/月
+// - 企业版 (¥1999/年): 无限制
 const DEMO_ACCOUNTS = [
   {
     username: 'demo_student',
@@ -22,12 +47,14 @@ const DEMO_ACCOUNTS = [
     password: 'Demo2025',
     role: 'student',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=demo_student',
-    description: '已完成部分学习的普通学生账号，适合展示日常学习功能',
-    progressTarget: 0.3, // 完成30%的知识点
+    description: '免费版普通学生账号，展示基础学习功能和日常使用场景',
+    progressTarget: 0.3, // 完成30%的知识点（约15个）
     studyTimeTarget: 7200, // 2小时学习时长
     achievementTarget: 5, // 解锁5个成就
     wrongQuestionsTarget: 10, // 10个错题
     chatHistoryTarget: 5, // 5个AI对话记录
+    pointsTarget: 200, // 200积分（等级2-学徒）
+    notificationsTarget: 8, // 8条通知
   },
   {
     username: 'demo_advanced',
@@ -35,12 +62,14 @@ const DEMO_ACCOUNTS = [
     password: 'Demo2025',
     role: 'student',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=demo_advanced',
-    description: '高级用户账号，完成多门课程，大量成就和数据',
-    progressTarget: 0.7, // 完成70%的知识点
+    description: '免费版高级用户，展示长期学习数据、成就系统和数据分析功能',
+    progressTarget: 0.7, // 完成70%的知识点（约35个）
     studyTimeTarget: 36000, // 10小时学习时长
     achievementTarget: 15, // 解锁15个成就
     wrongQuestionsTarget: 30, // 30个错题
     chatHistoryTarget: 20, // 20个AI对话记录
+    pointsTarget: 800, // 800积分（等级4-专家）
+    notificationsTarget: 15, // 15条通知
   },
   {
     username: 'demo_new',
@@ -48,12 +77,14 @@ const DEMO_ACCOUNTS = [
     password: 'Demo2025',
     role: 'student',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=demo_new',
-    description: '全新账号，用于展示新手引导流程',
+    description: '免费版新手账号，展示新手引导流程和首次体验',
     progressTarget: 0, // 无学习记录
     studyTimeTarget: 0,
     achievementTarget: 0,
     wrongQuestionsTarget: 0,
     chatHistoryTarget: 0,
+    pointsTarget: 0, // 0积分（等级1-初学者）
+    notificationsTarget: 2, // 2条欢迎通知
   },
   {
     username: 'demo_teacher',
@@ -61,12 +92,14 @@ const DEMO_ACCOUNTS = [
     password: 'Demo2025',
     role: 'teacher',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=demo_teacher',
-    description: '教师账号，用于展示教师端功能（班级管理、作业布置）',
+    description: '基础版教师账号（¥19/月），展示班级管理、作业布置等教学功能',
     progressTarget: 0, // 教师不需要学习进度
     studyTimeTarget: 0,
     achievementTarget: 0,
     wrongQuestionsTarget: 0,
     chatHistoryTarget: 0,
+    pointsTarget: 0,
+    notificationsTarget: 5, // 5条系统通知
   },
   {
     username: 'demo_vip',
@@ -74,12 +107,14 @@ const DEMO_ACCOUNTS = [
     password: 'Demo2025',
     role: 'student',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=demo_vip',
-    description: 'VIP会员账号，展示会员体系、积分商城、高级功能',
+    description: 'VIP高级会员账号（¥49/月），展示会员体系、积分商城、高级功能',
     progressTarget: 0.5, // 完成50%的知识点
     studyTimeTarget: 28800, // 8小时学习时长
     achievementTarget: 12, // 解锁12个成就
     wrongQuestionsTarget: 15, // 15个错题
     chatHistoryTarget: 30, // 30个AI对话记录
+    pointsTarget: 1500, // 1500积分（等级5-大师）
+    notificationsTarget: 12, // 12条通知
   },
   {
     username: 'demo_admin',
@@ -87,12 +122,14 @@ const DEMO_ACCOUNTS = [
     password: 'Demo2025',
     role: 'admin',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=demo_admin',
-    description: '管理员账号，用于展示后台管理功能',
+    description: '企业版管理员账号（¥1999/年），展示后台管理、系统监控等全部功能',
     progressTarget: 0, // 管理员不需要学习进度
     studyTimeTarget: 0,
     achievementTarget: 0,
     wrongQuestionsTarget: 0,
     chatHistoryTarget: 0,
+    pointsTarget: 0,
+    notificationsTarget: 3, // 3条系统管理通知
   },
 ];
 
@@ -417,6 +454,245 @@ async function fillChatHistory(userId: mongoose.Types.ObjectId, count: number) {
   console.log(`   ✅ 创建了 ${chats.length} 个对话记录`);
 }
 
+// 填充成就数据
+async function fillAchievements(
+  userId: mongoose.Types.ObjectId, 
+  totalStudyTime: number,
+  completedPointsCount: number
+) {
+  console.log(`   🏆 填充成就数据`);
+  
+  // 删除旧数据
+  await UserAchievement.deleteMany({ userId });
+  
+  const achievements = [];
+  
+  for (const def of ACHIEVEMENT_DEFINITIONS) {
+    let progress = 0;
+    let completed = false;
+    let unlockedAt = null;
+    
+    // 根据成就类型计算进度
+    switch (def.type) {
+      case 'study_time':
+        progress = Math.min(totalStudyTime, def.requirement);
+        completed = totalStudyTime >= def.requirement;
+        break;
+      
+      case 'knowledge_master':
+        progress = Math.min(completedPointsCount, def.requirement);
+        completed = completedPointsCount >= def.requirement;
+        break;
+      
+      case 'streak':
+        // 连续学习天数（简化处理）
+        const streakDays = Math.floor(totalStudyTime / 3600); // 假设每天1小时
+        progress = Math.min(streakDays, def.requirement);
+        completed = streakDays >= def.requirement;
+        break;
+      
+      case 'quiz_perfect':
+        // 完美答题次数（基于完成的知识点数量）
+        const perfectCount = Math.floor(completedPointsCount / 2);
+        progress = Math.min(perfectCount, def.requirement);
+        completed = perfectCount >= def.requirement;
+        break;
+      
+      case 'early_bird':
+        // 早起学习（随机给高级用户）
+        progress = totalStudyTime > 20000 ? Math.floor(Math.random() * def.requirement) : 0;
+        completed = progress >= def.requirement;
+        break;
+      
+      case 'night_owl':
+        // 夜猫子（随机给高级用户）
+        progress = totalStudyTime > 30000 ? Math.floor(Math.random() * def.requirement) : 0;
+        completed = progress >= def.requirement;
+        break;
+      
+      case 'explorer':
+        // 探索不同学科（基于完成的知识点）
+        progress = Math.min(Math.floor(completedPointsCount / 5), def.requirement);
+        completed = completedPointsCount >= 25; // 至少25个知识点才能解锁
+        break;
+      
+      case 'fast_learner':
+        // 快速学习者（基于学习时长）
+        progress = totalStudyTime > 10000 ? def.requirement : 0;
+        completed = totalStudyTime > 10000;
+        break;
+    }
+    
+    if (completed) {
+      // 随机一个解锁时间（过去30天内）
+      unlockedAt = new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000);
+    }
+    
+    achievements.push({
+      userId,
+      achievementId: def.id,
+      achievementType: def.type,
+      achievementLevel: def.level,
+      progress,
+      maxProgress: def.requirement,
+      completed,
+      unlockedAt,
+    });
+  }
+  
+  await UserAchievement.insertMany(achievements);
+  const unlockedCount = achievements.filter(a => a.completed).length;
+  console.log(`   ✅ 创建了 ${achievements.length} 个成就记录，已解锁 ${unlockedCount} 个`);
+}
+
+// 填充积分记录
+async function fillPoints(userId: mongoose.Types.ObjectId, totalPoints: number) {
+  if (totalPoints === 0) {
+    console.log('   ⏭️  跳过积分记录（新用户）');
+    return;
+  }
+  
+  console.log(`   💰 填充积分记录 (目标: ${totalPoints}积分)`);
+  
+  // 删除旧的积分账户
+  await Points.deleteMany({ userId });
+  
+  // 生成各种积分获取记录
+  const actions = [
+    { type: 'earn', reason: 'quiz_complete', description: '完成测验', amount: 10 },
+    { type: 'earn', reason: 'perfect_score', description: '满分通过', amount: 20 },
+    { type: 'earn', reason: 'study_streak', description: '连续学习奖励', amount: 15 },
+    { type: 'earn', reason: 'achievement_unlock', description: '解锁成就', amount: 50 },
+    { type: 'earn', reason: 'daily_login', description: '每日登录', amount: 5 },
+  ];
+  
+  const history = [];
+  let remainingPoints = totalPoints;
+  
+  while (remainingPoints > 0) {
+    const action = actions[Math.floor(Math.random() * actions.length)];
+    const amount = Math.min(action.amount, remainingPoints);
+    
+    history.push({
+      type: action.type,
+      amount,
+      reason: action.reason,
+      description: action.description,
+      createdAt: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000),
+    });
+    
+    remainingPoints -= amount;
+  }
+  
+  // 按时间排序（从旧到新）
+  history.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+  
+  // 计算等级信息
+  const levelInfo = (Points as any).getLevelInfo(totalPoints);
+  
+  // 创建积分账户
+  await Points.create({
+    userId,
+    balance: totalPoints,
+    totalEarned: totalPoints,
+    totalSpent: 0,
+    level: levelInfo.level,
+    levelName: levelInfo.name,
+    nextLevelPoints: levelInfo.nextLevelPoints,
+    history,
+  });
+  
+  console.log(`   ✅ 创建积分账户，当前${totalPoints}积分，等级 ${levelInfo.level} (${levelInfo.name})，共${history.length}条记录`);
+}
+
+// 填充通知消息
+async function fillNotifications(userId: mongoose.Types.ObjectId, count: number) {
+  if (count === 0) {
+    console.log('   ⏭️  跳过通知消息（新用户）');
+    return;
+  }
+  
+  console.log(`   🔔 填充通知消息 (目标: ${count}条)`);
+  
+  // 删除旧数据
+  await Notification.deleteMany({ recipientId: userId });
+  
+  // 使用正确的通知类型枚举: 'assignment' | 'grade' | 'class' | 'system' | 'announcement'
+  const notificationTemplates = [
+    { 
+      type: 'system', 
+      title: '🎉 恭喜解锁新成就！', 
+      content: '你已解锁成就「勤奋学习者」，获得50积分奖励！',
+      priority: 'normal'
+    },
+    { 
+      type: 'system', 
+      title: '🔥 连续学习打卡', 
+      content: '太棒了！你已经连续学习7天了，继续保持！',
+      priority: 'normal'
+    },
+    { 
+      type: 'announcement', 
+      title: '📚 学习提醒', 
+      content: '今天还没有学习哦，快来继续你的学习之旅吧！',
+      priority: 'low'
+    },
+    { 
+      type: 'announcement', 
+      title: '💡 新功能上线', 
+      content: 'IntelliBuddy新增了智能学习路径推荐功能，快来体验吧！',
+      priority: 'normal'
+    },
+    { 
+      type: 'system', 
+      title: '🏆 成就进度更新', 
+      content: '你距离解锁「知识专家」成就只差5个知识点了！',
+      priority: 'normal'
+    },
+    { 
+      type: 'system', 
+      title: '💰 积分到账', 
+      content: '恭喜获得20积分！完成测验可以获得更多积分哦！',
+      priority: 'low'
+    },
+    { 
+      type: 'grade', 
+      title: '📝 作业已批改', 
+      content: '你的作业「数据结构第三章」已经批改完成，快来查看吧！',
+      priority: 'high'
+    },
+    { 
+      type: 'assignment', 
+      title: '📋 新作业发布', 
+      content: '老师发布了新作业「算法分析」，截止日期为本周五。',
+      priority: 'high'
+    },
+  ];
+  
+  const notifications = [];
+  for (let i = 0; i < count; i++) {
+    const template = notificationTemplates[i % notificationTemplates.length];
+    const isRead = Math.random() > 0.3; // 70%已读
+    const createdAt = new Date(Date.now() - Math.random() * 15 * 24 * 60 * 60 * 1000);
+    
+    notifications.push({
+      recipientId: userId,
+      recipientType: 'student',
+      type: template.type,
+      title: template.title,
+      content: template.content,
+      priority: template.priority,
+      read: isRead,
+      readAt: isRead ? new Date(createdAt.getTime() + Math.random() * 24 * 60 * 60 * 1000) : undefined,
+      createdAt,
+    });
+  }
+  
+  await Notification.insertMany(notifications);
+  const unreadCount = notifications.filter(n => !n.read).length;
+  console.log(`   ✅ 创建了 ${notifications.length} 条通知消息，其中 ${unreadCount} 条未读`);
+}
+
 // 主函数
 async function main() {
   try {
@@ -438,6 +714,21 @@ async function main() {
       await fillWrongQuestions(user._id, config.wrongQuestionsTarget);
       await fillChatHistory(user._id, config.chatHistoryTarget);
       
+      // 计算完成的知识点数量
+      const completedPointsCount = await UserProgress.countDocuments({ 
+        userId: user._id, 
+        status: 'completed' 
+      });
+      
+      // 填充成就系统
+      await fillAchievements(user._id, config.studyTimeTarget, completedPointsCount);
+      
+      // 填充积分记录
+      await fillPoints(user._id, config.pointsTarget || 0);
+      
+      // 填充通知消息
+      await fillNotifications(user._id, config.notificationsTarget || 0);
+      
       console.log(`\n   ✨ ${config.username} 账号数据填充完成！`);
     }
     
@@ -453,7 +744,8 @@ async function main() {
       console.log();
     }
     
-    console.log('💡 提示: 您现在可以使用这些账号登录系统进行演示了！\n');
+    console.log('💡 提示: 您现在可以使用这些账号登录系统进行演示了！');
+    console.log('📖 详细文档: 请查看 DEMO_ACCOUNTS.md 文件\n');
     
   } catch (error) {
     console.error('\n❌ 创建演示账号失败:', error);

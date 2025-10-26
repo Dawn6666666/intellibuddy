@@ -41,6 +41,7 @@ import notificationRoutes from './routes/notification';
 import questionRoutes from './routes/question';
 import statsRoutes from './routes/stats';
 import teacherAnalyticsRoutes from './routes/teacher-analytics';
+import paymentRoutes from './routes/payment';
 import User, {IUser} from './models/User';
 
 // 导入中间件
@@ -109,6 +110,9 @@ app.use(compression({
     }
 }));
 
+// Stripe webhook 需要原始请求体，所以在 express.json() 之前注册
+app.use('/api/payment/webhook', paymentRoutes);
+
 app.use(express.json({ limit: '10mb' }));
 app.use(passport.initialize());
 
@@ -168,6 +172,7 @@ app.use('/api/notification', notificationRoutes);
 app.use('/api/question', questionRoutes);
 app.use('/api/stats', statsRoutes);
 app.use('/api/teacher-analytics', teacherAnalyticsRoutes);
+app.use('/api/payment', paymentRoutes);
 
 // --- GitHub 认证路由 ---
 app.get('/api/auth/github',

@@ -122,6 +122,29 @@ const router = createRouter({
                     path: 'analytics',
                     name: 'analytics',
                     component: () => import('../views/AnalyticsView.vue')
+                },
+                {
+                    path: 'upgrade',
+                    name: 'upgrade',
+                    component: () => import('../views/UpgradeMembershipView.vue')
+                }
+            ]
+        },
+        // 支付相关页面（独立布局）
+        {
+            path: '/payment',
+            children: [
+                {
+                    path: 'success',
+                    name: 'payment-success',
+                    component: () => import('../views/PaymentSuccessView.vue'),
+                    meta: { requiresAuth: true }
+                },
+                {
+                    path: 'cancel',
+                    name: 'payment-cancel',
+                    component: () => import('../views/PaymentCancelView.vue'),
+                    meta: { requiresAuth: true }
                 }
             ]
         }

@@ -30,6 +30,9 @@
           <router-link :to="{ name: 'my-classes' }" class="nav-item">
             <i class="fa-solid fa-users"></i> <span class="nav-text">我的班级</span>
           </router-link>
+          <router-link :to="{ name: 'upgrade' }" class="nav-item">
+            <i class="fa-solid fa-crown"></i> <span class="nav-text">订阅会员</span>
+          </router-link>
           <router-link :to="{ name: 'profile' }" class="nav-item">
             <i class="fa-solid fa-user"></i> <span class="nav-text">我的档案</span>
           </router-link>
@@ -92,6 +95,9 @@
               </router-link>
               <router-link :to="{ name: 'my-classes' }" class="mobile-nav-item" @click="closeMobileMenu">
                 <i class="fa-solid fa-users"></i> <span>我的班级</span>
+              </router-link>
+              <router-link :to="{ name: 'upgrade' }" class="mobile-nav-item" @click="closeMobileMenu">
+                <i class="fa-solid fa-crown"></i> <span>订阅会员</span>
               </router-link>
               <router-link :to="{ name: 'profile' }" class="mobile-nav-item" @click="closeMobileMenu">
                 <i class="fa-solid fa-user"></i> <span>我的档案</span>
