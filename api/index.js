@@ -117,10 +117,10 @@ __export(src_exports, {
 });
 module.exports = __toCommonJS(src_exports);
 var import_dotenv2 = __toESM(require("dotenv"));
-var import_express24 = __toESM(require("express"));
+var import_express28 = __toESM(require("express"));
 var import_cors = __toESM(require("cors"));
 var import_compression = __toESM(require("compression"));
-var import_mongoose17 = __toESM(require("mongoose"));
+var import_mongoose19 = __toESM(require("mongoose"));
 var import_passport2 = __toESM(require("passport"));
 var import_jsonwebtoken3 = __toESM(require("jsonwebtoken"));
 var import_path3 = __toESM(require("path"));
@@ -139,7 +139,8 @@ var UserSchema = new import_mongoose.Schema({
   // 默认不查询密码
   githubId: { type: String },
   qqId: { type: String },
-  avatarUrl: { type: String }
+  avatarUrl: { type: String },
+  role: { type: String, enum: ["student", "teacher", "admin"], default: "student" }
 }, {
   timestamps: true
 });
@@ -3619,6 +3620,29 @@ router13.put("/password", authMiddleware, async (req, res) => {
     res.status(500).json({ message: "\u4FEE\u6539\u5931\u8D25\uFF0C\u8BF7\u7A0D\u540E\u91CD\u8BD5" });
   }
 });
+router13.delete("/learning-data", authMiddleware, async (req, res) => {
+  try {
+    const userId = req.user?._id;
+    await StudySession_default.deleteMany({ userId });
+    await UserProgress_default.updateMany(
+      { userId },
+      {
+        status: "not_started",
+        masteryLevel: 0,
+        lastStudiedAt: null,
+        completedAt: null
+      }
+    );
+    console.log("\u7528\u6237\u6E05\u9664\u5B66\u4E60\u6570\u636E", { userId });
+    res.json({ message: "\u5B66\u4E60\u6570\u636E\u5DF2\u6E05\u9664" });
+  } catch (error) {
+    console.error("\u6E05\u9664\u5B66\u4E60\u6570\u636E\u5931\u8D25", error, {
+      userId: req.user?._id,
+      errorMessage: error.message
+    });
+    res.status(500).json({ message: "\u6E05\u9664\u5931\u8D25\uFF0C\u8BF7\u7A0D\u540E\u91CD\u8BD5" });
+  }
+});
 router13.get("/me/stats", authMiddleware, async (req, res) => {
   try {
     const userId = req.user?._id;
@@ -3646,8 +3670,8 @@ router13.get("/me/stats", authMiddleware, async (req, res) => {
       })
     );
     const totalUsers = allUsersStats.length;
-    const betterThanCount = allUsersStats.filter((p) => p < points).length;
-    const rankPercentage = totalUsers > 0 ? Math.round(betterThanCount / totalUsers * 100) : 0;
+    const betterThanCount = allUsersStats.filter((p) => p > points).length;
+    const rankPercentage = totalUsers > 1 ? Math.round(betterThanCount / (totalUsers - 1) * 100) : 0;
     const lastMonthStart = /* @__PURE__ */ new Date();
     lastMonthStart.setMonth(lastMonthStart.getMonth() - 1);
     lastMonthStart.setDate(1);
@@ -3694,7 +3718,7 @@ router13.get("/me/stats", authMiddleware, async (req, res) => {
       },
       ranking: {
         percentage: rankPercentage,
-        display: `Top ${100 - rankPercentage}%`,
+        display: `Top ${rankPercentage}%`,
         change: 0
         // TODO: 实现排名的月度对比
       }
@@ -5149,7 +5173,8 @@ function generateInviteCode() {
 router19.post("/", authMiddleware, async (req, res) => {
   try {
     const { name, description, subject, grade, semester, settings } = req.body;
-    const userId = req.user.userId;
+    const authUser = req.user;
+    const userId = authUser._id.toString();
     const user = await User_default.findById(userId);
     if (!user || user.role !== "teacher") {
       return res.status(403).json({ error: "\u53EA\u6709\u6559\u5E08\u53EF\u4EE5\u521B\u5EFA\u73ED\u7EA7" });
@@ -5179,7 +5204,8 @@ router19.post("/", authMiddleware, async (req, res) => {
 });
 router19.get("/my", authMiddleware, async (req, res) => {
   try {
-    const userId = req.user.userId;
+    const authUser = req.user;
+    const userId = authUser._id.toString();
     const user = await User_default.findById(userId);
     if (!user) {
       return res.status(404).json({ error: "\u7528\u6237\u4E0D\u5B58\u5728" });
@@ -5203,10 +5229,38 @@ router19.get("/my", authMiddleware, async (req, res) => {
     res.status(500).json({ error: "\u83B7\u53D6\u73ED\u7EA7\u5217\u8868\u5931\u8D25" });
   }
 });
+router19.get("/joined", authMiddleware, async (req, res) => {
+  try {
+    const authUser = req.user;
+    const userId = authUser._id.toString();
+    const classes = await Class_default.find({
+      "students.userId": userId,
+      "students.status": "active",
+      status: "active"
+    }).populate("teacherId", "username email avatarUrl").sort({ createdAt: -1 });
+    const classesWithJoinTime = classes.map((cls) => {
+      const classObj = cls.toObject();
+      const studentInfo = cls.students.find(
+        (s) => s.userId.toString() === userId && s.status === "active"
+      );
+      return {
+        ...classObj,
+        teacher: classObj.teacherId,
+        // 重命名字段
+        joinedAt: studentInfo?.joinedAt
+      };
+    });
+    res.json(classesWithJoinTime);
+  } catch (error) {
+    console.error("\u83B7\u53D6\u5DF2\u52A0\u5165\u73ED\u7EA7\u5931\u8D25:", error);
+    res.status(500).json({ error: "\u83B7\u53D6\u5DF2\u52A0\u5165\u73ED\u7EA7\u5931\u8D25" });
+  }
+});
 router19.get("/:classId", authMiddleware, async (req, res) => {
   try {
     const { classId } = req.params;
-    const userId = req.user.userId;
+    const authUser = req.user;
+    const userId = authUser._id.toString();
     const classInfo = await Class_default.findById(classId);
     if (!classInfo) {
       return res.status(404).json({ error: "\u73ED\u7EA7\u4E0D\u5B58\u5728" });
@@ -5227,7 +5281,8 @@ router19.get("/:classId", authMiddleware, async (req, res) => {
 router19.put("/:classId", authMiddleware, async (req, res) => {
   try {
     const { classId } = req.params;
-    const userId = req.user.userId;
+    const authUser = req.user;
+    const userId = authUser._id.toString();
     const updates = req.body;
     const classInfo = await Class_default.findById(classId);
     if (!classInfo) {
@@ -5249,10 +5304,11 @@ router19.put("/:classId", authMiddleware, async (req, res) => {
     res.status(500).json({ error: "\u66F4\u65B0\u73ED\u7EA7\u5931\u8D25" });
   }
 });
-router19.post("/join/:inviteCode", authMiddleware, async (req, res) => {
+router19.post("/join", authMiddleware, async (req, res) => {
   try {
-    const { inviteCode } = req.params;
-    const userId = req.user.userId;
+    const inviteCode = req.body.inviteCode;
+    const authUser = req.user;
+    const userId = authUser._id.toString();
     const user = await User_default.findById(userId);
     if (!user) {
       return res.status(404).json({ error: "\u7528\u6237\u4E0D\u5B58\u5728" });
@@ -5289,7 +5345,8 @@ router19.post("/join/:inviteCode", authMiddleware, async (req, res) => {
 router19.delete("/:classId/students/:studentId", authMiddleware, async (req, res) => {
   try {
     const { classId, studentId } = req.params;
-    const userId = req.user.userId;
+    const authUser = req.user;
+    const userId = authUser._id.toString();
     const classInfo = await Class_default.findById(classId);
     if (!classInfo) {
       return res.status(404).json({ error: "\u73ED\u7EA7\u4E0D\u5B58\u5728" });
@@ -5314,7 +5371,8 @@ router19.delete("/:classId/students/:studentId", authMiddleware, async (req, res
 router19.post("/:classId/leave", authMiddleware, async (req, res) => {
   try {
     const { classId } = req.params;
-    const userId = req.user.userId;
+    const authUser = req.user;
+    const userId = authUser._id.toString();
     const classInfo = await Class_default.findById(classId);
     if (!classInfo) {
       return res.status(404).json({ error: "\u73ED\u7EA7\u4E0D\u5B58\u5728" });
@@ -5336,7 +5394,8 @@ router19.post("/:classId/leave", authMiddleware, async (req, res) => {
 router19.post("/:classId/archive", authMiddleware, async (req, res) => {
   try {
     const { classId } = req.params;
-    const userId = req.user.userId;
+    const authUser = req.user;
+    const userId = authUser._id.toString();
     const classInfo = await Class_default.findById(classId);
     if (!classInfo) {
       return res.status(404).json({ error: "\u73ED\u7EA7\u4E0D\u5B58\u5728" });
@@ -5355,7 +5414,8 @@ router19.post("/:classId/archive", authMiddleware, async (req, res) => {
 router19.get("/:classId/students/stats", authMiddleware, async (req, res) => {
   try {
     const { classId } = req.params;
-    const userId = req.user.userId;
+    const authUser = req.user;
+    const userId = authUser._id.toString();
     const classInfo = await Class_default.findById(classId);
     if (!classInfo) {
       return res.status(404).json({ error: "\u73ED\u7EA7\u4E0D\u5B58\u5728" });
@@ -5371,10 +5431,10 @@ router19.get("/:classId/students/stats", authMiddleware, async (req, res) => {
         const sessions = await StudySession2.find({ userId: student.userId });
         const totalTime = sessions.reduce((sum, s) => sum + (s.duration || 0), 0);
         const sessionCount = sessions.length;
-        const knowledgePoints = await KnowledgePoint2.find({ userId: student.userId });
-        const masteredCount = knowledgePoints.filter((kp) => kp.masteryLevel >= 80).length;
-        const totalKnowledge = knowledgePoints.length;
-        const avgScore = knowledgePoints.length > 0 ? knowledgePoints.reduce((sum, kp) => sum + kp.masteryLevel, 0) / knowledgePoints.length : 0;
+        const userProgress = await UserProgress_default.find({ userId: student.userId });
+        const masteredCount = userProgress.filter((up) => up.bestScore >= 80).length;
+        const totalKnowledge = userProgress.length;
+        const avgScore = userProgress.length > 0 ? userProgress.reduce((sum, up) => sum + up.bestScore, 0) / userProgress.length : 0;
         return {
           userId: student.userId,
           userName: student.userName,
@@ -5425,7 +5485,7 @@ var AssignmentSchema = new import_mongoose13.Schema({
   totalScore: { type: Number, required: true, default: 100 },
   passingScore: { type: Number, required: true, default: 60 },
   questions: [{
-    questionId: { type: import_mongoose13.Schema.Types.ObjectId, required: true },
+    questionId: { type: import_mongoose13.Schema.Types.ObjectId, ref: "Question", required: true },
     score: { type: Number, required: true }
   }],
   dueDate: { type: Date },
@@ -5466,6 +5526,71 @@ AssignmentSchema.index({ "submissions.userId": 1 });
 AssignmentSchema.index({ dueDate: 1 });
 var Assignment_default = import_mongoose13.default.model("Assignment", AssignmentSchema);
 
+// src/models/Notification.ts
+var import_mongoose14 = __toESM(require("mongoose"));
+var NotificationSchema = new import_mongoose14.Schema({
+  recipientId: {
+    type: import_mongoose14.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+    index: true
+  },
+  recipientType: {
+    type: String,
+    enum: ["student", "teacher", "all"],
+    default: "student"
+  },
+  senderId: {
+    type: import_mongoose14.Schema.Types.ObjectId,
+    ref: "User"
+  },
+  type: {
+    type: String,
+    enum: ["assignment", "grade", "class", "system", "announcement"],
+    required: true,
+    index: true
+  },
+  title: {
+    type: String,
+    required: true
+  },
+  content: {
+    type: String,
+    required: true
+  },
+  relatedId: {
+    type: import_mongoose14.Schema.Types.ObjectId
+  },
+  relatedType: {
+    type: String,
+    enum: ["assignment", "class", "submission"]
+  },
+  priority: {
+    type: String,
+    enum: ["low", "normal", "high", "urgent"],
+    default: "normal"
+  },
+  read: {
+    type: Boolean,
+    default: false,
+    index: true
+  },
+  readAt: {
+    type: Date
+  },
+  actionUrl: {
+    type: String
+  },
+  metadata: {
+    type: import_mongoose14.Schema.Types.Mixed
+  }
+}, {
+  timestamps: true
+});
+NotificationSchema.index({ recipientId: 1, read: 1, createdAt: -1 });
+NotificationSchema.index({ recipientId: 1, type: 1, createdAt: -1 });
+var Notification = import_mongoose14.default.model("Notification", NotificationSchema);
+
 // src/routes/assignment.ts
 var router20 = import_express20.default.Router();
 router20.post("/", authMiddleware, async (req, res) => {
@@ -5485,7 +5610,7 @@ router20.post("/", authMiddleware, async (req, res) => {
       duration,
       settings
     } = req.body;
-    const userId = req.user.userId;
+    const userId = req.user._id.toString();
     const classInfo = await Class_default.findById(classId);
     if (!classInfo) {
       return res.status(404).json({ error: "\u73ED\u7EA7\u4E0D\u5B58\u5728" });
@@ -5507,7 +5632,15 @@ router20.post("/", authMiddleware, async (req, res) => {
       dueDate,
       startDate,
       duration,
-      settings: settings || {},
+      settings: {
+        allowRetake: true,
+        // 默认允许重新提交
+        showAnswers: true,
+        showScore: true,
+        randomOrder: false,
+        ...settings
+        // 允许前端覆盖默认值
+      },
       submissions: []
     });
     await assignment.save();
@@ -5520,7 +5653,7 @@ router20.post("/", authMiddleware, async (req, res) => {
 router20.get("/class/:classId", authMiddleware, async (req, res) => {
   try {
     const { classId } = req.params;
-    const userId = req.user.userId;
+    const userId = req.user._id.toString();
     const { status } = req.query;
     const classInfo = await Class_default.findById(classId);
     if (!classInfo) {
@@ -5538,6 +5671,8 @@ router20.get("/class/:classId", authMiddleware, async (req, res) => {
       query.status = status;
     } else if (isStudent) {
       query.status = "published";
+    } else {
+      query.status = { $ne: "archived" };
     }
     const assignments = await Assignment_default.find(query).sort({ createdAt: -1 }).select("-submissions.answers");
     if (isStudent) {
@@ -5567,7 +5702,7 @@ router20.get("/class/:classId", authMiddleware, async (req, res) => {
 router20.get("/:assignmentId", authMiddleware, async (req, res) => {
   try {
     const { assignmentId } = req.params;
-    const userId = req.user.userId;
+    const userId = req.user._id.toString();
     const assignment = await Assignment_default.findById(assignmentId);
     if (!assignment) {
       return res.status(404).json({ error: "\u4F5C\u4E1A\u4E0D\u5B58\u5728" });
@@ -5595,7 +5730,7 @@ router20.get("/:assignmentId", authMiddleware, async (req, res) => {
 router20.put("/:assignmentId", authMiddleware, async (req, res) => {
   try {
     const { assignmentId } = req.params;
-    const userId = req.user.userId;
+    const userId = req.user._id.toString();
     const updates = req.body;
     const assignment = await Assignment_default.findById(assignmentId);
     if (!assignment) {
@@ -5633,7 +5768,7 @@ router20.put("/:assignmentId", authMiddleware, async (req, res) => {
 router20.post("/:assignmentId/publish", authMiddleware, async (req, res) => {
   try {
     const { assignmentId } = req.params;
-    const userId = req.user.userId;
+    const userId = req.user._id.toString();
     const assignment = await Assignment_default.findById(assignmentId);
     if (!assignment) {
       return res.status(404).json({ error: "\u4F5C\u4E1A\u4E0D\u5B58\u5728" });
@@ -5646,6 +5781,50 @@ router20.post("/:assignmentId/publish", authMiddleware, async (req, res) => {
     }
     assignment.status = "published";
     await assignment.save();
+    try {
+      const classDoc = await Class_default.findById(assignment.classId);
+      if (!classDoc) {
+        console.warn("\u26A0 \u672A\u627E\u5230\u73ED\u7EA7\uFF0C\u65E0\u6CD5\u53D1\u9001\u901A\u77E5");
+      } else {
+        const activeStudents = classDoc.students.filter((s) => s.status === "active").map((s) => s.userId);
+        console.log(`\u{1F4E2} \u51C6\u5907\u5411 ${activeStudents.length} \u540D\u5B66\u751F\u53D1\u9001\u4F5C\u4E1A\u901A\u77E5`);
+        if (activeStudents.length === 0) {
+          console.warn("\u26A0 \u73ED\u7EA7\u4E2D\u6CA1\u6709\u6D3B\u8DC3\u5B66\u751F");
+        } else {
+          const dueDate = assignment.dueDate ? new Date(assignment.dueDate) : null;
+          const dueDateStr = dueDate ? dueDate.toLocaleDateString("zh-CN", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit"
+          }) : "\u65E0\u622A\u6B62\u65F6\u95F4";
+          const notifications = activeStudents.map((studentId) => ({
+            recipientId: studentId,
+            recipientType: "student",
+            senderId: userId,
+            type: "assignment",
+            title: "\u65B0\u4F5C\u4E1A\u53D1\u5E03",
+            content: `${classDoc.name} \u53D1\u5E03\u4E86\u65B0\u4F5C\u4E1A\uFF1A${assignment.title}`,
+            priority: "normal",
+            relatedId: assignment._id,
+            relatedType: "assignment",
+            actionUrl: `/app/my-classes`,
+            metadata: {
+              assignmentTitle: assignment.title,
+              className: classDoc.name,
+              dueDate,
+              dueDateStr,
+              totalScore: assignment.totalScore
+            },
+            read: false
+          }));
+          const created = await Notification.insertMany(notifications);
+          console.log(`\u2705 \u6210\u529F\u521B\u5EFA ${created.length} \u6761\u901A\u77E5\u8BB0\u5F55`);
+          console.log(`\u{1F4E7} \u5DF2\u5411\u4EE5\u4E0B\u5B66\u751FID\u53D1\u9001\u901A\u77E5: ${activeStudents.slice(0, 3).join(", ")}${activeStudents.length > 3 ? "..." : ""}`);
+        }
+      }
+    } catch (notifError) {
+      console.error("\u274C \u521B\u5EFA\u901A\u77E5\u5931\u8D25:", notifError);
+    }
     res.json({ message: "\u4F5C\u4E1A\u5DF2\u53D1\u5E03", assignment });
   } catch (error) {
     console.error("\u53D1\u5E03\u4F5C\u4E1A\u5931\u8D25:", error);
@@ -5656,8 +5835,8 @@ router20.post("/:assignmentId/submit", authMiddleware, async (req, res) => {
   try {
     const { assignmentId } = req.params;
     const { answers, timeSpent } = req.body;
-    const userId = req.user.userId;
-    const assignment = await Assignment_default.findById(assignmentId);
+    const userId = req.user._id.toString();
+    const assignment = await Assignment_default.findById(assignmentId).populate("questions.questionId");
     if (!assignment) {
       return res.status(404).json({ error: "\u4F5C\u4E1A\u4E0D\u5B58\u5728" });
     }
@@ -5690,12 +5869,48 @@ router20.post("/:assignmentId/submit", authMiddleware, async (req, res) => {
       return res.status(400).json({ error: "\u5DF2\u8FBE\u5230\u6700\u5927\u63D0\u4EA4\u6B21\u6570" });
     }
     let score = 0;
-    answers.forEach((answer, index) => {
-      if (assignment.questions[index]) {
-        if (answer.isCorrect) {
-          score += assignment.questions[index].score;
-        }
+    const processedAnswers = answers.map((answer, index) => {
+      const assignmentQuestion = assignment.questions.find(
+        (q) => q.questionId._id.toString() === answer.questionId.toString()
+      );
+      if (!assignmentQuestion) {
+        return {
+          questionIndex: index,
+          questionId: answer.questionId,
+          answer: answer.answer,
+          isCorrect: false,
+          score: 0
+        };
       }
+      const question = assignmentQuestion.questionId;
+      const correctAnswer = question.correctAnswer;
+      const studentAnswer = answer.answer;
+      let isCorrect = false;
+      let earnedScore = 0;
+      if (question.type === "multiple") {
+        const studentAns = Array.isArray(studentAnswer) ? [...studentAnswer].sort() : [];
+        const correctAns = Array.isArray(correctAnswer) ? [...correctAnswer].sort() : [];
+        isCorrect = JSON.stringify(studentAns) === JSON.stringify(correctAns);
+      } else if (question.type === "single" || question.type === "truefalse") {
+        console.log(`[\u5224\u65AD\u9898\u8C03\u8BD5] \u9898\u76EE: ${question.title}`);
+        console.log(`[\u5224\u65AD\u9898\u8C03\u8BD5] \u5B66\u751F\u7B54\u6848:`, studentAnswer, `\u7C7B\u578B: ${typeof studentAnswer}`);
+        console.log(`[\u5224\u65AD\u9898\u8C03\u8BD5] \u6B63\u786E\u7B54\u6848:`, correctAnswer, `\u7C7B\u578B: ${typeof correctAnswer}`);
+        isCorrect = studentAnswer === correctAnswer;
+        console.log(`[\u5224\u65AD\u9898\u8C03\u8BD5] \u662F\u5426\u6B63\u786E:`, isCorrect);
+      } else if (question.type === "short" || question.type === "essay") {
+        isCorrect = false;
+      }
+      if (isCorrect) {
+        earnedScore = assignmentQuestion.score;
+        score += earnedScore;
+      }
+      return {
+        questionIndex: index,
+        questionId: answer.questionId,
+        answer: studentAnswer,
+        isCorrect,
+        score: earnedScore
+      };
     });
     const user = await User_default.findById(userId);
     if (!user) {
@@ -5708,7 +5923,7 @@ router20.post("/:assignmentId/submit", authMiddleware, async (req, res) => {
       userName: user.username,
       submittedAt: /* @__PURE__ */ new Date(),
       score,
-      answers,
+      answers: processedAnswers,
       timeSpent: timeSpent || 0,
       attempt: previousSubmissions.length + 1,
       status: submissionStatus
@@ -5726,10 +5941,74 @@ router20.post("/:assignmentId/submit", authMiddleware, async (req, res) => {
     res.status(500).json({ error: "\u63D0\u4EA4\u4F5C\u4E1A\u5931\u8D25" });
   }
 });
+router20.get("/:assignmentId/my-submission", authMiddleware, async (req, res) => {
+  try {
+    const { assignmentId } = req.params;
+    const userId = req.user._id.toString();
+    const userRole = req.user.role;
+    if (userRole !== "student") {
+      return res.status(403).json({ error: "\u53EA\u6709\u5B66\u751F\u53EF\u4EE5\u67E5\u770B\u81EA\u5DF1\u7684\u63D0\u4EA4" });
+    }
+    const assignment = await Assignment_default.findById(assignmentId).populate("questions.questionId");
+    if (!assignment) {
+      return res.status(404).json({ error: "\u4F5C\u4E1A\u4E0D\u5B58\u5728" });
+    }
+    const mySubmissions = assignment.submissions.filter(
+      (s) => s.userId.toString() === userId
+    ).sort((a, b) => b.submittedAt.getTime() - a.submittedAt.getTime());
+    if (mySubmissions.length === 0) {
+      return res.status(404).json({ error: "\u8FD8\u6CA1\u6709\u63D0\u4EA4\u8BB0\u5F55" });
+    }
+    const submissionsData = mySubmissions.map((submission, index) => {
+      const questionResults = assignment.questions.map((q, qIndex) => {
+        const question = q.questionId;
+        const answer = submission.answers.find(
+          (ans) => ans.questionId?.toString() === question?._id?.toString()
+        );
+        return {
+          questionIndex: qIndex + 1,
+          questionTitle: question?.title || "",
+          questionType: question?.type || "",
+          score: answer?.score || 0,
+          maxScore: q.score,
+          isCorrect: answer?.isCorrect || false,
+          userAnswer: assignment.settings.showAnswers ? answer?.answer : void 0,
+          correctAnswer: assignment.settings.showAnswers ? question?.correctAnswer : void 0
+        };
+      });
+      return {
+        attempt: submission.attempt,
+        submittedAt: submission.submittedAt,
+        score: submission.score,
+        totalScore: assignment.totalScore,
+        timeSpent: submission.timeSpent,
+        status: submission.status,
+        isPassed: submission.score >= assignment.passingScore,
+        isLatest: index === 0,
+        questionResults: assignment.settings.showAnswers ? questionResults : void 0
+      };
+    });
+    res.json({
+      assignmentId,
+      assignmentTitle: assignment.title,
+      assignmentType: assignment.type,
+      passingScore: assignment.passingScore,
+      totalScore: assignment.totalScore,
+      allowRetake: assignment.settings.allowRetake,
+      maxAttempts: assignment.settings.maxAttempts,
+      showAnswers: assignment.settings.showAnswers,
+      showScore: assignment.settings.showScore,
+      submissions: submissionsData
+    });
+  } catch (error) {
+    console.error("\u83B7\u53D6\u63D0\u4EA4\u8BE6\u60C5\u5931\u8D25:", error);
+    res.status(500).json({ error: "\u83B7\u53D6\u63D0\u4EA4\u8BE6\u60C5\u5931\u8D25" });
+  }
+});
 router20.get("/:assignmentId/submissions/stats", authMiddleware, async (req, res) => {
   try {
     const { assignmentId } = req.params;
-    const userId = req.user.userId;
+    const userId = req.user._id.toString();
     const assignment = await Assignment_default.findById(assignmentId);
     if (!assignment) {
       return res.status(404).json({ error: "\u4F5C\u4E1A\u4E0D\u5B58\u5728" });
@@ -5772,6 +6051,7 @@ router20.get("/:assignmentId/submissions/stats", authMiddleware, async (req, res
       passRate: Math.round(passRate * 100) / 100,
       scoreRanges,
       submissions: assignment.submissions.map((s) => ({
+        _id: s._id,
         userId: s.userId,
         userName: s.userName,
         submittedAt: s.submittedAt,
@@ -5786,10 +6066,106 @@ router20.get("/:assignmentId/submissions/stats", authMiddleware, async (req, res
     res.status(500).json({ error: "\u83B7\u53D6\u63D0\u4EA4\u7EDF\u8BA1\u5931\u8D25" });
   }
 });
+router20.get("/submission/:submissionId", authMiddleware, async (req, res) => {
+  try {
+    const { submissionId } = req.params;
+    const userId = req.user._id.toString();
+    const assignment = await Assignment_default.findOne({
+      "submissions._id": submissionId
+    });
+    if (!assignment) {
+      return res.status(404).json({ error: "\u63D0\u4EA4\u8BB0\u5F55\u4E0D\u5B58\u5728" });
+    }
+    if (assignment.teacherId.toString() !== userId) {
+      return res.status(403).json({ error: "\u65E0\u6743\u8BBF\u95EE" });
+    }
+    const submission = assignment.submissions.find(
+      (s) => s._id.toString() === submissionId
+    );
+    if (!submission) {
+      return res.status(404).json({ error: "\u63D0\u4EA4\u8BB0\u5F55\u4E0D\u5B58\u5728" });
+    }
+    const questionsWithAnswers = assignment.questions.map((question, index) => {
+      const studentAnswer = submission.answers.find((a) => a.questionIndex === index);
+      return {
+        ...question.toObject(),
+        studentAnswer: studentAnswer?.answer,
+        correctAnswer: question.correctAnswer
+      };
+    });
+    res.json({
+      _id: submission._id,
+      // 添加_id字段，保持与前端一致
+      submissionId: submission._id,
+      studentId: submission.userId,
+      studentName: submission.userName,
+      submittedAt: submission.submittedAt,
+      score: submission.score,
+      status: submission.status,
+      attempt: submission.attempt,
+      timeSpent: submission.timeSpent,
+      feedback: submission.feedback,
+      answers: submission.answers,
+      assignmentId: assignment._id,
+      // 添加assignmentId字段
+      questions: questionsWithAnswers,
+      // 添加合并后的题目数组
+      assignment: {
+        id: assignment._id,
+        title: assignment.title,
+        questions: assignment.questions
+      }
+    });
+  } catch (error) {
+    console.error("\u83B7\u53D6\u63D0\u4EA4\u8BE6\u60C5\u5931\u8D25:", error);
+    res.status(500).json({ error: "\u83B7\u53D6\u63D0\u4EA4\u8BE6\u60C5\u5931\u8D25" });
+  }
+});
+router20.post("/submission/:submissionId/grade", authMiddleware, async (req, res) => {
+  try {
+    const { submissionId } = req.params;
+    const { score, feedback } = req.body;
+    const userId = req.user._id.toString();
+    if (typeof score !== "number" || score < 0 || score > 100) {
+      return res.status(400).json({ error: "\u5206\u6570\u5FC5\u987B\u57280-100\u4E4B\u95F4" });
+    }
+    const assignment = await Assignment_default.findOne({
+      "submissions._id": submissionId
+    });
+    if (!assignment) {
+      return res.status(404).json({ error: "\u63D0\u4EA4\u8BB0\u5F55\u4E0D\u5B58\u5728" });
+    }
+    if (assignment.teacherId.toString() !== userId) {
+      return res.status(403).json({ error: "\u65E0\u6743\u6279\u6539\u6B64\u4F5C\u4E1A" });
+    }
+    const submission = assignment.submissions.find(
+      (s) => s._id.toString() === submissionId
+    );
+    if (!submission) {
+      return res.status(404).json({ error: "\u63D0\u4EA4\u8BB0\u5F55\u4E0D\u5B58\u5728" });
+    }
+    submission.score = score;
+    submission.feedback = feedback || "";
+    submission.status = "graded";
+    await assignment.save();
+    res.json({
+      message: "\u6279\u6539\u6210\u529F",
+      submission: {
+        id: submission._id,
+        score: submission.score,
+        feedback: submission.feedback,
+        status: submission.status
+      }
+    });
+  } catch (error) {
+    console.error("\u6279\u6539\u4F5C\u4E1A\u5931\u8D25:", error);
+    res.status(500).json({ error: "\u6279\u6539\u4F5C\u4E1A\u5931\u8D25" });
+  }
+});
 router20.delete("/:assignmentId", authMiddleware, async (req, res) => {
   try {
     const { assignmentId } = req.params;
-    const userId = req.user.userId;
+    const userId = req.user._id.toString();
     const assignment = await Assignment_default.findById(assignmentId);
     if (!assignment) {
       return res.status(404).json({ error: "\u4F5C\u4E1A\u4E0D\u5B58\u5728" });
@@ -5818,7 +6194,7 @@ init_StudySession();
 var router21 = import_express21.default.Router();
 router21.get("/time-distribution", authMiddleware, async (req, res) => {
   try {
-    const userId = req.user.userId;
+    const userId = req.user._id;
     const { period = "7d" } = req.query;
     const now = /* @__PURE__ */ new Date();
     let startDate = /* @__PURE__ */ new Date();
@@ -5876,8 +6252,8 @@ router21.get("/time-distribution", authMiddleware, async (req, res) => {
 });
 router21.get("/knowledge-mastery", authMiddleware, async (req, res) => {
   try {
-    const userId = req.user.userId;
-    const knowledgePoints = await KnowledgePoint_default.find({ userId });
+    const userId = req.user._id;
+    const userProgress = await UserProgress_default.find({ userId }).populate("pointId");
     const masteryDistribution = {
       expert: 0,
       // 90-100
@@ -5890,8 +6266,8 @@ router21.get("/knowledge-mastery", authMiddleware, async (req, res) => {
       novice: 0
       // 0-29
     };
-    knowledgePoints.forEach((kp) => {
-      const level = kp.masteryLevel;
+    userProgress.forEach((up) => {
+      const level = up.bestScore;
       if (level >= 90) masteryDistribution.expert++;
       else if (level >= 70) masteryDistribution.proficient++;
       else if (level >= 50) masteryDistribution.intermediate++;
@@ -5899,8 +6275,9 @@ router21.get("/knowledge-mastery", authMiddleware, async (req, res) => {
       else masteryDistribution.novice++;
     });
     const subjectStats = {};
-    knowledgePoints.forEach((kp) => {
-      const subject = kp.subject || "\u672A\u5206\u7C7B";
+    for (const up of userProgress) {
+      const kp = await KnowledgePoint_default.findOne({ id: up.pointId });
+      const subject = kp?.subject || "\u672A\u5206\u7C7B";
       if (!subjectStats[subject]) {
         subjectStats[subject] = {
           total: 0,
@@ -5910,19 +6287,20 @@ router21.get("/knowledge-mastery", authMiddleware, async (req, res) => {
         };
       }
       subjectStats[subject].total++;
-      subjectStats[subject].totalMastery += kp.masteryLevel;
-      if (kp.masteryLevel >= 80) {
+      subjectStats[subject].totalMastery += up.bestScore;
+      if (up.bestScore >= 80) {
         subjectStats[subject].mastered++;
       }
-    });
+    }
     Object.keys(subjectStats).forEach((subject) => {
       const stats = subjectStats[subject];
       stats.avgMastery = Math.round(stats.totalMastery / stats.total);
       delete stats.totalMastery;
     });
     const difficultyStats = {};
-    knowledgePoints.forEach((kp) => {
-      const difficulty = kp.difficulty || "medium";
+    for (const up of userProgress) {
+      const kp = await KnowledgePoint_default.findOne({ id: up.pointId });
+      const difficulty = kp?.difficulty || 3;
       if (!difficultyStats[difficulty]) {
         difficultyStats[difficulty] = {
           total: 0,
@@ -5932,11 +6310,11 @@ router21.get("/knowledge-mastery", authMiddleware, async (req, res) => {
         };
       }
       difficultyStats[difficulty].total++;
-      difficultyStats[difficulty].totalMastery += kp.masteryLevel;
-      if (kp.masteryLevel >= 80) {
+      difficultyStats[difficulty].totalMastery += up.bestScore;
+      if (up.bestScore >= 80) {
         difficultyStats[difficulty].mastered++;
       }
-    });
+    }
     Object.keys(difficultyStats).forEach((difficulty) => {
       const stats = difficultyStats[difficulty];
       stats.avgMastery = Math.round(stats.totalMastery / stats.total);
@@ -5949,12 +6327,12 @@ router21.get("/knowledge-mastery", authMiddleware, async (req, res) => {
         ...stats
       })),
       byDifficulty: Object.entries(difficultyStats).map(([difficulty, stats]) => ({
-        difficulty,
-        difficultyName: difficulty === "easy" ? "\u7B80\u5355" : difficulty === "medium" ? "\u4E2D\u7B49" : "\u56F0\u96BE",
+        difficulty: Number(difficulty),
+        difficultyName: Number(difficulty) <= 2 ? "\u7B80\u5355" : Number(difficulty) <= 3 ? "\u4E2D\u7B49" : "\u56F0\u96BE",
         ...stats
       })),
-      total: knowledgePoints.length,
-      avgMastery: knowledgePoints.length > 0 ? Math.round(knowledgePoints.reduce((sum, kp) => sum + kp.masteryLevel, 0) / knowledgePoints.length) : 0
+      total: userProgress.length,
+      avgMastery: userProgress.length > 0 ? Math.round(userProgress.reduce((sum, up) => sum + up.bestScore, 0) / userProgress.length) : 0
     });
   } catch (error) {
     console.error("\u83B7\u53D6\u77E5\u8BC6\u70B9\u638C\u63E1\u5EA6\u5931\u8D25:", error);
@@ -5963,8 +6341,8 @@ router21.get("/knowledge-mastery", authMiddleware, async (req, res) => {
 });
 router21.get("/ability-radar", authMiddleware, async (req, res) => {
   try {
-    const userId = req.user.userId;
-    const knowledgePoints = await KnowledgePoint_default.find({ userId });
+    const userId = req.user._id;
+    const userProgress = await UserProgress_default.find({ userId });
     const sessions = await StudySession_default.find({ userId });
     const wrongQuestions = await WrongQuestion_default.find({ userId });
     const abilities = {
@@ -5981,14 +6359,15 @@ router21.get("/ability-radar", authMiddleware, async (req, res) => {
       evaluation: 0
       // 评价力
     };
-    if (knowledgePoints.length > 0) {
-      const avgMastery = knowledgePoints.reduce((sum, kp) => sum + kp.masteryLevel, 0) / knowledgePoints.length;
+    if (userProgress.length > 0) {
+      const avgMastery = userProgress.reduce((sum, up) => sum + up.bestScore, 0) / userProgress.length;
       abilities.memory = Math.min(100, avgMastery);
-      const avgReviewCount = knowledgePoints.reduce((sum, kp) => sum + kp.reviewCount, 0) / knowledgePoints.length;
-      abilities.understanding = Math.min(100, avgMastery * 0.7 + Math.min(avgReviewCount * 5, 30));
-      const practiceRate = sessions.length / knowledgePoints.length;
+      const avgAttempts = userProgress.reduce((sum, up) => sum + up.quizAttempts, 0) / userProgress.length;
+      abilities.understanding = Math.min(100, avgMastery * 0.7 + Math.min(avgAttempts * 5, 30));
+      const practiceRate = sessions.length / userProgress.length;
       abilities.application = Math.min(100, avgMastery * 0.6 + Math.min(practiceRate * 20, 40));
-      const wrongRate = wrongQuestions.length > 0 ? wrongQuestions.filter((wq) => wq.correctedCount > 0).length / wrongQuestions.length : 0.5;
+      const masteredWrong = wrongQuestions.filter((wq) => wq.mastered).length;
+      const wrongRate = wrongQuestions.length > 0 ? masteredWrong / wrongQuestions.length : 0.5;
       abilities.analysis = Math.min(100, avgMastery * 0.5 + wrongRate * 50);
       abilities.synthesis = Math.min(100, (abilities.memory + abilities.understanding + abilities.application) / 3);
       const recentSessions = sessions.filter((s) => {
@@ -6015,14 +6394,17 @@ router21.get("/ability-radar", authMiddleware, async (req, res) => {
 });
 router21.get("/learning-trend", authMiddleware, async (req, res) => {
   try {
-    const userId = req.user.userId;
+    const userId = req.user._id;
     const startDate = /* @__PURE__ */ new Date();
     startDate.setDate(startDate.getDate() - 90);
     const sessions = await StudySession_default.find({
       userId,
       createdAt: { $gte: startDate }
     }).sort({ createdAt: 1 });
-    const knowledgePoints = await KnowledgePoint_default.find({ userId });
+    const userProgress = await UserProgress_default.find({
+      userId,
+      createdAt: { $gte: startDate }
+    });
     const weeklyStats = {};
     sessions.forEach((session) => {
       const weekStart = new Date(session.createdAt);
@@ -6038,12 +6420,14 @@ router21.get("/learning-trend", authMiddleware, async (req, res) => {
       weeklyStats[weekKey].duration += session.duration || 0;
       weeklyStats[weekKey].sessionCount++;
     });
-    knowledgePoints.forEach((kp) => {
-      const weekStart = new Date(kp.createdAt);
-      weekStart.setDate(weekStart.getDate() - weekStart.getDay());
-      const weekKey = weekStart.toISOString().split("T")[0];
-      if (weeklyStats[weekKey]) {
-        weeklyStats[weekKey].knowledgeCount++;
+    userProgress.forEach((up) => {
+      if (up.createdAt) {
+        const weekStart = new Date(up.createdAt);
+        weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+        const weekKey = weekStart.toISOString().split("T")[0];
+        if (weeklyStats[weekKey]) {
+          weeklyStats[weekKey].knowledgeCount++;
+        }
       }
     });
     const trendData = Object.entries(weeklyStats).map(([week, stats]) => ({
@@ -6099,12 +6483,12 @@ router21.get("/learning-trend", authMiddleware, async (req, res) => {
 });
 router21.get("/wrong-questions-analysis", authMiddleware, async (req, res) => {
   try {
-    const userId = req.user.userId;
-    const wrongQuestions = await WrongQuestion_default.find({ userId }).populate("knowledgePointId", "title subject");
+    const userId = req.user._id;
+    const wrongQuestions = await WrongQuestion_default.find({ userId });
     const byKnowledge = {};
-    wrongQuestions.forEach((wq) => {
-      const kpId = wq.knowledgePointId?._id?.toString() || "unknown";
-      const kpTitle = wq.knowledgePointId?.title || "\u672A\u77E5\u77E5\u8BC6\u70B9";
+    for (const wq of wrongQuestions) {
+      const kpId = wq.pointId || "unknown";
+      const kpTitle = wq.pointTitle || "\u672A\u77E5\u77E5\u8BC6\u70B9";
       if (!byKnowledge[kpId]) {
         byKnowledge[kpId] = {
           knowledgePoint: kpTitle,
@@ -6115,11 +6499,11 @@ router21.get("/wrong-questions-analysis", authMiddleware, async (req, res) => {
         };
       }
       byKnowledge[kpId].count++;
-      if (wq.correctedCount > 0) {
+      if (wq.mastered) {
         byKnowledge[kpId].corrected++;
       }
-      byKnowledge[kpId].totalAttempts += wq.attemptCount;
-    });
+      byKnowledge[kpId].totalAttempts += wq.retryCount;
+    }
     Object.keys(byKnowledge).forEach((kpId) => {
       const stats = byKnowledge[kpId];
       stats.avgAttempts = stats.count > 0 ? Math.round(stats.totalAttempts / stats.count * 10) / 10 : 0;
@@ -6128,7 +6512,7 @@ router21.get("/wrong-questions-analysis", authMiddleware, async (req, res) => {
     });
     const byType = {};
     wrongQuestions.forEach((wq) => {
-      const type = wq.questionType || "unknown";
+      const type = wq.type || "unknown";
       byType[type] = (byType[type] || 0) + 1;
     });
     const last30Days = /* @__PURE__ */ new Date();
@@ -6136,12 +6520,12 @@ router21.get("/wrong-questions-analysis", authMiddleware, async (req, res) => {
     const recentWrong = wrongQuestions.filter((wq) => wq.createdAt >= last30Days);
     res.json({
       total: wrongQuestions.length,
-      corrected: wrongQuestions.filter((wq) => wq.correctedCount > 0).length,
-      correctionRate: wrongQuestions.length > 0 ? Math.round(wrongQuestions.filter((wq) => wq.correctedCount > 0).length / wrongQuestions.length * 100) : 0,
+      corrected: wrongQuestions.filter((wq) => wq.mastered).length,
+      correctionRate: wrongQuestions.length > 0 ? Math.round(wrongQuestions.filter((wq) => wq.mastered).length / wrongQuestions.length * 100) : 0,
       byKnowledge: Object.entries(byKnowledge).map(([_, stats]) => stats).sort((a, b) => b.count - a.count).slice(0, 10),
       byType: Object.entries(byType).map(([type, count]) => ({
         type,
-        typeName: type === "single" ? "\u5355\u9009" : type === "multiple" ? "\u591A\u9009" : type === "judge" ? "\u5224\u65AD" : "\u5176\u4ED6",
+        typeName: type === "single" ? "\u5355\u9009" : type === "multiple" ? "\u591A\u9009" : type === "boolean" ? "\u5224\u65AD" : "\u5176\u4ED6",
         count
       })),
       recentTrend: {
@@ -6156,13 +6540,13 @@ router21.get("/wrong-questions-analysis", authMiddleware, async (req, res) => {
 });
 router21.get("/comprehensive-report", authMiddleware, async (req, res) => {
   try {
-    const userId = req.user.userId;
+    const userId = req.user._id;
     const user = await User_default.findById(userId);
-    const knowledgePoints = await KnowledgePoint_default.find({ userId });
+    const userProgress = await UserProgress_default.find({ userId });
     const sessions = await StudySession_default.find({ userId });
     const wrongQuestions = await WrongQuestion_default.find({ userId });
     const totalDuration = sessions.reduce((sum, s) => sum + (s.duration || 0), 0);
-    const avgMastery = knowledgePoints.length > 0 ? knowledgePoints.reduce((sum, kp) => sum + kp.masteryLevel, 0) / knowledgePoints.length : 0;
+    const avgMastery = userProgress.length > 0 ? userProgress.reduce((sum, up) => sum + up.bestScore, 0) / userProgress.length : 0;
     const last7Days = /* @__PURE__ */ new Date();
     last7Days.setDate(last7Days.getDate() - 7);
     const recentSessions = sessions.filter((s) => s.createdAt >= last7Days);
@@ -6189,8 +6573,8 @@ router21.get("/comprehensive-report", authMiddleware, async (req, res) => {
         joinDate: user?.createdAt
       },
       overview: {
-        totalKnowledge: knowledgePoints.length,
-        masteredKnowledge: knowledgePoints.filter((kp) => kp.masteryLevel >= 80).length,
+        totalKnowledge: userProgress.length,
+        masteredKnowledge: userProgress.filter((up) => up.bestScore >= 80).length,
         avgMastery: Math.round(avgMastery),
         totalDuration,
         totalSessions: sessions.length,
@@ -6219,9 +6603,9 @@ var analytics_advanced_default = router21;
 var import_express22 = __toESM(require("express"));
 
 // src/models/Membership.ts
-var import_mongoose14 = __toESM(require("mongoose"));
-var MembershipSchema = new import_mongoose14.Schema({
-  userId: { type: import_mongoose14.Schema.Types.ObjectId, ref: "User", required: true, unique: true },
+var import_mongoose15 = __toESM(require("mongoose"));
+var MembershipSchema = new import_mongoose15.Schema({
+  userId: { type: import_mongoose15.Schema.Types.ObjectId, ref: "User", required: true, unique: true },
   tier: {
     type: String,
     enum: ["free", "basic", "premium", "enterprise"],
@@ -6309,12 +6693,12 @@ MembershipSchema.statics.getTierFeatures = function(tier) {
   };
   return features[tier] || features.free;
 };
-var Membership_default = import_mongoose14.default.model("Membership", MembershipSchema);
+var Membership_default = import_mongoose15.default.model("Membership", MembershipSchema);
 
 // src/models/Points.ts
-var import_mongoose15 = __toESM(require("mongoose"));
-var PointsSchema = new import_mongoose15.Schema({
-  userId: { type: import_mongoose15.Schema.Types.ObjectId, ref: "User", required: true, unique: true },
+var import_mongoose16 = __toESM(require("mongoose"));
+var PointsSchema = new import_mongoose16.Schema({
+  userId: { type: import_mongoose16.Schema.Types.ObjectId, ref: "User", required: true, unique: true },
   balance: { type: Number, default: 0 },
   totalEarned: { type: Number, default: 0 },
   totalSpent: { type: Number, default: 0 },
@@ -6330,7 +6714,7 @@ var PointsSchema = new import_mongoose15.Schema({
     amount: { type: Number, required: true },
     reason: { type: String, required: true },
     description: { type: String },
-    relatedId: { type: import_mongoose15.Schema.Types.ObjectId },
+    relatedId: { type: import_mongoose16.Schema.Types.ObjectId },
     relatedType: { type: String },
     createdAt: { type: Date, default: Date.now }
   }]
@@ -6393,7 +6777,7 @@ PointsSchema.methods.spendPoints = function(amount, reason, description) {
   });
   return this.save();
 };
-var Points_default = import_mongoose15.default.model("Points", PointsSchema);
+var Points_default = import_mongoose16.default.model("Points", PointsSchema);
 
 // src/routes/membership.ts
 var router22 = import_express22.default.Router();
@@ -6898,6 +7282,1026 @@ router23.get("/shop", authMiddleware, async (req, res) => {
 });
 var points_default = router23;
 
+// src/routes/notification.ts
+var import_express24 = __toESM(require("express"));
+var router24 = import_express24.default.Router();
+router24.get("/my", authMiddleware, async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { page = 1, limit = 20, unreadOnly = false, type } = req.query;
+    const query = { recipientId: userId };
+    if (unreadOnly === "true") {
+      query.read = false;
+    }
+    if (type) {
+      query.type = type;
+    }
+    const skip = (Number(page) - 1) * Number(limit);
+    const [notifications, total, unreadCount] = await Promise.all([
+      Notification.find(query).sort({ createdAt: -1 }).skip(skip).limit(Number(limit)).populate("senderId", "username avatarUrl").lean(),
+      Notification.countDocuments(query),
+      Notification.countDocuments({ recipientId: userId, read: false })
+    ]);
+    res.json({
+      notifications,
+      total,
+      unreadCount,
+      page: Number(page),
+      limit: Number(limit),
+      totalPages: Math.ceil(total / Number(limit))
+    });
+  } catch (error) {
+    console.error("\u83B7\u53D6\u901A\u77E5\u5931\u8D25:", error);
+    res.status(500).json({ error: "\u83B7\u53D6\u901A\u77E5\u5931\u8D25" });
+  }
+});
+router24.get("/unread-count", authMiddleware, async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const count = await Notification.countDocuments({
+      recipientId: userId,
+      read: false
+    });
+    res.json({ count });
+  } catch (error) {
+    console.error("\u83B7\u53D6\u672A\u8BFB\u6570\u91CF\u5931\u8D25:", error);
+    res.status(500).json({ error: "\u83B7\u53D6\u672A\u8BFB\u6570\u91CF\u5931\u8D25" });
+  }
+});
+router24.put("/:notificationId/read", authMiddleware, async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { notificationId } = req.params;
+    const notification = await Notification.findOneAndUpdate(
+      { _id: notificationId, recipientId: userId },
+      { read: true, readAt: /* @__PURE__ */ new Date() },
+      { new: true }
+    );
+    if (!notification) {
+      return res.status(404).json({ error: "\u901A\u77E5\u4E0D\u5B58\u5728" });
+    }
+    res.json(notification);
+  } catch (error) {
+    console.error("\u6807\u8BB0\u5DF2\u8BFB\u5931\u8D25:", error);
+    res.status(500).json({ error: "\u6807\u8BB0\u5DF2\u8BFB\u5931\u8D25" });
+  }
+});
+router24.put("/mark-all-read", authMiddleware, async (req, res) => {
+  try {
+    const userId = req.user._id;
+    await Notification.updateMany(
+      { recipientId: userId, read: false },
+      { read: true, readAt: /* @__PURE__ */ new Date() }
+    );
+    res.json({ message: "\u6240\u6709\u901A\u77E5\u5DF2\u6807\u8BB0\u4E3A\u5DF2\u8BFB" });
+  } catch (error) {
+    console.error("\u6807\u8BB0\u5168\u90E8\u5DF2\u8BFB\u5931\u8D25:", error);
+    res.status(500).json({ error: "\u6807\u8BB0\u5168\u90E8\u5DF2\u8BFB\u5931\u8D25" });
+  }
+});
+router24.delete("/:notificationId", authMiddleware, async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { notificationId } = req.params;
+    const notification = await Notification.findOneAndDelete({
+      _id: notificationId,
+      recipientId: userId
+    });
+    if (!notification) {
+      return res.status(404).json({ error: "\u901A\u77E5\u4E0D\u5B58\u5728" });
+    }
+    res.json({ message: "\u901A\u77E5\u5DF2\u5220\u9664" });
+  } catch (error) {
+    console.error("\u5220\u9664\u901A\u77E5\u5931\u8D25:", error);
+    res.status(500).json({ error: "\u5220\u9664\u901A\u77E5\u5931\u8D25" });
+  }
+});
+router24.delete("/batch/read", authMiddleware, async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const result = await Notification.deleteMany({
+      recipientId: userId,
+      read: true
+    });
+    res.json({
+      message: "\u5DF2\u8BFB\u901A\u77E5\u5DF2\u6E05\u7A7A",
+      deletedCount: result.deletedCount
+    });
+  } catch (error) {
+    console.error("\u6E05\u7A7A\u5DF2\u8BFB\u901A\u77E5\u5931\u8D25:", error);
+    res.status(500).json({ error: "\u6E05\u7A7A\u5DF2\u8BFB\u901A\u77E5\u5931\u8D25" });
+  }
+});
+router24.post("/", authMiddleware, async (req, res) => {
+  try {
+    const user = req.user;
+    if (user.role !== "teacher" && user.role !== "admin") {
+      return res.status(403).json({ error: "\u65E0\u6743\u9650\u521B\u5EFA\u901A\u77E5" });
+    }
+    const {
+      recipientIds,
+      classId,
+      type,
+      title,
+      content,
+      priority = "normal",
+      relatedId,
+      relatedType,
+      actionUrl,
+      metadata
+    } = req.body;
+    if (!title || !content) {
+      return res.status(400).json({ error: "\u6807\u9898\u548C\u5185\u5BB9\u4E0D\u80FD\u4E3A\u7A7A" });
+    }
+    let recipients = [];
+    if (classId) {
+      const classDoc = await Class_default.findById(classId);
+      if (!classDoc) {
+        return res.status(404).json({ error: "\u73ED\u7EA7\u4E0D\u5B58\u5728" });
+      }
+      recipients = classDoc.students.filter((s) => s.status === "active").map((s) => s.userId);
+    } else if (recipientIds && Array.isArray(recipientIds)) {
+      recipients = recipientIds;
+    } else {
+      return res.status(400).json({ error: "\u5FC5\u987B\u6307\u5B9A\u63A5\u6536\u8005\u6216\u73ED\u7EA7" });
+    }
+    const notifications = recipients.map((recipientId) => ({
+      recipientId,
+      recipientType: "student",
+      senderId: user._id,
+      type,
+      title,
+      content,
+      priority,
+      relatedId,
+      relatedType,
+      actionUrl,
+      metadata,
+      read: false
+    }));
+    const created = await Notification.insertMany(notifications);
+    res.json({
+      message: "\u901A\u77E5\u521B\u5EFA\u6210\u529F",
+      count: created.length
+    });
+  } catch (error) {
+    console.error("\u521B\u5EFA\u901A\u77E5\u5931\u8D25:", error);
+    res.status(500).json({ error: "\u521B\u5EFA\u901A\u77E5\u5931\u8D25" });
+  }
+});
+var notification_default = router24;
+
+// src/routes/question.ts
+var import_express25 = __toESM(require("express"));
+
+// src/models/Question.ts
+var import_mongoose17 = __toESM(require("mongoose"));
+var QuestionSchema = new import_mongoose17.Schema({
+  title: { type: String, required: true },
+  type: {
+    type: String,
+    enum: ["single", "multiple", "truefalse", "short", "essay"],
+    required: true
+  },
+  content: { type: String, required: true },
+  options: [{
+    id: { type: String, required: true },
+    content: { type: String, required: true },
+    isCorrect: { type: Boolean }
+  }],
+  correctAnswer: { type: import_mongoose17.Schema.Types.Mixed },
+  // 可以是字符串或数组
+  analysis: { type: String },
+  difficulty: {
+    type: String,
+    enum: ["easy", "medium", "hard"],
+    default: "medium"
+  },
+  knowledgePoints: [{ type: import_mongoose17.Schema.Types.ObjectId, ref: "KnowledgePoint" }],
+  tags: [{ type: String }],
+  teacherId: { type: import_mongoose17.Schema.Types.ObjectId, ref: "User", required: true },
+  isPublic: { type: Boolean, default: false },
+  usageCount: { type: Number, default: 0 }
+}, {
+  timestamps: true
+});
+QuestionSchema.index({ teacherId: 1, type: 1 });
+QuestionSchema.index({ difficulty: 1 });
+QuestionSchema.index({ tags: 1 });
+QuestionSchema.index({ isPublic: 1 });
+QuestionSchema.index({ knowledgePoints: 1 });
+QuestionSchema.methods.toSafeObject = function() {
+  const obj = this.toObject();
+  if (obj.options) {
+    obj.options = obj.options.map((opt) => ({
+      id: opt.id,
+      content: opt.content
+      // 不返回 isCorrect
+    }));
+  }
+  delete obj.correctAnswer;
+  delete obj.analysis;
+  return obj;
+};
+var Question_default = import_mongoose17.default.model("Question", QuestionSchema);
+
+// src/routes/question.ts
+var router25 = import_express25.default.Router();
+router25.post("/", authMiddleware, async (req, res) => {
+  try {
+    const userId = req.user._id.toString();
+    const userRole = req.user.role;
+    if (userRole !== "teacher") {
+      return res.status(403).json({ error: "\u53EA\u6709\u6559\u5E08\u53EF\u4EE5\u521B\u5EFA\u9898\u76EE" });
+    }
+    const questionData = {
+      ...req.body,
+      teacherId: userId
+    };
+    const question = new Question_default(questionData);
+    await question.save();
+    res.status(201).json(question);
+  } catch (error) {
+    console.error("\u521B\u5EFA\u9898\u76EE\u5931\u8D25:", error);
+    res.status(500).json({ error: "\u521B\u5EFA\u9898\u76EE\u5931\u8D25", details: error.message });
+  }
+});
+router25.get("/my", authMiddleware, async (req, res) => {
+  try {
+    const userId = req.user._id.toString();
+    const userRole = req.user.role;
+    if (userRole !== "teacher") {
+      return res.status(403).json({ error: "\u53EA\u6709\u6559\u5E08\u53EF\u4EE5\u8BBF\u95EE" });
+    }
+    const {
+      page = 1,
+      limit = 20,
+      type,
+      difficulty,
+      tag,
+      search
+    } = req.query;
+    const query = { teacherId: userId };
+    if (type) query.type = type;
+    if (difficulty) query.difficulty = difficulty;
+    if (tag) query.tags = tag;
+    if (search) {
+      query.$or = [
+        { title: { $regex: search, $options: "i" } },
+        { content: { $regex: search, $options: "i" } }
+      ];
+    }
+    const skip = (Number(page) - 1) * Number(limit);
+    const [questions, total] = await Promise.all([
+      Question_default.find(query).sort({ createdAt: -1 }).skip(skip).limit(Number(limit)).lean(),
+      Question_default.countDocuments(query)
+    ]);
+    res.json({
+      questions,
+      total,
+      page: Number(page),
+      limit: Number(limit),
+      totalPages: Math.ceil(total / Number(limit))
+    });
+  } catch (error) {
+    console.error("\u83B7\u53D6\u9898\u76EE\u5217\u8868\u5931\u8D25:", error);
+    res.status(500).json({ error: "\u83B7\u53D6\u9898\u76EE\u5217\u8868\u5931\u8D25", details: error.message });
+  }
+});
+router25.get("/:id", authMiddleware, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user._id.toString();
+    const userRole = req.user.role;
+    const question = await Question_default.findById(id);
+    if (!question) {
+      return res.status(404).json({ error: "\u9898\u76EE\u4E0D\u5B58\u5728" });
+    }
+    if (userRole === "teacher") {
+      if (question.teacherId.toString() !== userId && !question.isPublic) {
+        return res.status(403).json({ error: "\u65E0\u6743\u8BBF\u95EE\u6B64\u9898\u76EE" });
+      }
+      return res.json(question);
+    }
+    const safeQuestion = question.toSafeObject();
+    res.json(safeQuestion);
+  } catch (error) {
+    console.error("\u83B7\u53D6\u9898\u76EE\u8BE6\u60C5\u5931\u8D25:", error);
+    res.status(500).json({ error: "\u83B7\u53D6\u9898\u76EE\u8BE6\u60C5\u5931\u8D25", details: error.message });
+  }
+});
+router25.put("/:id", authMiddleware, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user._id.toString();
+    const userRole = req.user.role;
+    if (userRole !== "teacher") {
+      return res.status(403).json({ error: "\u53EA\u6709\u6559\u5E08\u53EF\u4EE5\u7F16\u8F91\u9898\u76EE" });
+    }
+    const question = await Question_default.findById(id);
+    if (!question) {
+      return res.status(404).json({ error: "\u9898\u76EE\u4E0D\u5B58\u5728" });
+    }
+    if (question.teacherId.toString() !== userId) {
+      return res.status(403).json({ error: "\u53EA\u80FD\u7F16\u8F91\u81EA\u5DF1\u521B\u5EFA\u7684\u9898\u76EE" });
+    }
+    Object.assign(question, req.body);
+    await question.save();
+    res.json(question);
+  } catch (error) {
+    console.error("\u66F4\u65B0\u9898\u76EE\u5931\u8D25:", error);
+    res.status(500).json({ error: "\u66F4\u65B0\u9898\u76EE\u5931\u8D25", details: error.message });
+  }
+});
+router25.delete("/:id", authMiddleware, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user._id.toString();
+    const userRole = req.user.role;
+    if (userRole !== "teacher") {
+      return res.status(403).json({ error: "\u53EA\u6709\u6559\u5E08\u53EF\u4EE5\u5220\u9664\u9898\u76EE" });
+    }
+    const question = await Question_default.findById(id);
+    if (!question) {
+      return res.status(404).json({ error: "\u9898\u76EE\u4E0D\u5B58\u5728" });
+    }
+    if (question.teacherId.toString() !== userId) {
+      return res.status(403).json({ error: "\u53EA\u80FD\u5220\u9664\u81EA\u5DF1\u521B\u5EFA\u7684\u9898\u76EE" });
+    }
+    if (question.usageCount > 0) {
+      return res.status(400).json({
+        error: "\u8BE5\u9898\u76EE\u5DF2\u88AB\u4F7F\u7528\uFF0C\u65E0\u6CD5\u5220\u9664",
+        usageCount: question.usageCount
+      });
+    }
+    await Question_default.findByIdAndDelete(id);
+    res.json({ message: "\u9898\u76EE\u5220\u9664\u6210\u529F" });
+  } catch (error) {
+    console.error("\u5220\u9664\u9898\u76EE\u5931\u8D25:", error);
+    res.status(500).json({ error: "\u5220\u9664\u9898\u76EE\u5931\u8D25", details: error.message });
+  }
+});
+router25.post("/batch", authMiddleware, async (req, res) => {
+  try {
+    const { questionIds } = req.body;
+    const userRole = req.user.role;
+    if (!Array.isArray(questionIds)) {
+      return res.status(400).json({ error: "questionIds \u5FC5\u987B\u662F\u6570\u7EC4" });
+    }
+    const questions = await Question_default.find({ _id: { $in: questionIds } });
+    if (userRole === "student") {
+      const safeQuestions = questions.map((q) => q.toSafeObject());
+      return res.json(safeQuestions);
+    }
+    res.json(questions);
+  } catch (error) {
+    console.error("\u6279\u91CF\u83B7\u53D6\u9898\u76EE\u5931\u8D25:", error);
+    res.status(500).json({ error: "\u6279\u91CF\u83B7\u53D6\u9898\u76EE\u5931\u8D25", details: error.message });
+  }
+});
+router25.get("/public/list", authMiddleware, async (req, res) => {
+  try {
+    const userRole = req.user.role;
+    if (userRole !== "teacher") {
+      return res.status(403).json({ error: "\u53EA\u6709\u6559\u5E08\u53EF\u4EE5\u8BBF\u95EE\u9898\u5E93" });
+    }
+    const {
+      page = 1,
+      limit = 20,
+      type,
+      difficulty,
+      tag,
+      search
+    } = req.query;
+    const query = { isPublic: true };
+    if (type) query.type = type;
+    if (difficulty) query.difficulty = difficulty;
+    if (tag) query.tags = tag;
+    if (search) {
+      query.$or = [
+        { title: { $regex: search, $options: "i" } },
+        { content: { $regex: search, $options: "i" } }
+      ];
+    }
+    const skip = (Number(page) - 1) * Number(limit);
+    const [questions, total] = await Promise.all([
+      Question_default.find(query).sort({ usageCount: -1, createdAt: -1 }).skip(skip).limit(Number(limit)).populate("teacherId", "name").lean(),
+      Question_default.countDocuments(query)
+    ]);
+    res.json({
+      questions,
+      total,
+      page: Number(page),
+      limit: Number(limit),
+      totalPages: Math.ceil(total / Number(limit))
+    });
+  } catch (error) {
+    console.error("\u83B7\u53D6\u516C\u5F00\u9898\u5E93\u5931\u8D25:", error);
+    res.status(500).json({ error: "\u83B7\u53D6\u516C\u5F00\u9898\u5E93\u5931\u8D25", details: error.message });
+  }
+});
+router25.post("/:id/copy", authMiddleware, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user._id.toString();
+    const userRole = req.user.role;
+    if (userRole !== "teacher") {
+      return res.status(403).json({ error: "\u53EA\u6709\u6559\u5E08\u53EF\u4EE5\u590D\u5236\u9898\u76EE" });
+    }
+    const originalQuestion = await Question_default.findById(id);
+    if (!originalQuestion) {
+      return res.status(404).json({ error: "\u9898\u76EE\u4E0D\u5B58\u5728" });
+    }
+    if (!originalQuestion.isPublic && originalQuestion.teacherId.toString() !== userId) {
+      return res.status(403).json({ error: "\u65E0\u6743\u590D\u5236\u6B64\u9898\u76EE" });
+    }
+    const newQuestion = new Question_default({
+      ...originalQuestion.toObject(),
+      _id: void 0,
+      teacherId: userId,
+      isPublic: false,
+      usageCount: 0,
+      createdAt: void 0,
+      updatedAt: void 0
+    });
+    await newQuestion.save();
+    res.status(201).json(newQuestion);
+  } catch (error) {
+    console.error("\u590D\u5236\u9898\u76EE\u5931\u8D25:", error);
+    res.status(500).json({ error: "\u590D\u5236\u9898\u76EE\u5931\u8D25", details: error.message });
+  }
+});
+var question_default = router25;
+
+// src/routes/stats.ts
+var import_express26 = __toESM(require("express"));
+var router26 = import_express26.default.Router();
+router26.get("/active-students-this-week", authMiddleware, async (req, res) => {
+  try {
+    const userId = req.user._id.toString();
+    const now = /* @__PURE__ */ new Date();
+    const startOfWeek = new Date(now);
+    startOfWeek.setDate(now.getDate() - now.getDay());
+    startOfWeek.setHours(0, 0, 0, 0);
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 7);
+    const classes = await Class_default.find({ teacherId: userId, status: "active" });
+    if (classes.length === 0) {
+      return res.json({ count: 0, students: [] });
+    }
+    const allStudentIds = /* @__PURE__ */ new Set();
+    classes.forEach((cls) => {
+      cls.students.forEach((student) => {
+        if (student.status === "active") {
+          allStudentIds.add(student.userId.toString());
+        }
+      });
+    });
+    const assignments = await Assignment_default.find({
+      teacherId: userId,
+      "submissions.submittedAt": {
+        $gte: startOfWeek,
+        $lt: endOfWeek
+      }
+    });
+    const activeStudentIds = /* @__PURE__ */ new Set();
+    assignments.forEach((assignment) => {
+      assignment.submissions.forEach((submission) => {
+        const submittedAt = new Date(submission.submittedAt);
+        if (submittedAt >= startOfWeek && submittedAt < endOfWeek) {
+          activeStudentIds.add(submission.userId.toString());
+        }
+      });
+    });
+    const activeStudents = await User_default.find({
+      _id: { $in: Array.from(activeStudentIds) }
+    }).select("username email avatar");
+    res.json({
+      count: activeStudents.length,
+      totalStudents: allStudentIds.size,
+      students: activeStudents.map((student) => ({
+        id: student._id,
+        username: student.username,
+        email: student.email,
+        avatar: student.avatar
+      })),
+      weekStart: startOfWeek,
+      weekEnd: endOfWeek
+    });
+  } catch (error) {
+    console.error("\u83B7\u53D6\u6D3B\u8DC3\u5B66\u751F\u5931\u8D25:", error);
+    res.status(500).json({ error: "\u83B7\u53D6\u6D3B\u8DC3\u5B66\u751F\u5931\u8D25" });
+  }
+});
+router26.get("/teacher-overview", authMiddleware, async (req, res) => {
+  try {
+    const userId = req.user._id.toString();
+    const classCount = await Class_default.countDocuments({ teacherId: userId, status: "active" });
+    const classes = await Class_default.find({ teacherId: userId, status: "active" });
+    const studentIds = /* @__PURE__ */ new Set();
+    classes.forEach((cls) => {
+      cls.students.forEach((student) => {
+        if (student.status === "active") {
+          studentIds.add(student.userId.toString());
+        }
+      });
+    });
+    const assignmentCount = await Assignment_default.countDocuments({
+      teacherId: userId,
+      status: { $in: ["published", "draft"] }
+    });
+    const pendingGradingCount = await Assignment_default.aggregate([
+      { $match: { teacherId: userId } },
+      { $unwind: "$submissions" },
+      { $match: { "submissions.status": "submitted" } },
+      { $count: "total" }
+    ]);
+    res.json({
+      classCount,
+      studentCount: studentIds.size,
+      assignmentCount,
+      pendingGradingCount: pendingGradingCount[0]?.total || 0
+    });
+  } catch (error) {
+    console.error("\u83B7\u53D6\u6559\u5E08\u7EDF\u8BA1\u6982\u89C8\u5931\u8D25:", error);
+    res.status(500).json({ error: "\u83B7\u53D6\u6559\u5E08\u7EDF\u8BA1\u6982\u89C8\u5931\u8D25" });
+  }
+});
+var stats_default = router26;
+
+// src/routes/teacher-analytics.ts
+var import_express27 = __toESM(require("express"));
+init_StudySession();
+var router27 = import_express27.default.Router();
+router27.get("/class/:classId/overview", authMiddleware, async (req, res) => {
+  try {
+    const { classId } = req.params;
+    const userId = req.user._id.toString();
+    const classInfo = await Class_default.findById(classId);
+    if (!classInfo) {
+      return res.status(404).json({ error: "\u73ED\u7EA7\u4E0D\u5B58\u5728" });
+    }
+    if (classInfo.teacherId.toString() !== userId) {
+      return res.status(403).json({ error: "\u65E0\u6743\u8BBF\u95EE" });
+    }
+    const activeStudents = classInfo.students.filter((s) => s.status === "active");
+    const studentIds = activeStudents.map((s) => s.userId);
+    const totalDuration = await StudySession_default.aggregate([
+      { $match: { userId: { $in: studentIds } } },
+      { $group: { _id: null, total: { $sum: "$duration" } } }
+    ]).then((result) => result[0]?.total || 0);
+    const progressData = await UserProgress_default.find({ userId: { $in: studentIds } });
+    const totalKnowledge = progressData.length;
+    const masteredKnowledge = progressData.filter((p) => p.bestScore >= 80).length;
+    const assignments = await Assignment_default.find({ classId });
+    const totalAssignments = assignments.length;
+    const completedAssignments = assignments.filter((a) => {
+      const submittedStudents = new Set(a.submissions.map((s) => s.userId.toString()));
+      return submittedStudents.size === studentIds.length;
+    }).length;
+    const totalWrongQuestions = await WrongQuestion_default.countDocuments({
+      userId: { $in: studentIds }
+    });
+    const sevenDaysAgo = /* @__PURE__ */ new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const activeSessions = await StudySession_default.distinct("userId", {
+      userId: { $in: studentIds },
+      createdAt: { $gte: sevenDaysAgo }
+    });
+    res.json({
+      classId,
+      className: classInfo.name,
+      overview: {
+        totalStudents: activeStudents.length,
+        activeStudents: activeSessions.length,
+        totalDuration: Math.round(totalDuration),
+        avgDurationPerStudent: Math.round(totalDuration / activeStudents.length) || 0,
+        totalKnowledge,
+        masteredKnowledge,
+        masteryRate: totalKnowledge > 0 ? Math.round(masteredKnowledge / totalKnowledge * 100) : 0,
+        totalAssignments,
+        completedAssignments,
+        assignmentCompletionRate: totalAssignments > 0 ? Math.round(completedAssignments / totalAssignments * 100) : 0,
+        totalWrongQuestions
+      }
+    });
+  } catch (error) {
+    console.error("\u83B7\u53D6\u73ED\u7EA7\u6982\u89C8\u5931\u8D25:", error);
+    res.status(500).json({ error: "\u83B7\u53D6\u73ED\u7EA7\u6982\u89C8\u5931\u8D25" });
+  }
+});
+router27.get("/class/:classId/student-rankings", authMiddleware, async (req, res) => {
+  try {
+    const { classId } = req.params;
+    const userId = req.user._id.toString();
+    const { sortBy = "score" } = req.query;
+    const classInfo = await Class_default.findById(classId);
+    if (!classInfo) {
+      return res.status(404).json({ error: "\u73ED\u7EA7\u4E0D\u5B58\u5728" });
+    }
+    if (classInfo.teacherId.toString() !== userId) {
+      return res.status(403).json({ error: "\u65E0\u6743\u8BBF\u95EE" });
+    }
+    const activeStudents = classInfo.students.filter((s) => s.status === "active");
+    const studentRankings = await Promise.all(
+      activeStudents.map(async (student) => {
+        const studentId = student.userId;
+        const sessions = await StudySession_default.find({ userId: studentId });
+        const totalTime = sessions.reduce((sum, s) => sum + (s.duration || 0), 0);
+        const userProgress = await UserProgress_default.find({ userId: studentId });
+        const masteredCount = userProgress.filter((up) => up.bestScore >= 80).length;
+        const totalKnowledge = userProgress.length;
+        const progressRate = totalKnowledge > 0 ? Math.round(masteredCount / totalKnowledge * 100) : 0;
+        const avgScore = userProgress.length > 0 ? Math.round(userProgress.reduce((sum, up) => sum + up.bestScore, 0) / userProgress.length) : 0;
+        const assignments = await Assignment_default.find({ classId });
+        const submittedAssignments = assignments.filter(
+          (a) => a.submissions.some((s) => s.userId.toString() === studentId.toString())
+        ).length;
+        const assignmentCompletionRate = assignments.length > 0 ? Math.round(submittedAssignments / assignments.length * 100) : 0;
+        const wrongQuestionsCount = await WrongQuestion_default.countDocuments({ userId: studentId });
+        const lastActive = sessions.length > 0 ? sessions[sessions.length - 1].createdAt : student.joinedAt;
+        return {
+          userId: studentId,
+          userName: student.userName,
+          totalTime,
+          masteredCount,
+          totalKnowledge,
+          progressRate,
+          avgScore,
+          assignmentCompletionRate,
+          wrongQuestionsCount,
+          lastActive
+        };
+      })
+    );
+    studentRankings.sort((a, b) => {
+      switch (sortBy) {
+        case "studyTime":
+          return b.totalTime - a.totalTime;
+        case "progress":
+          return b.progressRate - a.progressRate;
+        case "score":
+        default:
+          return b.avgScore - a.avgScore;
+      }
+    });
+    const rankedStudents = studentRankings.map((student, index) => ({
+      ...student,
+      rank: index + 1
+    }));
+    res.json({
+      classId,
+      sortBy,
+      students: rankedStudents
+    });
+  } catch (error) {
+    console.error("\u83B7\u53D6\u5B66\u751F\u6392\u540D\u5931\u8D25:", error);
+    res.status(500).json({ error: "\u83B7\u53D6\u5B66\u751F\u6392\u540D\u5931\u8D25" });
+  }
+});
+router27.get("/class/:classId/weak-points", authMiddleware, async (req, res) => {
+  try {
+    const { classId } = req.params;
+    const userId = req.user._id.toString();
+    const classInfo = await Class_default.findById(classId);
+    if (!classInfo) {
+      return res.status(404).json({ error: "\u73ED\u7EA7\u4E0D\u5B58\u5728" });
+    }
+    if (classInfo.teacherId.toString() !== userId) {
+      return res.status(403).json({ error: "\u65E0\u6743\u8BBF\u95EE" });
+    }
+    const activeStudents = classInfo.students.filter((s) => s.status === "active");
+    const studentIds = activeStudents.map((s) => s.userId);
+    const progressData = await UserProgress_default.find({
+      userId: { $in: studentIds }
+    }).populate("pointId", "title subject difficulty");
+    const knowledgePointStats = {};
+    progressData.forEach((progress) => {
+      const pointId = progress.pointId?._id?.toString();
+      if (!pointId) return;
+      const point = progress.pointId;
+      if (!knowledgePointStats[pointId]) {
+        knowledgePointStats[pointId] = {
+          pointId,
+          title: point.title || "\u672A\u77E5\u77E5\u8BC6\u70B9",
+          subject: point.subject || "\u672A\u5206\u7C7B",
+          difficulty: point.difficulty || "medium",
+          totalStudents: 0,
+          masteredStudents: 0,
+          avgScore: 0,
+          totalScore: 0,
+          lowScoreStudents: []
+        };
+      }
+      knowledgePointStats[pointId].totalStudents++;
+      knowledgePointStats[pointId].totalScore += progress.bestScore;
+      if (progress.bestScore >= 80) {
+        knowledgePointStats[pointId].masteredStudents++;
+      }
+      if (progress.bestScore < 60) {
+        knowledgePointStats[pointId].lowScoreStudents.push({
+          userId: progress.userId,
+          score: progress.bestScore
+        });
+      }
+    });
+    const weakPointsArray = Object.values(knowledgePointStats).map((stats) => {
+      stats.avgScore = Math.round(stats.totalScore / stats.totalStudents);
+      stats.masteryRate = Math.round(stats.masteredStudents / stats.totalStudents * 100);
+      stats.lowScoreCount = stats.lowScoreStudents.length;
+      delete stats.totalScore;
+      delete stats.lowScoreStudents;
+      return stats;
+    });
+    const weakPoints = weakPointsArray.filter((point) => point.avgScore < 70 || point.masteryRate < 50).sort((a, b) => a.avgScore - b.avgScore).slice(0, 20);
+    const bySubject = {};
+    weakPoints.forEach((point) => {
+      const subject = point.subject;
+      if (!bySubject[subject]) {
+        bySubject[subject] = {
+          subject,
+          weakPointCount: 0,
+          avgScore: 0,
+          totalScore: 0
+        };
+      }
+      bySubject[subject].weakPointCount++;
+      bySubject[subject].totalScore += point.avgScore;
+    });
+    Object.values(bySubject).forEach((stats) => {
+      stats.avgScore = Math.round(stats.totalScore / stats.weakPointCount);
+      delete stats.totalScore;
+    });
+    res.json({
+      classId,
+      weakPoints,
+      bySubject: Object.values(bySubject),
+      summary: {
+        totalWeakPoints: weakPoints.length,
+        avgWeakPointScore: weakPoints.length > 0 ? Math.round(weakPoints.reduce((sum, p) => sum + p.avgScore, 0) / weakPoints.length) : 0
+      }
+    });
+  } catch (error) {
+    console.error("\u83B7\u53D6\u8584\u5F31\u77E5\u8BC6\u70B9\u5931\u8D25:", error);
+    res.status(500).json({ error: "\u83B7\u53D6\u8584\u5F31\u77E5\u8BC6\u70B9\u5931\u8D25" });
+  }
+});
+router27.get("/class/:classId/learning-trend", authMiddleware, async (req, res) => {
+  try {
+    const { classId } = req.params;
+    const userId = req.user._id.toString();
+    const { period = "30d" } = req.query;
+    const classInfo = await Class_default.findById(classId);
+    if (!classInfo) {
+      return res.status(404).json({ error: "\u73ED\u7EA7\u4E0D\u5B58\u5728" });
+    }
+    if (classInfo.teacherId.toString() !== userId) {
+      return res.status(403).json({ error: "\u65E0\u6743\u8BBF\u95EE" });
+    }
+    const activeStudents = classInfo.students.filter((s) => s.status === "active");
+    const studentIds = activeStudents.map((s) => s.userId);
+    const now = /* @__PURE__ */ new Date();
+    let startDate = /* @__PURE__ */ new Date();
+    switch (period) {
+      case "7d":
+        startDate.setDate(now.getDate() - 7);
+        break;
+      case "30d":
+        startDate.setDate(now.getDate() - 30);
+        break;
+      case "90d":
+        startDate.setDate(now.getDate() - 90);
+        break;
+      default:
+        startDate.setDate(now.getDate() - 30);
+    }
+    const sessions = await StudySession_default.find({
+      userId: { $in: studentIds },
+      createdAt: { $gte: startDate }
+    }).sort({ createdAt: 1 });
+    const dailyStats = {};
+    sessions.forEach((session) => {
+      const date = session.createdAt.toISOString().split("T")[0];
+      if (!dailyStats[date]) {
+        dailyStats[date] = {
+          date,
+          totalDuration: 0,
+          sessionCount: 0,
+          activeStudents: /* @__PURE__ */ new Set()
+        };
+      }
+      dailyStats[date].totalDuration += session.duration || 0;
+      dailyStats[date].sessionCount++;
+      dailyStats[date].activeStudents.add(session.userId.toString());
+    });
+    const trendData = Object.values(dailyStats).map((stats) => ({
+      date: stats.date,
+      totalDuration: stats.totalDuration,
+      avgDuration: Math.round(stats.totalDuration / stats.activeStudents.size) || 0,
+      sessionCount: stats.sessionCount,
+      activeStudents: stats.activeStudents.size
+    }));
+    res.json({
+      classId,
+      period,
+      trend: trendData
+    });
+  } catch (error) {
+    console.error("\u83B7\u53D6\u5B66\u4E60\u8D8B\u52BF\u5931\u8D25:", error);
+    res.status(500).json({ error: "\u83B7\u53D6\u5B66\u4E60\u8D8B\u52BF\u5931\u8D25" });
+  }
+});
+router27.get("/class/:classId/assignment-analytics", authMiddleware, async (req, res) => {
+  try {
+    const { classId } = req.params;
+    const userId = req.user._id.toString();
+    const classInfo = await Class_default.findById(classId);
+    if (!classInfo) {
+      return res.status(404).json({ error: "\u73ED\u7EA7\u4E0D\u5B58\u5728" });
+    }
+    if (classInfo.teacherId.toString() !== userId) {
+      return res.status(403).json({ error: "\u65E0\u6743\u8BBF\u95EE" });
+    }
+    const assignments = await Assignment_default.find({ classId });
+    const activeStudents = classInfo.students.filter((s) => s.status === "active");
+    const totalStudents = activeStudents.length;
+    const assignmentStats = assignments.map((assignment) => {
+      const submittedCount = new Set(
+        assignment.submissions.map((s) => s.userId.toString())
+      ).size;
+      const scores = assignment.submissions.map((s) => s.score);
+      const avgScore = scores.length > 0 ? Math.round(scores.reduce((sum, s) => sum + s, 0) / scores.length) : 0;
+      const passedCount = scores.filter((s) => s >= assignment.passingScore).length;
+      return {
+        assignmentId: assignment._id,
+        title: assignment.title,
+        type: assignment.type,
+        totalStudents,
+        submittedCount,
+        submissionRate: totalStudents > 0 ? Math.round(submittedCount / totalStudents * 100) : 0,
+        avgScore,
+        passRate: submittedCount > 0 ? Math.round(passedCount / submittedCount * 100) : 0,
+        dueDate: assignment.dueDate
+      };
+    });
+    const byType = {};
+    assignmentStats.forEach((stat) => {
+      const type = stat.type || "homework";
+      if (!byType[type]) {
+        byType[type] = {
+          type,
+          count: 0,
+          avgSubmissionRate: 0,
+          avgScore: 0,
+          totalSubmissionRate: 0,
+          totalScore: 0
+        };
+      }
+      byType[type].count++;
+      byType[type].totalSubmissionRate += stat.submissionRate;
+      byType[type].totalScore += stat.avgScore;
+    });
+    Object.values(byType).forEach((stats) => {
+      stats.avgSubmissionRate = Math.round(stats.totalSubmissionRate / stats.count);
+      stats.avgScore = Math.round(stats.totalScore / stats.count);
+      delete stats.totalSubmissionRate;
+      delete stats.totalScore;
+    });
+    res.json({
+      classId,
+      assignments: assignmentStats,
+      byType: Object.values(byType),
+      summary: {
+        totalAssignments: assignments.length,
+        avgSubmissionRate: assignmentStats.length > 0 ? Math.round(
+          assignmentStats.reduce((sum, a) => sum + a.submissionRate, 0) / assignmentStats.length
+        ) : 0,
+        avgScore: assignmentStats.length > 0 ? Math.round(
+          assignmentStats.reduce((sum, a) => sum + a.avgScore, 0) / assignmentStats.length
+        ) : 0
+      }
+    });
+  } catch (error) {
+    console.error("\u83B7\u53D6\u4F5C\u4E1A\u7EDF\u8BA1\u5931\u8D25:", error);
+    res.status(500).json({ error: "\u83B7\u53D6\u4F5C\u4E1A\u7EDF\u8BA1\u5931\u8D25" });
+  }
+});
+router27.get("/class/:classId/suggestions", authMiddleware, async (req, res) => {
+  try {
+    const { classId } = req.params;
+    const userId = req.user._id.toString();
+    const classInfo = await Class_default.findById(classId);
+    if (!classInfo) {
+      return res.status(404).json({ error: "\u73ED\u7EA7\u4E0D\u5B58\u5728" });
+    }
+    if (classInfo.teacherId.toString() !== userId) {
+      return res.status(403).json({ error: "\u65E0\u6743\u8BBF\u95EE" });
+    }
+    const activeStudents = classInfo.students.filter((s) => s.status === "active");
+    const studentIds = activeStudents.map((s) => s.userId);
+    const progressData = await UserProgress_default.find({ userId: { $in: studentIds } });
+    const avgMastery = progressData.length > 0 ? progressData.reduce((sum, p) => sum + p.bestScore, 0) / progressData.length : 0;
+    const sevenDaysAgo = /* @__PURE__ */ new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const recentSessions = await StudySession_default.countDocuments({
+      userId: { $in: studentIds },
+      createdAt: { $gte: sevenDaysAgo }
+    });
+    const assignments = await Assignment_default.find({ classId });
+    const avgSubmissionRate = assignments.length > 0 ? assignments.reduce((sum, a) => {
+      const submittedCount = new Set(
+        a.submissions.map((s) => s.userId.toString())
+      ).size;
+      return sum + submittedCount / activeStudents.length;
+    }, 0) / assignments.length * 100 : 0;
+    const suggestions = [];
+    if (avgMastery < 60) {
+      suggestions.push({
+        type: "warning",
+        category: "\u77E5\u8BC6\u638C\u63E1",
+        title: "\u73ED\u7EA7\u6574\u4F53\u638C\u63E1\u5EA6\u504F\u4F4E",
+        description: `\u73ED\u7EA7\u5E73\u5747\u638C\u63E1\u5EA6\u4E3A ${Math.round(avgMastery)}%\uFF0C\u4F4E\u4E8E\u53CA\u683C\u7EBF\u3002`,
+        action: "\u5EFA\u8BAE\u9488\u5BF9\u8584\u5F31\u77E5\u8BC6\u70B9\u7EC4\u7EC7\u4E13\u9898\u590D\u4E60\u8BFE\uFF0C\u52A0\u5F3A\u57FA\u7840\u77E5\u8BC6\u8BB2\u89E3\u3002",
+        priority: "high"
+      });
+    } else if (avgMastery < 75) {
+      suggestions.push({
+        type: "info",
+        category: "\u77E5\u8BC6\u638C\u63E1",
+        title: "\u90E8\u5206\u77E5\u8BC6\u70B9\u9700\u8981\u5F3A\u5316",
+        description: `\u73ED\u7EA7\u5E73\u5747\u638C\u63E1\u5EA6\u4E3A ${Math.round(avgMastery)}%\uFF0C\u6709\u63D0\u5347\u7A7A\u95F4\u3002`,
+        action: "\u5EFA\u8BAE\u67E5\u770B\u8584\u5F31\u77E5\u8BC6\u70B9\u5217\u8868\uFF0C\u9488\u5BF9\u6027\u5730\u5E03\u7F6E\u7EC3\u4E60\u4F5C\u4E1A\u3002",
+        priority: "medium"
+      });
+    }
+    if (recentSessions < activeStudents.length * 3) {
+      suggestions.push({
+        type: "warning",
+        category: "\u5B66\u4E60\u6D3B\u8DC3\u5EA6",
+        title: "\u73ED\u7EA7\u6D3B\u8DC3\u5EA6\u8F83\u4F4E",
+        description: "\u6700\u8FD1\u4E00\u5468\u5B66\u4E60\u6D3B\u8DC3\u5EA6\u4E0D\u8DB3\uFF0C\u90E8\u5206\u5B66\u751F\u53EF\u80FD\u7F3A\u4E4F\u5B66\u4E60\u52A8\u529B\u3002",
+        action: "\u5EFA\u8BAE\u901A\u8FC7\u4F5C\u4E1A\u3001\u6D4B\u9A8C\u7B49\u65B9\u5F0F\u6FC0\u53D1\u5B66\u751F\u5B66\u4E60\u79EF\u6781\u6027\uFF0C\u6216\u8FDB\u884C\u4E00\u5BF9\u4E00\u6C9F\u901A\u3002",
+        priority: "high"
+      });
+    }
+    if (avgSubmissionRate < 70) {
+      suggestions.push({
+        type: "warning",
+        category: "\u4F5C\u4E1A\u5B8C\u6210",
+        title: "\u4F5C\u4E1A\u63D0\u4EA4\u7387\u504F\u4F4E",
+        description: `\u5E73\u5747\u4F5C\u4E1A\u63D0\u4EA4\u7387\u4E3A ${Math.round(avgSubmissionRate)}%\uFF0C\u9700\u8981\u6539\u5584\u3002`,
+        action: "\u5EFA\u8BAE\u8DDF\u8FDB\u672A\u63D0\u4EA4\u4F5C\u4E1A\u7684\u5B66\u751F\uFF0C\u4E86\u89E3\u539F\u56E0\u5E76\u63D0\u4F9B\u5E2E\u52A9\u3002\u540C\u65F6\u53EF\u4EE5\u8003\u8651\u8C03\u6574\u4F5C\u4E1A\u96BE\u5EA6\u6216\u622A\u6B62\u65F6\u95F4\u3002",
+        priority: "high"
+      });
+    }
+    const studentStats = await Promise.all(
+      activeStudents.slice(0, 10).map(async (student) => {
+        const studentProgress = await UserProgress_default.find({ userId: student.userId });
+        const studentAvgScore = studentProgress.length > 0 ? studentProgress.reduce((sum, p) => sum + p.bestScore, 0) / studentProgress.length : 0;
+        const studentSessions = await StudySession_default.find({
+          userId: student.userId,
+          createdAt: { $gte: sevenDaysAgo }
+        });
+        return {
+          userName: student.userName,
+          avgScore: studentAvgScore,
+          recentSessions: studentSessions.length
+        };
+      })
+    );
+    const needAttention = studentStats.filter((s) => s.avgScore < 50 || s.recentSessions === 0);
+    if (needAttention.length > 0) {
+      suggestions.push({
+        type: "info",
+        category: "\u5B66\u751F\u5173\u6CE8",
+        title: "\u90E8\u5206\u5B66\u751F\u9700\u8981\u7279\u522B\u5173\u6CE8",
+        description: `\u6709 ${needAttention.length} \u540D\u5B66\u751F\u7684\u5B66\u4E60\u60C5\u51B5\u9700\u8981\u91CD\u70B9\u5173\u6CE8\u3002`,
+        action: `\u5EFA\u8BAE\u4E0E\u8FD9\u4E9B\u5B66\u751F\u8FDB\u884C\u4E00\u5BF9\u4E00\u4EA4\u6D41\uFF1A${needAttention.slice(0, 3).map((s) => s.userName).join("\u3001")}${needAttention.length > 3 ? " \u7B49" : ""}\u3002`,
+        priority: "medium"
+      });
+    }
+    if (suggestions.length === 0) {
+      suggestions.push({
+        type: "success",
+        category: "\u6574\u4F53\u60C5\u51B5",
+        title: "\u73ED\u7EA7\u5B66\u4E60\u72B6\u6001\u826F\u597D",
+        description: "\u73ED\u7EA7\u6574\u4F53\u5B66\u4E60\u60C5\u51B5\u8868\u73B0\u4F18\u79C0\uFF0C\u8BF7\u7EE7\u7EED\u4FDD\u6301\uFF01",
+        action: "\u53EF\u4EE5\u9002\u5F53\u589E\u52A0\u4E00\u4E9B\u6311\u6218\u6027\u5185\u5BB9\uFF0C\u5E2E\u52A9\u5B66\u751F\u8FDB\u4E00\u6B65\u63D0\u5347\u3002",
+        priority: "low"
+      });
+    }
+    res.json({
+      classId,
+      suggestions,
+      generatedAt: /* @__PURE__ */ new Date()
+    });
+  } catch (error) {
+    console.error("\u751F\u6210\u5EFA\u8BAE\u5931\u8D25:", error);
+    res.status(500).json({ error: "\u751F\u6210\u5EFA\u8BAE\u5931\u8D25" });
+  }
+});
+var teacher_analytics_default = router27;
+
 // src/middleware/errorHandler.ts
 var AppError = class extends Error {
   constructor(message, statusCode = 500, code = "INTERNAL_ERROR" /* INTERNAL_ERROR */) {
@@ -7059,7 +8463,7 @@ var authRateLimitMiddleware = createRateLimitMiddleware(
 var globalRateLimitMiddleware = createRateLimitMiddleware(globalLimiter);
 
 // src/utils/dbIndexes.ts
-var import_mongoose16 = __toESM(require("mongoose"));
+var import_mongoose18 = __toESM(require("mongoose"));
 init_KnowledgePoint();
 init_StudySession();
 async function createDatabaseIndexes() {
@@ -7128,11 +8532,11 @@ if (typeof require !== "undefined" && require.main === module) {
     console.error("\u9519\u8BEF: MONGO_URI \u672A\u5728 .env \u6587\u4EF6\u4E2D\u5B9A\u4E49");
     process.exit(1);
   }
-  import_mongoose16.default.connect(mongoUri2).then(async () => {
+  import_mongoose18.default.connect(mongoUri2).then(async () => {
     console.log("\u2713 \u5DF2\u8FDE\u63A5\u5230 MongoDB");
     await createDatabaseIndexes();
     await listDatabaseIndexes();
-    await import_mongoose16.default.connection.close();
+    await import_mongoose18.default.connection.close();
     console.log("\n\u2713 \u6570\u636E\u5E93\u8FDE\u63A5\u5DF2\u5173\u95ED");
     process.exit(0);
   }).catch((err) => {
@@ -7143,17 +8547,33 @@ if (typeof require !== "undefined" && require.main === module) {
 
 // src/index.ts
 import_dotenv2.default.config();
-var app = (0, import_express24.default)();
+var app = (0, import_express28.default)();
 var PORT = process.env.PORT || 5001;
 var mongoUri = process.env.MONGO_URI;
 if (!mongoUri) {
   console.error("\u9519\u8BEF: MONGO_URI \u672A\u5728 .env \u6587\u4EF6\u4E2D\u5B9A\u4E49");
   process.exit(1);
 }
-import_mongoose17.default.connect(mongoUri).then(async () => {
-  console.log("\u6210\u529F\u8FDE\u63A5\u5230 MongoDB Atlas");
+var mongooseOptions = {
+  serverSelectionTimeoutMS: 1e4,
+  // 增加服务器选择超时时间
+  socketTimeoutMS: 45e3,
+  // Socket 超时时间
+  family: 4
+  // 强制使用 IPv4（某些网络环境下 IPv6 可能有问题）
+};
+import_mongoose19.default.connect(mongoUri, mongooseOptions).then(async () => {
+  console.log("\u2713 \u6210\u529F\u8FDE\u63A5\u5230 MongoDB");
   await createDatabaseIndexes();
-}).catch((err) => console.error("\u65E0\u6CD5\u8FDE\u63A5\u5230 MongoDB:", err));
+}).catch((err) => {
+  console.error("\u2717 \u65E0\u6CD5\u8FDE\u63A5\u5230 MongoDB:", err.message);
+  console.error("\n\u53EF\u80FD\u7684\u89E3\u51B3\u65B9\u6848\uFF1A");
+  console.error("1. \u68C0\u67E5\u7F51\u7EDC\u8FDE\u63A5\u548C\u9632\u706B\u5899\u8BBE\u7F6E");
+  console.error("2. \u786E\u8BA4 MongoDB Atlas IP \u767D\u540D\u5355\u5DF2\u6DFB\u52A0 0.0.0.0/0\uFF08\u5141\u8BB8\u6240\u6709 IP\uFF09");
+  console.error("3. \u5C1D\u8BD5\u4F7F\u7528\u6807\u51C6 MongoDB URI \u683C\u5F0F\uFF08\u800C\u975E mongodb+srv://\uFF09");
+  console.error("4. \u5982\u679C\u5728\u4E2D\u56FD\u5927\u9646\uFF0C\u53EF\u80FD\u9700\u8981\u4F7F\u7528 VPN \u6216\u4EE3\u7406");
+  console.error("5. \u68C0\u67E5 .env \u6587\u4EF6\u4E2D\u7684 MONGO_URI \u662F\u5426\u6B63\u786E\u914D\u7F6E\n");
+});
 var corsOptions = {
   origin: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(",").map((origin) => origin.trim()) : "*",
   credentials: true,
@@ -7173,9 +8593,9 @@ app.use((0, import_compression.default)({
     return import_compression.default.filter(req, res);
   }
 }));
-app.use(import_express24.default.json({ limit: "10mb" }));
+app.use(import_express28.default.json({ limit: "10mb" }));
 app.use(import_passport2.default.initialize());
-app.use("/uploads", import_express24.default.static(import_path3.default.join(__dirname, "../uploads")));
+app.use("/uploads", import_express28.default.static(import_path3.default.join(__dirname, "../uploads")));
 if (process.env.TRUST_PROXY === "true") {
   app.set("trust proxy", 1);
 }
@@ -7208,6 +8628,10 @@ app.use("/api/assignment", assignment_default);
 app.use("/api/analytics-advanced", analytics_advanced_default);
 app.use("/api/membership", membership_default);
 app.use("/api/points", points_default);
+app.use("/api/notification", notification_default);
+app.use("/api/question", question_default);
+app.use("/api/stats", stats_default);
+app.use("/api/teacher-analytics", teacher_analytics_default);
 app.get(
   "/api/auth/github",
   import_passport2.default.authenticate("github", { scope: ["user:email"], session: false })

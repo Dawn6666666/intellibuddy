@@ -2,7 +2,7 @@ import express from 'express';
 import { authMiddleware } from '../middleware/auth';
 import { Notification } from '../models/Notification';
 import { User } from '../models/User';
-import { Class } from '../models/Class';
+import Class from '../models/Class';
 
 const router = express.Router();
 

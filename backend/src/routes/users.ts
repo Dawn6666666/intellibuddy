@@ -253,8 +253,8 @@ router.get('/me/stats', authMiddleware, async (req: Request, res: Response) => {
 
         // 计算排名百分比
         const totalUsers = allUsersStats.length;
-        const betterThanCount = allUsersStats.filter(p => p < points).length;
-        const rankPercentage = totalUsers > 0 ? Math.round((betterThanCount / totalUsers) * 100) : 0;
+        const betterThanCount = allUsersStats.filter(p => p > points).length; // 修复：统计比当前用户积分高的用户数
+        const rankPercentage = totalUsers > 1 ? Math.round((betterThanCount / (totalUsers - 1)) * 100) : 0; // 修复：排除自己
 
         // 获取上月的统计数据来计算增长趋势
         const lastMonthStart = new Date();
@@ -309,7 +309,7 @@ router.get('/me/stats', authMiddleware, async (req: Request, res: Response) => {
             },
             ranking: {
                 percentage: rankPercentage,
-                display: `Top ${100 - rankPercentage}%`,
+                display: `Top ${rankPercentage}%`,
                 change: 0 // TODO: 实现排名的月度对比
             }
         });
