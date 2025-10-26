@@ -52,7 +52,9 @@ router.post('/register', async (req, res) => {
             user: {
                 _id: newUser._id, 
                 username: newUser.username, 
-                email: newUser.email
+                email: newUser.email,
+                role: newUser.role,
+                avatarUrl: newUser.avatarUrl
             }
         });
     } catch (error: any) {
@@ -69,8 +71,11 @@ router.post('/login', async (req, res) => {
     try {
         const {email, password} = req.body;
         
+        console.log(`🔑 [后端 /login] 收到登录请求: ${email}`);
+        
         // 验证必填项
         if (!email || !password) {
+            console.log(`  ❌ 缺少必填项`);
             return res.status(400).json({message: '请输入邮箱和密码'});
         }
         
@@ -78,21 +83,33 @@ router.post('/login', async (req, res) => {
         const user = await User.findOne({email}).select('+passwordHash').lean();
         
         if (!user) {
+            console.log(`  ❌ 用户不存在: ${email}`);
             return res.status(400).json({message: '邮箱或密码错误'});
         }
         
         if (!user.passwordHash) {
+            console.log(`  ❌ 用户未设置密码: ${email}`);
             return res.status(400).json({message: '该账户未设置密码，请使用第三方登录'});
         }
         
         // 验证密码
         const isMatch = await bcrypt.compare(password, user.passwordHash);
         if (!isMatch) {
+            console.log(`  ❌ 密码错误: ${email}`);
             return res.status(400).json({message: '邮箱或密码错误'});
         }
         
         // 生成token
         const token = jwt.sign({userId: user._id}, JWT_SECRET, {expiresIn: '7d'});
+        
+        console.log(`  ✅ 登录成功，生成 Token:`, token.substring(0, 20) + '...');
+        console.log(`  👤 用户信息:`, {
+            _id: user._id,
+            username: user.username,
+            email: user.email,
+            role: user.role,
+            avatarUrl: user.avatarUrl
+        });
         
         logger.info('用户登录成功', {
             userId: user._id,
@@ -107,10 +124,13 @@ router.post('/login', async (req, res) => {
             user: {
                 _id: user._id, 
                 username: user.username, 
-                email: user.email
+                email: user.email,
+                role: user.role,
+                avatarUrl: user.avatarUrl
             }
         });
     } catch (error: any) {
+        console.log(`  ❌ 登录异常:`, error.message);
         logger.error('用户登录失败', error, {
             email: req.body.email,
             ip: req.ip,

@@ -187,39 +187,40 @@ onMounted(async () => {
 
 // 统计卡片数据
 const stats = computed(() => {
-  if (!userStats.value) {
+  // 加载期间显示加载状态，而不是默认的 Top 100%
+  if (!userStats.value || isLoadingStats.value) {
     return [
       {
         label: '总学习时长',
-        value: '0h',
+        value: '加载中...',
         icon: 'fa-solid fa-clock',
         color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         trend: 'up',
-        change: '0%'
+        change: '--'
       },
       {
         label: '完成课程',
-        value: '0',
+        value: '加载中...',
         icon: 'fa-solid fa-book-open',
         color: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
         trend: 'up',
-        change: '0%'
+        change: '--'
       },
       {
         label: '学习积分',
-        value: '0',
+        value: '加载中...',
         icon: 'fa-solid fa-star',
         color: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
         trend: 'up',
-        change: '0%'
+        change: '--'
       },
       {
         label: '总排名',
-        value: 'Top 100%',
+        value: '加载中...',
         icon: 'fa-solid fa-ranking-star',
         color: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
         trend: 'up',
-        change: '0%'
+        change: '--'
       }
     ];
   }

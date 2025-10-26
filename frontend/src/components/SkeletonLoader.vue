@@ -34,14 +34,20 @@
       </div>
       <div class="skeleton-chart-body">
         <div class="skeleton-bars">
-          <div v-for="i in 5" :key="i" class="skeleton-bar" :style="{ height: `${Math.random() * 60 + 20}%` }"></div>
+          <div v-for="i in 5"
+:key="i"
+class="skeleton-bar"
+:style="{ height: `${Math.random() * 60 + 20}%` }"></div>
         </div>
       </div>
     </div>
     
     <!-- 文本骨架屏 -->
     <div v-else-if="type === 'text'" class="skeleton-text">
-      <div v-for="i in rows" :key="i" class="skeleton-line" :style="{ width: i === rows ? '60%' : '100%' }"></div>
+      <div v-for="i in rows"
+:key="i"
+class="skeleton-line"
+:style="{ width: i === rows ? '60%' : '100%' }"></div>
     </div>
     
     <!-- 图片骨架屏 -->

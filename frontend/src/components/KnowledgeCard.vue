@@ -72,9 +72,22 @@ const displayTitle = computed(() => {
 
 /* 将 :hover 效果从 .knowledge-card 移到 .card-link 上，确保悬浮效果正确 */
 .card-link:hover .knowledge-card {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 12px 32px rgba(138, 127, 251, 0.3);
   border-color: var(--primary-color);
+}
+
+/* 悬浮时增强左侧边框的发光效果 */
+.card-link:hover .knowledge-card.status-completed {
+  box-shadow: 0 12px 32px rgba(74, 222, 128, 0.25), -4px 0 12px rgba(74, 222, 128, 0.4);
+}
+
+.card-link:hover .knowledge-card.status-in_progress {
+  box-shadow: 0 12px 32px rgba(250, 204, 21, 0.25), -4px 0 12px rgba(250, 204, 21, 0.4);
+}
+
+.card-link:hover .knowledge-card.status-not_started {
+  box-shadow: 0 12px 32px rgba(96, 165, 250, 0.25), -4px 0 12px rgba(96, 165, 250, 0.4);
 }
 
 .knowledge-card {
@@ -84,9 +97,10 @@ const displayTitle = computed(() => {
   padding: 24px;
   display: flex;
   flex-direction: column;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   border-left: 4px solid var(--card-border); /* 默认左侧边框 */
   height: 100%; /* 确保卡片在链接内高度 100% */
+  will-change: transform, box-shadow;
 }
 
 /* 根据不同状态改变左侧边框颜色 */
@@ -150,12 +164,39 @@ const displayTitle = computed(() => {
   padding: 8px 16px;
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   font-size: 14px;
+  position: relative;
+  overflow: hidden;
+}
+
+.learn-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: var(--primary-color);
+  transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: -1;
+}
+
+.learn-btn:hover::before {
+  left: 0;
 }
 
 .learn-btn:hover {
-  background-color: var(--primary-color);
   color: white;
+  transform: translateX(2px);
+  box-shadow: 0 4px 12px rgba(138, 127, 251, 0.3);
+}
+
+.learn-btn i {
+  transition: transform 0.3s ease;
+}
+
+.learn-btn:hover i {
+  transform: translateX(4px);
 }
 </style>

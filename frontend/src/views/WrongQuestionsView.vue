@@ -1,74 +1,125 @@
 <template>
   <div class="wrong-questions-container">
-    <!-- 页面头部 -->
-    <div class="page-header">
-      <div class="header-content">
-        <h1><i class="fa-solid fa-book-bookmark"></i> 我的错题本</h1>
-        <p class="subtitle">温故而知新，可以为师矣</p>
+      <!-- 页面头部 -->
+      <div class="page-header">
+        <div class="header-content">
+          <h1><i class="fa-solid fa-book-bookmark"></i> 我的错题本</h1>
+          <p class="subtitle">温故而知新，可以为师矣</p>
+        </div>
       </div>
-    </div>
 
-    <!-- 统计卡片 -->
-    <div class="stats-grid" v-if="stats">
-      <div class="stat-card">
-        <div class="stat-icon" style="background: linear-gradient(135deg, #ff4d4f, #ff7875)">
-          <i class="fa-solid fa-xmark"></i>
-        </div>
-        <div class="stat-content">
-          <div class="stat-value">{{ stats.totalWrong }}</div>
-          <div class="stat-label">总错题数</div>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon" style="background: linear-gradient(135deg, #52c41a, #73d13d)">
-          <i class="fa-solid fa-check"></i>
-        </div>
-        <div class="stat-content">
-          <div class="stat-value">{{ stats.totalMastered }}</div>
-          <div class="stat-label">已掌握</div>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon" style="background: linear-gradient(135deg, #ffc107, #ffd666)">
-          <i class="fa-solid fa-clock"></i>
-        </div>
-        <div class="stat-content">
-          <div class="stat-value">{{ stats.totalUnmastered }}</div>
-          <div class="stat-label">待掌握</div>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon" style="background: linear-gradient(135deg, var(--primary-color), #9254de)">
-          <i class="fa-solid fa-percent"></i>
-        </div>
-        <div class="stat-content">
-          <div class="stat-value">{{ stats.masteryRate }}%</div>
-          <div class="stat-label">掌握率</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 薄弱知识点 -->
-    <div class="weak-points-section" v-if="stats && stats.weakestPoints && stats.weakestPoints.length > 0">
-      <h2><i class="fa-solid fa-triangle-exclamation"></i> 最薄弱的知识点</h2>
-      <div class="weak-points-grid">
-        <div 
-          v-for="point in stats.weakestPoints" 
-          :key="point.pointId"
-          class="weak-point-card"
-          @click="filterByPoint(point.pointId)"
-        >
-          <div class="point-info">
-            <h3>{{ point.pointTitle }}</h3>
-            <span class="subject-badge">{{ point.subject }}</span>
+      <!-- 统计卡片 - 始终显示占位 -->
+      <div class="stats-grid">
+        <div class="stat-card" v-if="stats">
+          <div class="stat-icon" style="background: linear-gradient(135deg, #ff4d4f, #ff7875)">
+            <i class="fa-solid fa-xmark"></i>
           </div>
-          <div class="point-count">
-            <span class="count-value">{{ point.count }}</span>
-            <span class="count-label">道错题</span>
+          <div class="stat-content">
+            <div class="stat-value">{{ stats.totalWrong }}</div>
+            <div class="stat-label">总错题数</div>
           </div>
         </div>
+        <div v-else class="stat-card skeleton-card">
+          <div class="skeleton skeleton-icon"></div>
+          <div class="stat-content">
+            <div class="skeleton skeleton-value"></div>
+            <div class="skeleton skeleton-label"></div>
+          </div>
+        </div>
+
+        <div class="stat-card" v-if="stats">
+          <div class="stat-icon" style="background: linear-gradient(135deg, #52c41a, #73d13d)">
+            <i class="fa-solid fa-check"></i>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value">{{ stats.totalMastered }}</div>
+            <div class="stat-label">已掌握</div>
+          </div>
+        </div>
+        <div v-else class="stat-card skeleton-card">
+          <div class="skeleton skeleton-icon"></div>
+          <div class="stat-content">
+            <div class="skeleton skeleton-value"></div>
+            <div class="skeleton skeleton-label"></div>
+          </div>
+        </div>
+
+        <div class="stat-card" v-if="stats">
+          <div class="stat-icon" style="background: linear-gradient(135deg, #ffc107, #ffd666)">
+            <i class="fa-solid fa-clock"></i>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value">{{ stats.totalUnmastered }}</div>
+            <div class="stat-label">待掌握</div>
+          </div>
+        </div>
+        <div v-else class="stat-card skeleton-card">
+          <div class="skeleton skeleton-icon"></div>
+          <div class="stat-content">
+            <div class="skeleton skeleton-value"></div>
+            <div class="skeleton skeleton-label"></div>
+          </div>
+        </div>
+
+        <div class="stat-card" v-if="stats">
+          <div class="stat-icon" style="background: linear-gradient(135deg, var(--primary-color), #9254de)">
+            <i class="fa-solid fa-percent"></i>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value">{{ stats.masteryRate }}%</div>
+            <div class="stat-label">掌握率</div>
+          </div>
+        </div>
+        <div v-else class="stat-card skeleton-card">
+          <div class="skeleton skeleton-icon"></div>
+          <div class="stat-content">
+            <div class="skeleton skeleton-value"></div>
+            <div class="skeleton skeleton-label"></div>
+          </div>
+        </div>
       </div>
-    </div>
+
+      <!-- 薄弱知识点 - 始终显示占位 -->
+      <div class="weak-points-section">
+        <h2 v-if="stats && stats.weakestPoints && stats.weakestPoints.length > 0">
+          <i class="fa-solid fa-triangle-exclamation"></i> 最薄弱的知识点
+        </h2>
+        <div v-else class="skeleton skeleton-section-title"></div>
+        
+        <div class="weak-points-grid">
+          <!-- 有数据时显示实际内容 -->
+          <template v-if="stats && stats.weakestPoints && stats.weakestPoints.length > 0">
+            <div 
+              v-for="point in stats.weakestPoints" 
+              :key="point.pointId"
+              class="weak-point-card"
+              @click="filterByPoint(point.pointId)"
+            >
+              <div class="point-info">
+                <h3>{{ point.pointTitle }}</h3>
+                <span class="subject-badge">{{ point.subject }}</span>
+              </div>
+              <div class="point-count">
+                <span class="count-value">{{ point.count }}</span>
+                <span class="count-label">道错题</span>
+              </div>
+            </div>
+          </template>
+          
+          <!-- 无数据时显示骨架屏 -->
+          <template v-else>
+            <div v-for="i in 5" :key="i" class="weak-point-card skeleton-card">
+              <div class="point-info">
+                <div class="skeleton skeleton-point-title"></div>
+                <div class="skeleton skeleton-badge"></div>
+              </div>
+              <div class="point-count">
+                <div class="skeleton skeleton-count"></div>
+              </div>
+            </div>
+          </template>
+        </div>
+      </div>
 
     <!-- 筛选和操作栏 -->
     <div class="filters-bar">
@@ -103,25 +154,19 @@
       </div>
     </div>
 
-    <!-- 加载状态 -->
-    <div v-if="isLoading" class="loading-state">
-      <i class="fa-solid fa-spinner fa-spin"></i>
-      <p>正在加载错题...</p>
-    </div>
-
-    <!-- 错题列表 -->
-    <div v-else-if="filteredQuestions.length > 0" class="questions-list">
-      <WrongQuestionCard
-        v-for="question in filteredQuestions"
-        :key="question._id"
-        :question="question"
-        :is-analyzing="analyzingQuestionId === question._id"
-        @analyze="handleAnalyze"
-        @master="handleMaster"
-        @reset="handleReset"
-        @delete="handleDelete"
-      />
-    </div>
+      <!-- 错题列表 -->
+      <div v-if="filteredQuestions.length > 0" class="questions-list">
+        <WrongQuestionCard
+          v-for="question in filteredQuestions"
+          :key="question._id"
+          :question="question"
+          :is-analyzing="analyzingQuestionId === question._id"
+          @analyze="handleAnalyze"
+          @master="handleMaster"
+          @reset="handleReset"
+          @delete="handleDelete"
+        />
+      </div>
 
     <!-- 空状态 -->
     <div v-else class="empty-state">
@@ -365,6 +410,179 @@ onMounted(async () => {
   margin: 0 auto;
   padding: 40px 20px;
   min-height: calc(100vh - 80px);
+}
+
+/* 骨架屏样式 */
+.skeleton-loading {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(138, 127, 251, 0.1) 25%,
+    rgba(138, 127, 251, 0.2) 50%,
+    rgba(138, 127, 251, 0.1) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.skeleton-title {
+  width: 320px;
+  height: 40px;
+  margin: 0 auto 12px;
+  max-width: 100%;
+}
+
+.skeleton-subtitle {
+  width: 240px;
+  height: 20px;
+  margin: 0 auto;
+  max-width: 100%;
+}
+
+.skeleton-card {
+  background: var(--card-bg) !important;
+  border: 1px solid var(--card-border) !important;
+  pointer-events: none;
+}
+
+.skeleton-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+.skeleton-value {
+  width: 60px;
+  height: 32px;
+  margin-bottom: 8px;
+}
+
+.skeleton-label {
+  width: 80px;
+  height: 16px;
+}
+
+.skeleton-section-title {
+  width: 200px;
+  height: 28px;
+  margin-bottom: 20px;
+}
+
+.skeleton-point-title {
+  width: 180px;
+  height: 20px;
+  margin-bottom: 8px;
+}
+
+.skeleton-badge {
+  width: 60px;
+  height: 20px;
+  border-radius: 10px;
+}
+
+.skeleton-count {
+  width: 40px;
+  height: 32px;
+  margin: 0 auto;
+}
+
+.skeleton-filter-btn {
+  width: 120px;
+  height: 40px;
+  border-radius: 10px;
+}
+
+.skeleton-select {
+  width: 150px;
+  height: 40px;
+  border-radius: 10px;
+}
+
+.skeleton-question-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--border-radius);
+  padding: 24px;
+  margin-bottom: 20px;
+}
+
+.skeleton-question-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.skeleton-question-title {
+  width: 60%;
+  height: 24px;
+}
+
+.skeleton-badge-small {
+  width: 80px;
+  height: 24px;
+  border-radius: 12px;
+}
+
+.skeleton-question-content {
+  width: 100%;
+  height: 60px;
+  margin-bottom: 16px;
+}
+
+.skeleton-question-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.skeleton-option {
+  width: 100%;
+  height: 44px;
+  border-radius: 8px;
+}
+
+.skeleton-question-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 16px;
+  border-top: 1px solid var(--card-border);
+}
+
+.skeleton-footer-text {
+  width: 150px;
+  height: 16px;
+}
+
+.skeleton-footer-btn {
+  width: 100px;
+  height: 36px;
+  border-radius: 8px;
 }
 
 .page-header {
@@ -664,6 +882,40 @@ onMounted(async () => {
   }
 
   .subject-select {
+    width: 100%;
+  }
+
+  /* 骨架屏移动端适配 */
+  .skeleton-title {
+    width: 240px;
+    height: 32px;
+  }
+
+  .skeleton-subtitle {
+    width: 180px;
+    height: 18px;
+  }
+
+  .skeleton-icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .skeleton-value {
+    width: 50px;
+    height: 24px;
+  }
+
+  .skeleton-question-title {
+    width: 70%;
+  }
+
+  .skeleton-filter-btn {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .skeleton-select {
     width: 100%;
   }
 }

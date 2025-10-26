@@ -15,7 +15,10 @@
             </div>
           </div>
           <div class="confetti-container">
-            <div v-for="i in 30" :key="i" class="confetti" :style="getConfettiStyle(i)"></div>
+            <div v-for="i in 30"
+:key="i"
+class="confetti"
+:style="getConfettiStyle(i)"></div>
           </div>
         </div>
       </div>

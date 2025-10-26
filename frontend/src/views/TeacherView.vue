@@ -12,90 +12,144 @@
             </el-button>
           </div>
 
-          <!-- 统计卡片 -->
-          <el-row :gutter="20" class="stats-cards" v-if="classes.length > 0">
-            <el-col :xs="24" :sm="12" :md="6">
-              <div class="stat-card stat-primary">
-                <div class="stat-icon">
-                  <i class="fa-solid fa-chalkboard"></i>
+          <!-- 加载骨架屏 -->
+          <template v-if="loading">
+            <!-- 统计卡片骨架屏 -->
+            <el-row :gutter="20" class="stats-cards">
+              <el-col :xs="24"
+:sm="12"
+:md="6"
+v-for="i in 4"
+:key="'stat-skeleton-' + i">
+                <div class="stat-card skeleton-stat-card">
+                  <div class="stat-icon skeleton skeleton-icon"></div>
+                  <div class="stat-content">
+                    <div class="skeleton skeleton-stat-label"></div>
+                    <div class="skeleton skeleton-stat-value"></div>
+                  </div>
                 </div>
-                <div class="stat-content">
-                  <div class="stat-label">班级总数</div>
-                  <div class="stat-value">{{ classes.length }}</div>
-                </div>
-              </div>
-            </el-col>
-            <el-col :xs="24" :sm="12" :md="6">
-              <div class="stat-card stat-success">
-                <div class="stat-icon">
-                  <i class="fa-solid fa-users"></i>
-                </div>
-                <div class="stat-content">
-                  <div class="stat-label">学生总数</div>
-                  <div class="stat-value">{{ totalStudents }}</div>
-                </div>
-              </div>
-            </el-col>
-            <el-col :xs="24" :sm="12" :md="6">
-              <div class="stat-card stat-warning">
-                <div class="stat-icon">
-                  <i class="fa-solid fa-clipboard-list"></i>
-                </div>
-                <div class="stat-content">
-                  <div class="stat-label">作业总数</div>
-                  <div class="stat-value">{{ assignments.length }}</div>
-                </div>
-              </div>
-            </el-col>
-            <el-col :xs="24" :sm="12" :md="6">
-              <div class="stat-card stat-info">
-                <div class="stat-icon">
-                  <i class="fa-solid fa-clock"></i>
-                </div>
-                <div class="stat-content">
-                  <div class="stat-label">本周活跃</div>
-                  <div class="stat-value">{{ activeStudentsThisWeek }}</div>
-                </div>
-              </div>
-            </el-col>
-          </el-row>
+              </el-col>
+            </el-row>
 
-          <el-row :gutter="20" v-if="classes.length > 0">
-            <el-col :xs="24" :sm="12" :lg="8" v-for="cls in classes" :key="cls._id">
-              <el-card class="class-card" shadow="hover" @click="viewClassDetail(cls)">
-                <template #header>
+            <!-- 班级卡片骨架屏 -->
+            <el-row :gutter="20" style="margin-top: 20px;">
+              <el-col :xs="24"
+:sm="12"
+:lg="8"
+v-for="i in 3"
+:key="'class-skeleton-' + i">
+                <div class="class-card skeleton-class-card">
                   <div class="card-header">
-                    <span class="class-name">{{ cls.name }}</span>
-                    <el-tag :type="cls.status === 'active' ? 'success' : 'info'">
-                      {{ cls.status === 'active' ? '活跃' : '已归档' }}
-                    </el-tag>
+                    <div class="skeleton skeleton-class-name"></div>
+                    <div class="skeleton skeleton-tag"></div>
                   </div>
-                </template>
-                <div class="class-info">
-                  <p v-if="cls.description" class="description">{{ cls.description }}</p>
-                  <div class="meta">
-                    <div class="meta-item">
-                      <el-icon><User /></el-icon>
-                      <span>{{ cls.students.filter((s: any) => s.status === 'active').length }} 名学生</span>
+                  <div class="class-info">
+                    <div class="skeleton skeleton-description"></div>
+                    <div class="skeleton skeleton-description" style="width: 70%; margin-top: 8px;"></div>
+                    <div class="meta" style="margin-top: 16px;">
+                      <div class="skeleton skeleton-meta-item"></div>
+                      <div class="skeleton skeleton-meta-item"></div>
                     </div>
-                    <div class="meta-item" v-if="cls.subject">
-                      <el-icon><Reading /></el-icon>
-                      <span>{{ cls.subject }}</span>
+                    <div class="invite-code" style="margin-top: 16px;">
+                      <div class="skeleton skeleton-invite-code"></div>
                     </div>
-                  </div>
-                  <div class="invite-code">
-                    <span>邀请码：</span>
-                    <el-tag>{{ cls.inviteCode }}</el-tag>
-                    <el-button link @click.stop="copyInviteCode(cls.inviteCode)">
-                      <el-icon><CopyDocument /></el-icon>
-                    </el-button>
                   </div>
                 </div>
-              </el-card>
-            </el-col>
-          </el-row>
+              </el-col>
+            </el-row>
+          </template>
 
-          <el-empty v-else description="还没有创建班级" />
+          <!-- 实际内容 -->
+          <template v-else>
+            <!-- 统计卡片 -->
+            <el-row :gutter="20" class="stats-cards" v-if="classes.length > 0">
+              <el-col :xs="24" :sm="12" :md="6">
+                <div class="stat-card stat-primary">
+                  <div class="stat-icon">
+                    <i class="fa-solid fa-chalkboard"></i>
+                  </div>
+                  <div class="stat-content">
+                    <div class="stat-label">班级总数</div>
+                    <div class="stat-value">{{ classes.length }}</div>
+                  </div>
+                </div>
+              </el-col>
+              <el-col :xs="24" :sm="12" :md="6">
+                <div class="stat-card stat-success">
+                  <div class="stat-icon">
+                    <i class="fa-solid fa-users"></i>
+                  </div>
+                  <div class="stat-content">
+                    <div class="stat-label">学生总数</div>
+                    <div class="stat-value">{{ totalStudents }}</div>
+                  </div>
+                </div>
+              </el-col>
+              <el-col :xs="24" :sm="12" :md="6">
+                <div class="stat-card stat-warning">
+                  <div class="stat-icon">
+                    <i class="fa-solid fa-clipboard-list"></i>
+                  </div>
+                  <div class="stat-content">
+                    <div class="stat-label">作业总数</div>
+                    <div class="stat-value">{{ assignments.length }}</div>
+                  </div>
+                </div>
+              </el-col>
+              <el-col :xs="24" :sm="12" :md="6">
+                <div class="stat-card stat-info">
+                  <div class="stat-icon">
+                    <i class="fa-solid fa-clock"></i>
+                  </div>
+                  <div class="stat-content">
+                    <div class="stat-label">本周活跃</div>
+                    <div class="stat-value">{{ activeStudentsThisWeek }}</div>
+                  </div>
+                </div>
+              </el-col>
+            </el-row>
+
+            <el-row :gutter="20" v-if="classes.length > 0">
+              <el-col :xs="24"
+:sm="12"
+:lg="8"
+v-for="cls in classes"
+:key="cls._id">
+                <el-card class="class-card" shadow="hover" @click="viewClassDetail(cls)">
+                  <template #header>
+                    <div class="card-header">
+                      <span class="class-name">{{ cls.name }}</span>
+                      <el-tag :type="cls.status === 'active' ? 'success' : 'info'">
+                        {{ cls.status === 'active' ? '活跃' : '已归档' }}
+                      </el-tag>
+                    </div>
+                  </template>
+                  <div class="class-info">
+                    <p v-if="cls.description" class="description">{{ cls.description }}</p>
+                    <div class="meta">
+                      <div class="meta-item">
+                        <el-icon><User /></el-icon>
+                        <span>{{ cls.students.filter((s: any) => s.status === 'active').length }} 名学生</span>
+                      </div>
+                      <div class="meta-item" v-if="cls.subject">
+                        <el-icon><Reading /></el-icon>
+                        <span>{{ cls.subject }}</span>
+                      </div>
+                    </div>
+                    <div class="invite-code">
+                      <span>邀请码：</span>
+                      <el-tag>{{ cls.inviteCode }}</el-tag>
+                      <el-button link @click.stop="copyInviteCode(cls.inviteCode)">
+                        <el-icon><CopyDocument /></el-icon>
+                      </el-button>
+                    </div>
+                  </div>
+                </el-card>
+              </el-col>
+            </el-row>
+
+            <el-empty v-else description="还没有创建班级" />
+          </template>
         </div>
       </div>
 
@@ -110,13 +164,19 @@
             </el-button>
           </div>
 
-          <el-alert v-if="classes.length === 0" type="warning" :closable="false" style="margin-bottom: 20px;">
+          <el-alert v-if="classes.length === 0"
+type="warning"
+:closable="false"
+style="margin-bottom: 20px;">
             请先创建班级才能布置作业
           </el-alert>
 
           <!-- 作业筛选 -->
-          <div class="filter-section" v-if="assignments.length > 0">
-            <el-select v-model="assignmentFilter.classId" placeholder="筛选班级" clearable style="width: 200px; margin-right: 12px;">
+          <div class="filter-section" v-if="assignments.length > 0 && !loading">
+            <el-select v-model="assignmentFilter.classId"
+placeholder="筛选班级"
+clearable
+style="width: 200px; margin-right: 12px;">
               <el-option label="全部班级" value="" />
               <el-option
                 v-for="cls in classes"
@@ -125,7 +185,10 @@
                 :value="cls._id"
               />
             </el-select>
-            <el-select v-model="assignmentFilter.status" placeholder="筛选状态" clearable style="width: 150px;">
+            <el-select v-model="assignmentFilter.status"
+placeholder="筛选状态"
+clearable
+style="width: 150px;">
               <el-option label="全部状态" value="" />
               <el-option label="草稿" value="draft" />
               <el-option label="已发布" value="published" />
@@ -133,7 +196,29 @@
             </el-select>
           </div>
 
-          <el-table :data="filteredAssignments" v-loading="loading" class="assignment-table">
+          <!-- 表格骨架屏 -->
+          <div v-if="loading" class="table-skeleton">
+            <div class="skeleton-table-header">
+              <div class="skeleton skeleton-th" style="width: 25%;"></div>
+              <div class="skeleton skeleton-th" style="width: 15%;"></div>
+              <div class="skeleton skeleton-th" style="width: 10%;"></div>
+              <div class="skeleton skeleton-th" style="width: 15%;"></div>
+              <div class="skeleton skeleton-th" style="width: 10%;"></div>
+              <div class="skeleton skeleton-th" style="width: 15%;"></div>
+              <div class="skeleton skeleton-th" style="width: 10%;"></div>
+            </div>
+            <div class="skeleton-table-row" v-for="i in 5" :key="'row-' + i">
+              <div class="skeleton skeleton-td" style="width: 25%;"></div>
+              <div class="skeleton skeleton-td" style="width: 15%;"></div>
+              <div class="skeleton skeleton-td" style="width: 10%;"></div>
+              <div class="skeleton skeleton-td" style="width: 15%;"></div>
+              <div class="skeleton skeleton-td" style="width: 10%;"></div>
+              <div class="skeleton skeleton-td" style="width: 15%;"></div>
+              <div class="skeleton skeleton-td" style="width: 10%;"></div>
+            </div>
+          </div>
+
+          <el-table v-else :data="filteredAssignments" class="assignment-table">
             <el-table-column prop="title" label="作业标题" min-width="200">
               <template #default="{ row }">
                 <div class="assignment-title-cell">
@@ -190,7 +275,10 @@
                   <i class="fa-solid fa-chart-bar"></i> 统计
                 </el-button>
                 <el-button link @click="editAssignment(row)">编辑</el-button>
-                <el-button link type="primary" v-if="row.status === 'draft'" @click="publishAssignment(row)">
+                <el-button link
+type="primary"
+v-if="row.status === 'draft'"
+@click="publishAssignment(row)">
                   发布
                 </el-button>
                 <el-button link type="danger" @click="deleteAssignment(row)">
@@ -218,56 +306,100 @@
           </div>
 
           <div v-if="selectedClassId">
-            <!-- 学生统计卡片 -->
-            <el-row :gutter="20" class="student-stats-cards" v-if="studentStats.length > 0">
-              <el-col :xs="24" :sm="12" :md="6">
-                <div class="mini-stat-card">
-                  <div class="mini-stat-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                    <i class="fa-solid fa-user-graduate"></i>
+            <!-- 加载骨架屏 -->
+            <template v-if="loading">
+              <!-- 统计卡片骨架屏 -->
+              <el-row :gutter="20" class="student-stats-cards">
+                <el-col :xs="24"
+:sm="12"
+:md="6"
+v-for="i in 4"
+:key="'mini-stat-skeleton-' + i">
+                  <div class="mini-stat-card skeleton-mini-stat-card">
+                    <div class="skeleton skeleton-mini-icon"></div>
+                    <div class="mini-stat-info">
+                      <div class="skeleton skeleton-mini-label"></div>
+                      <div class="skeleton skeleton-mini-value"></div>
+                    </div>
                   </div>
-                  <div class="mini-stat-info">
-                    <div class="mini-stat-label">学生总数</div>
-                    <div class="mini-stat-value">{{ studentStats.length }}</div>
-                  </div>
-                </div>
-              </el-col>
-              <el-col :xs="24" :sm="12" :md="6">
-                <div class="mini-stat-card">
-                  <div class="mini-stat-icon" style="background: linear-gradient(135deg, #48c774 0%, #00b894 100%);">
-                    <i class="fa-solid fa-fire"></i>
-                  </div>
-                  <div class="mini-stat-info">
-                    <div class="mini-stat-label">平均分</div>
-                    <div class="mini-stat-value">{{ calculateAverageScore() }}</div>
-                  </div>
-                </div>
-              </el-col>
-              <el-col :xs="24" :sm="12" :md="6">
-                <div class="mini-stat-card">
-                  <div class="mini-stat-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
-                    <i class="fa-solid fa-clock"></i>
-                  </div>
-                  <div class="mini-stat-info">
-                    <div class="mini-stat-label">总学习时长</div>
-                    <div class="mini-stat-value">{{ calculateTotalHours() }}h</div>
-                  </div>
-                </div>
-              </el-col>
-              <el-col :xs="24" :sm="12" :md="6">
-                <div class="mini-stat-card">
-                  <div class="mini-stat-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
-                    <i class="fa-solid fa-check-circle"></i>
-                  </div>
-                  <div class="mini-stat-info">
-                    <div class="mini-stat-label">知识点掌握</div>
-                    <div class="mini-stat-value">{{ calculateKnowledgeMastery() }}%</div>
-                  </div>
-                </div>
-              </el-col>
-            </el-row>
+                </el-col>
+              </el-row>
 
-            <!-- 学生列表 -->
-            <el-table :data="studentStats" v-loading="loading" class="student-table">
+              <!-- 表格骨架屏 -->
+              <div class="table-skeleton" style="margin-top: 20px;">
+                <div class="skeleton-table-header">
+                  <div class="skeleton skeleton-th" style="width: 5%;"></div>
+                  <div class="skeleton skeleton-th" style="width: 20%;"></div>
+                  <div class="skeleton skeleton-th" style="width: 15%;"></div>
+                  <div class="skeleton skeleton-th" style="width: 15%;"></div>
+                  <div class="skeleton skeleton-th" style="width: 15%;"></div>
+                  <div class="skeleton skeleton-th" style="width: 15%;"></div>
+                  <div class="skeleton skeleton-th" style="width: 15%;"></div>
+                </div>
+                <div class="skeleton-table-row" v-for="i in 5" :key="'student-row-' + i">
+                  <div class="skeleton skeleton-td" style="width: 5%;"></div>
+                  <div class="skeleton skeleton-td" style="width: 20%;"></div>
+                  <div class="skeleton skeleton-td" style="width: 15%;"></div>
+                  <div class="skeleton skeleton-td" style="width: 15%;"></div>
+                  <div class="skeleton skeleton-td" style="width: 15%;"></div>
+                  <div class="skeleton skeleton-td" style="width: 15%;"></div>
+                  <div class="skeleton skeleton-td" style="width: 15%;"></div>
+                </div>
+              </div>
+            </template>
+
+            <!-- 实际内容 -->
+            <template v-else>
+              <!-- 学生统计卡片 -->
+              <el-row :gutter="20" class="student-stats-cards" v-if="studentStats.length > 0">
+                <el-col :xs="24" :sm="12" :md="6">
+                  <div class="mini-stat-card">
+                    <div class="mini-stat-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                      <i class="fa-solid fa-user-graduate"></i>
+                    </div>
+                    <div class="mini-stat-info">
+                      <div class="mini-stat-label">学生总数</div>
+                      <div class="mini-stat-value">{{ studentStats.length }}</div>
+                    </div>
+                  </div>
+                </el-col>
+                <el-col :xs="24" :sm="12" :md="6">
+                  <div class="mini-stat-card">
+                    <div class="mini-stat-icon" style="background: linear-gradient(135deg, #48c774 0%, #00b894 100%);">
+                      <i class="fa-solid fa-fire"></i>
+                    </div>
+                    <div class="mini-stat-info">
+                      <div class="mini-stat-label">平均分</div>
+                      <div class="mini-stat-value">{{ calculateAverageScore() }}</div>
+                    </div>
+                  </div>
+                </el-col>
+                <el-col :xs="24" :sm="12" :md="6">
+                  <div class="mini-stat-card">
+                    <div class="mini-stat-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                      <i class="fa-solid fa-clock"></i>
+                    </div>
+                    <div class="mini-stat-info">
+                      <div class="mini-stat-label">总学习时长</div>
+                      <div class="mini-stat-value">{{ calculateTotalHours() }}h</div>
+                    </div>
+                  </div>
+                </el-col>
+                <el-col :xs="24" :sm="12" :md="6">
+                  <div class="mini-stat-card">
+                    <div class="mini-stat-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                      <i class="fa-solid fa-check-circle"></i>
+                    </div>
+                    <div class="mini-stat-info">
+                      <div class="mini-stat-label">知识点掌握</div>
+                      <div class="mini-stat-value">{{ calculateKnowledgeMastery() }}%</div>
+                    </div>
+                  </div>
+                </el-col>
+              </el-row>
+
+              <!-- 学生列表 -->
+              <el-table :data="studentStats" class="student-table">
               <el-table-column type="expand">
                 <template #default="{ row }">
                   <div class="student-detail">
@@ -314,7 +446,10 @@
                   </div>
                 </template>
               </el-table-column>
-              <el-table-column prop="userName" label="学生姓名" width="150" fixed>
+              <el-table-column prop="userName"
+label="学生姓名"
+width="150"
+fixed>
                 <template #default="{ row }">
                   <div class="student-name-cell">
                     <el-avatar :size="32" :src="row.avatar" style="margin-right: 8px;">
@@ -324,14 +459,26 @@
                   </div>
                 </template>
               </el-table-column>
-              <el-table-column prop="sessionCount" label="学习次数" width="120" sortable />
-              <el-table-column prop="totalTime" label="学习时长" width="120" sortable>
+              <el-table-column prop="sessionCount"
+label="学习次数"
+width="120"
+sortable />
+              <el-table-column prop="totalTime"
+label="学习时长"
+width="120"
+sortable>
               <template #default="{ row }">
                 {{ formatDuration(row.totalTime) }}
               </template>
             </el-table-column>
-              <el-table-column prop="totalKnowledge" label="知识点" width="100" sortable />
-              <el-table-column prop="masteredCount" label="已掌握" width="100" sortable />
+              <el-table-column prop="totalKnowledge"
+label="知识点"
+width="100"
+sortable />
+              <el-table-column prop="masteredCount"
+label="已掌握"
+width="100"
+sortable />
               <el-table-column label="掌握率" width="120">
               <template #default="{ row }">
                 <el-progress
@@ -341,7 +488,10 @@
                 />
               </template>
             </el-table-column>
-              <el-table-column prop="avgScore" label="平均分" width="120" sortable>
+              <el-table-column prop="avgScore"
+label="平均分"
+width="120"
+sortable>
                 <template #default="{ row }">
                   <el-tag :type="getScoreTagType(row.avgScore)">
                     {{ row.avgScore || 0 }} 分
@@ -356,6 +506,7 @@
               </template>
             </el-table-column>
           </el-table>
+          </template>
           </div>
 
           <el-empty v-else description="请选择班级查看学生情况" />
@@ -374,7 +525,10 @@
         <div class="tab-content">
           <div class="header-actions">
             <h2>数据分析</h2>
-            <el-select v-model="selectedAnalyticsClass" placeholder="选择班级" style="width: 200px;" @change="loadAnalyticsData">
+            <el-select v-model="selectedAnalyticsClass"
+placeholder="选择班级"
+style="width: 200px;"
+@change="loadAnalyticsData">
               <el-option
                 v-for="cls in classes"
                 :key="cls._id"
@@ -384,7 +538,62 @@
             </el-select>
           </div>
 
-          <div v-if="selectedAnalyticsClass" v-loading="analyticsLoading">
+          <!-- 加载骨架屏 -->
+          <div v-if="selectedAnalyticsClass && analyticsLoading">
+            <!-- 统计卡片骨架屏 -->
+            <el-row :gutter="20" class="analytics-overview">
+              <el-col :xs="12"
+:sm="6"
+v-for="i in 4"
+:key="'analytics-stat-skeleton-' + i">
+                <div class="analytics-stat-card skeleton-analytics-stat-card">
+                  <div class="skeleton skeleton-analytics-icon"></div>
+                  <div class="analytics-stat-content">
+                    <div class="skeleton skeleton-analytics-label"></div>
+                    <div class="skeleton skeleton-analytics-value"></div>
+                  </div>
+                </div>
+              </el-col>
+            </el-row>
+
+            <!-- 图表骨架屏 -->
+            <el-row :gutter="20" style="margin-top: 20px;">
+              <el-col :xs="24" :lg="12">
+                <div class="chart-skeleton-card">
+                  <div class="skeleton skeleton-card-header"></div>
+                  <div class="skeleton-chart-content">
+                    <div class="skeleton skeleton-chart-item" v-for="i in 5" :key="'ranking-' + i"></div>
+                  </div>
+                </div>
+              </el-col>
+              <el-col :xs="24" :lg="12">
+                <div class="chart-skeleton-card">
+                  <div class="skeleton skeleton-card-header"></div>
+                  <div class="skeleton-chart-content">
+                    <div class="skeleton skeleton-chart-item" v-for="i in 5" :key="'weak-' + i"></div>
+                  </div>
+                </div>
+              </el-col>
+            </el-row>
+
+            <!-- 图表骨架屏 -->
+            <el-row :gutter="20" style="margin-top: 20px;">
+              <el-col :xs="24" :lg="12">
+                <div class="chart-skeleton-card">
+                  <div class="skeleton skeleton-card-header"></div>
+                  <div class="skeleton skeleton-chart-area"></div>
+                </div>
+              </el-col>
+              <el-col :xs="24" :lg="12">
+                <div class="chart-skeleton-card">
+                  <div class="skeleton skeleton-card-header"></div>
+                  <div class="skeleton skeleton-chart-area"></div>
+                </div>
+              </el-col>
+            </el-row>
+          </div>
+
+          <div v-else-if="selectedAnalyticsClass && !analyticsLoading">
             <!-- 班级概览 -->
             <el-row :gutter="20" class="analytics-overview">
               <el-col :xs="12" :sm="6">
@@ -440,7 +649,10 @@
                   <template #header>
                     <div class="card-header">
                       <span>🏆 学生排名</span>
-                      <el-select v-model="rankingSortBy" size="small" style="width: 120px;" @change="loadStudentRankings">
+                      <el-select v-model="rankingSortBy"
+size="small"
+style="width: 120px;"
+@change="loadStudentRankings">
                         <el-option label="按分数" value="score" />
                         <el-option label="按学时" value="studyTime" />
                         <el-option label="按进度" value="progress" />
@@ -919,25 +1131,41 @@
               stripe
               :default-sort="{ prop: 'submittedAt', order: 'descending' }"
             >
-              <el-table-column prop="userName" label="学生姓名" width="150" sortable />
-              <el-table-column label="提交时间" width="180" sortable prop="submittedAt">
+              <el-table-column prop="userName"
+label="学生姓名"
+width="150"
+sortable />
+              <el-table-column label="提交时间"
+width="180"
+sortable
+prop="submittedAt">
                 <template #default="{ row }">
                   {{ formatDateTime(row.submittedAt) }}
                 </template>
               </el-table-column>
-              <el-table-column label="分数" width="120" sortable prop="score">
+              <el-table-column label="分数"
+width="120"
+sortable
+prop="score">
                 <template #default="{ row }">
                   <el-tag :type="getScoreTagType(row.score)">
                     {{ row.score }} 分
                   </el-tag>
                 </template>
               </el-table-column>
-              <el-table-column label="用时" width="120" sortable prop="timeSpent">
+              <el-table-column label="用时"
+width="120"
+sortable
+prop="timeSpent">
                 <template #default="{ row }">
                   {{ formatTimeSpent(row.timeSpent) }}
                 </template>
               </el-table-column>
-              <el-table-column label="尝试次数" width="120" align="center" sortable prop="attempt">
+              <el-table-column label="尝试次数"
+width="120"
+align="center"
+sortable
+prop="attempt">
                 <template #default="{ row }">
                   第 {{ row.attempt }} 次
                 </template>
@@ -951,7 +1179,10 @@
               </el-table-column>
               <el-table-column label="操作" width="150" fixed="right">
                 <template #default="{ row }">
-                  <el-button link type="primary" size="small" @click="viewSubmissionDetail(row)">
+                  <el-button link
+type="primary"
+size="small"
+@click="viewSubmissionDetail(row)">
                     <i class="fa-solid fa-file-lines"></i> 查看详情
                   </el-button>
                 </template>
@@ -3622,6 +3853,236 @@ html.light-theme .class-card:hover {
 .el-popper.is-light,
 .el-date-picker__popper {
   z-index: 3000 !important;
+}
+
+/* ==================== 骨架屏样式 ==================== */
+
+/* 基础骨架屏动画 */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(138, 127, 251, 0.1) 25%,
+    rgba(138, 127, 251, 0.2) 50%,
+    rgba(138, 127, 251, 0.1) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 统计卡片骨架屏 */
+.skeleton-stat-card {
+  animation: fadeIn 0.3s ease-out;
+  pointer-events: none;
+}
+
+.skeleton-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+}
+
+.skeleton-stat-label {
+  width: 70%;
+  height: 14px;
+  margin-bottom: 8px;
+}
+
+.skeleton-stat-value {
+  width: 50%;
+  height: 28px;
+}
+
+/* 班级卡片骨架屏 */
+.skeleton-class-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  pointer-events: none;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.skeleton-class-name {
+  width: 60%;
+  height: 20px;
+}
+
+.skeleton-tag {
+  width: 60px;
+  height: 24px;
+  border-radius: 4px;
+}
+
+.skeleton-description {
+  width: 100%;
+  height: 16px;
+}
+
+.skeleton-meta-item {
+  width: 100px;
+  height: 20px;
+  margin-right: 16px;
+  display: inline-block;
+}
+
+.skeleton-invite-code {
+  width: 150px;
+  height: 24px;
+}
+
+/* 表格骨架屏 */
+.table-skeleton {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  padding: 20px;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.skeleton-table-header {
+  display: flex;
+  gap: 12px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid var(--border-color);
+  margin-bottom: 12px;
+}
+
+.skeleton-th {
+  height: 20px;
+  border-radius: 4px;
+}
+
+.skeleton-table-row {
+  display: flex;
+  gap: 12px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.skeleton-td {
+  height: 16px;
+  border-radius: 4px;
+}
+
+/* Mini统计卡片骨架屏 */
+.skeleton-mini-stat-card {
+  pointer-events: none;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.skeleton-mini-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+}
+
+.skeleton-mini-label {
+  width: 70%;
+  height: 14px;
+  margin-bottom: 8px;
+}
+
+.skeleton-mini-value {
+  width: 50%;
+  height: 24px;
+}
+
+/* 数据分析卡片骨架屏 */
+.skeleton-analytics-stat-card {
+  pointer-events: none;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.skeleton-analytics-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+}
+
+.skeleton-analytics-label {
+  width: 70%;
+  height: 14px;
+  margin-bottom: 8px;
+}
+
+.skeleton-analytics-value {
+  width: 60%;
+  height: 28px;
+}
+
+/* 图表骨架屏 */
+.chart-skeleton-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 20px;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.skeleton-card-header {
+  width: 40%;
+  height: 20px;
+  margin-bottom: 20px;
+}
+
+.skeleton-chart-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.skeleton-chart-item {
+  width: 100%;
+  height: 60px;
+  border-radius: 8px;
+}
+
+.skeleton-chart-area {
+  width: 100%;
+  height: 300px;
+  border-radius: 8px;
+}
+
+/* 响应式 - 骨架屏 */
+@media (max-width: 768px) {
+  .skeleton-icon,
+  .skeleton-mini-icon,
+  .skeleton-analytics-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .skeleton-stat-value,
+  .skeleton-mini-value,
+  .skeleton-analytics-value {
+    height: 24px;
+  }
+
+  .skeleton-chart-area {
+    height: 200px;
+  }
 }
 </style>
 

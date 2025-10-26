@@ -2,9 +2,22 @@
  * 浏览器通知工具类
  */
 
+// 类型声明
+type NotificationPermissionType = 'default' | 'granted' | 'denied'
+
+interface NotificationOptions {
+  body?: string
+  icon?: string
+  badge?: string
+  tag?: string
+  data?: unknown
+  requireInteraction?: boolean
+  silent?: boolean
+}
+
 export class NotificationService {
   private static instance: NotificationService
-  private permission: NotificationPermission = 'default'
+  private permission: NotificationPermissionType = 'default'
 
   private constructor() {
     this.checkPermission()
@@ -110,7 +123,7 @@ export class NotificationService {
   /**
    * 获取当前权限状态
    */
-  getPermission(): NotificationPermission {
+  getPermission(): NotificationPermissionType {
     return this.permission
   }
 }

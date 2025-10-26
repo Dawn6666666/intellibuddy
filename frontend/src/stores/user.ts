@@ -43,25 +43,30 @@ export interface ChatSession {
 export type StudyActivity = [string, number][];
 
 export const useUserStore = defineStore('user', {
-    state: () => ({
-        user: null as UserInfo | null,
-        token: localStorage.getItem('authToken') || null,
-        progress: new Map<string, UserProgress['status']>(),
-        isLoading: false,
-        error: null as string | null,
-        isChatOpen: false,
-        chatContext: null as KnowledgePoint | null,
-        skillMastery: [] as { name: string; level: number }[],
-        studyActivityData: [] as StudyActivity,
+    state: () => {
+        console.log('🏗️ UserStore 初始化 state');
+        const token = localStorage.getItem('authToken');
+        console.log('  🔑 从 localStorage 读取 token:', token ? '存在' : '不存在');
+        return {
+            user: null as UserInfo | null,
+            token: token || null,
+            progress: {} as Record<string, UserProgress['status']>,
+            isLoading: false,
+            error: null as string | null,
+            isChatOpen: false,
+            chatContext: null as KnowledgePoint | null,
+            skillMastery: [] as { name: string; level: number }[],
+            studyActivityData: [] as StudyActivity,
 
-        // --- 聊天状态 ---
-        chatSessions: [] as ChatSession[],
-        activeChatId: null as string | null,
-        messages: [] as ChatMessage[],
+            // --- 聊天状态 ---
+            chatSessions: [] as ChatSession[],
+            activeChatId: null as string | null,
+            messages: [] as ChatMessage[],
 
-        // --- 推荐路径 ---
-        recommendedPath: [] as string[], // 推荐的知识点ID数组
-    }),
+            // --- 推荐路径 ---
+            recommendedPath: [] as string[], // 推荐的知识点ID数组
+        };
+    },
 
     getters: {
         isLoggedIn: (state) => !!state.user && !!state.token,
@@ -74,8 +79,8 @@ export const useUserStore = defineStore('user', {
         },
         progressStats(state) {
             const knowledgeStore = useKnowledgeStore();
-            const total = knowledgeStore.knowledgePoints.size;
-            const completed = Array.from(state.progress.values()).filter(s => s === 'completed').length;
+            const total = Object.keys(knowledgeStore.knowledgePoints).length;
+            const completed = Object.values(state.progress).filter(s => s === 'completed').length;
             const percentage = total > 0 ? (completed / total) * 100 : 0;
             return {total, completed, percentage};
         },
@@ -83,33 +88,68 @@ export const useUserStore = defineStore('user', {
 
     actions: {
         async fetchInitialData() {
-            if (!this.token) return;
+            console.log('🚀 [fetchInitialData] 开始执行');
+            console.log('  📋 当前 token:', this.token ? `存在 (${this.token.substring(0, 20)}...)` : '不存在');
+            
+            if (!this.token) {
+                console.warn('⚠️ [fetchInitialData] token 不存在，跳过数据加载');
+                return;
+            }
+            
             this.isLoading = true;
             const knowledgeStore = useKnowledgeStore();
             
             try {
+                console.log('📡 [fetchInitialData] 第一阶段：获取用户基本信息');
                 // 第一阶段：只获取用户基本信息（快速登录）
                 this.user = await apiGetMyProfile(this.token);
+                console.log('✅ [fetchInitialData] 用户信息获取成功:', this.user);
+                
                 // 更新 localStorage 中的用户信息
                 localStorage.setItem('user', JSON.stringify(this.user));
+                console.log('💾 [fetchInitialData] 用户信息已保存到 localStorage');
                 
+                console.log('📡 [fetchInitialData] 第二阶段：并行加载其他数据');
                 // 第二阶段：并行加载其他数据（后台加载，不阻塞登录）
                 Promise.all([
                     apiGetUserProgress(this.token).then(progressData => {
-                        this.progress = new Map(progressData.map((p: UserProgress) => [p.pointId, p.status]));
+                        console.log('📥 [Progress] API 返回的用户进度数据:', progressData);
+                        console.log('  📊 进度数据类型:', Array.isArray(progressData) ? '数组' : typeof progressData);
+                        console.log('  📊 进度数据长度:', Array.isArray(progressData) ? progressData.length : 'N/A');
+                        
+                        this.progress = progressData.reduce((acc: Record<string, UserProgress['status']>, p: UserProgress) => {
+                            acc[p.pointId] = p.status;
+                            return acc;
+                        }, {});
+                        console.log('✅ [Progress] 用户进度已更新，条目数:', Object.keys(this.progress).length);
+                        console.log('  📊 进度详情:', this.progress);
+                    }).catch(err => {
+                        console.error('❌ [Progress] 获取用户进度失败:', err);
+                        throw err;
                     }),
                     apiGetChats(this.token).then(chats => {
+                        console.log('💬 [Chats] 获取聊天会话成功，数量:', chats.length);
                         this.chatSessions = chats;
                         if (chats.length > 0) {
                             this.loadChatSession(chats[0]._id);
                         } else {
                             this.startNewChat();
                         }
+                    }).catch(err => {
+                        console.error('❌ [Chats] 获取聊天会话失败:', err);
                     }),
-                    knowledgeStore.fetchKnowledgePoints(),
-                    this.fetchRecommendedPath()
+                    knowledgeStore.fetchKnowledgePoints().then(() => {
+                        console.log('📚 [Knowledge] 知识点加载成功');
+                    }).catch(err => {
+                        console.error('❌ [Knowledge] 知识点加载失败:', err);
+                    }),
+                    this.fetchRecommendedPath().then(() => {
+                        console.log('🎯 [Recommend] 推荐路径加载成功');
+                    }).catch(err => {
+                        console.error('❌ [Recommend] 推荐路径加载失败:', err);
+                    })
                 ]).catch(err => {
-                    console.warn("部分数据加载失败，不影响登录:", err);
+                    console.warn("⚠️ [fetchInitialData] 部分数据加载失败，不影响登录:", err);
                 });
 
                 // 生成模拟数据（技能掌握度）
@@ -129,10 +169,12 @@ export const useUserStore = defineStore('user', {
                 });
 
             } catch (err) {
-                console.error("获取用户信息失败:", err);
+                console.error("❌ [fetchInitialData] 获取用户信息失败:", err);
+                console.error("  错误详情:", err);
                 throw err; // 只有关键信息失败才抛出错误
             } finally {
                 this.isLoading = false;
+                console.log('🏁 [fetchInitialData] 执行完成');
             }
         },
 
@@ -218,7 +260,7 @@ export const useUserStore = defineStore('user', {
             const knowledgeStore = useKnowledgeStore();
             this.user = null;
             this.token = null;
-            this.progress.clear();
+            this.progress = {};
             knowledgeStore.$reset();
             localStorage.removeItem('authToken');
             localStorage.removeItem('user');
@@ -231,8 +273,16 @@ export const useUserStore = defineStore('user', {
         },
 
         async tryLoginFromLocalStorage() {
+            console.log('🔄 [tryLoginFromLocalStorage] 尝试从 localStorage 恢复登录状态');
+            console.log('  📋 localStorage.authToken:', localStorage.getItem('authToken') ? '存在' : '不存在');
+            console.log('  📋 localStorage.user:', localStorage.getItem('user') ? '存在' : '不存在');
+            console.log('  📋 store.token:', this.token ? '存在' : '不存在');
+            
             if (this.token) {
+                console.log('✅ [tryLoginFromLocalStorage] Token 存在，开始加载数据');
                 await this.fetchInitialData();
+            } else {
+                console.warn('⚠️ [tryLoginFromLocalStorage] Token 不存在，跳过登录恢复');
             }
         },
 
@@ -317,5 +367,11 @@ export const useUserStore = defineStore('user', {
                 throw error;
             }
         },
+    },
+    
+    // 启用持久化
+    persist: {
+        key: 'intellibuddy-user',
+        paths: ['user', 'token', 'progress'], // 持久化用户信息、token 和进度
     },
 })

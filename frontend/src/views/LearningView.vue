@@ -1,6 +1,50 @@
 <template>
-  <div class="learning-container" v-if="knowledgePoint">
-    <header class="page-header">
+  <!-- 骨架屏加载状态 -->
+  <div v-if="isLoadingDetail" class="learning-container skeleton-loading">
+    <!-- 页面标题骨架 -->
+    <header class="page-header skeleton-header animate-fade-in-down">
+      <div class="skeleton-title"></div>
+      <div class="skeleton-subtitle"></div>
+    </header>
+
+    <div class="main-content-grid">
+      <!-- 左侧骨架 -->
+      <div class="side-panel-left animate-slide-in-left">
+        <div class="card skeleton-card">
+          <div class="skeleton-card-title"></div>
+          <div class="skeleton-list">
+            <div class="skeleton-list-item" v-for="i in 5" :key="i"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 中间内容骨架 -->
+      <div class="card skeleton-card animate-fade-in-scale">
+        <div class="skeleton-card-header">
+          <div class="skeleton-card-title"></div>
+        </div>
+        <div class="skeleton-content">
+          <div class="skeleton-text-line" v-for="i in 8" :key="i"></div>
+          <div class="skeleton-code-block"></div>
+          <div class="skeleton-text-line" v-for="i in 4" :key="i + 8"></div>
+        </div>
+      </div>
+
+      <!-- 右侧骨架 -->
+      <div class="side-panel-right animate-slide-in-right">
+        <div class="card skeleton-card">
+          <div class="skeleton-card-title"></div>
+          <div class="skeleton-list">
+            <div class="skeleton-list-item" v-for="i in 6" :key="i"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 正常内容 -->
+  <div v-else-if="knowledgePoint" class="learning-container">
+    <header class="page-header animate-fade-in-down">
       <div class="header-top">
         <h1>{{ knowledgePoint.title }}</h1>
         <div class="header-actions">
@@ -18,7 +62,7 @@
 
     <div class="main-content-grid">
       <!-- 左侧文件列表 -->
-      <div class="side-panel-left">
+      <div class="side-panel-left animate-slide-in-left">
         <div class="card chapter-list-card">
           <h3><i class="fa-solid fa-file-lines"></i> 文件列表</h3>
           <div class="chapter-groups">
@@ -69,7 +113,7 @@
       </div>
 
       <!-- 中间内容区 -->
-      <div class="card content-card" ref="contentRef">
+      <div class="card content-card animate-fade-in-scale" ref="contentRef">
         <div class="card-header">
           <h3><i class="fa-solid fa-book-open"></i> 学习内容</h3>
           <button class="context-ask-btn" @click="askWithContext">
@@ -81,7 +125,7 @@
       </div>
 
       <!-- 右侧导航目录 -->
-      <div class="side-panel-right">
+      <div class="side-panel-right animate-slide-in-right">
         <div class="card toc-card">
           <h3><i class="fa-solid fa-list-ul"></i> 导航目录</h3>
           <ul class="toc-list">
@@ -115,12 +159,14 @@
     </div>
 
     <!-- 回到顶部按钮 -->
-    <button v-if="showBackToTop"
-@click="scrollToTop"
-class="back-to-top-btn"
-title="回到顶部">
-      <i class="fa-solid fa-arrow-up"></i>
-    </button>
+    <transition name="bounce-in">
+      <button v-if="showBackToTop"
+  @click="scrollToTop"
+  class="back-to-top-btn"
+  title="回到顶部">
+        <i class="fa-solid fa-arrow-up"></i>
+      </button>
+    </transition>
 
     <!-- 测验面板 -->
     <QuizPanel
@@ -132,9 +178,6 @@ title="回到顶部">
       @failed="handleQuizFailed"
     />
 
-  </div>
-  <div v-else class="loading">
-    <p>知识点加载中或不存在...</p>
   </div>
 </template>
 
@@ -293,7 +336,7 @@ const pointId = computed(() => route.params.pointId as string);
 
 // 存储从API获取的完整知识点详情（包含 content, contentFiles, quiz）
 const knowledgePointDetail = ref<KnowledgePoint | null>(null);
-const isLoadingDetail = ref(false);
+const isLoadingDetail = ref(true); // 初始为 true，显示骨架屏
 
 const knowledgePoint = computed(() => {
   // 如果已经加载了详情，使用详情数据（包含完整内容）
@@ -1716,5 +1759,328 @@ html.light-theme .markdown-body :deep(.code-header) {
 /* 深色模式下的公式 */
 html.dark-theme .markdown-body :deep(.katex) {
   color: #e0e0e0;
+}
+
+/* ========== 优雅的页面加载动画 ========== */
+
+/* 1. 页面标题淡入下落动画 */
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-down {
+  animation: fadeInDown 0.6s ease-out;
+}
+
+/* 2. 左侧面板从左滑入动画 */
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft 0.7s ease-out 0.2s both;
+}
+
+/* 3. 中间内容淡入放大动画 */
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fade-in-scale {
+  animation: fadeInScale 0.7s ease-out 0.3s both;
+}
+
+/* 4. 右侧面板从右滑入动画 */
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.7s ease-out 0.4s both;
+}
+
+/* 5. 回到顶部按钮弹出动画 */
+.bounce-in-enter-active {
+  animation: bounceIn 0.5s ease-out;
+}
+
+.bounce-in-leave-active {
+  animation: bounceOut 0.3s ease-in;
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0) translateY(20px);
+  }
+  50% {
+    transform: scale(1.1) translateY(-5px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes bounceOut {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+}
+
+/* 响应式优化：移动端减少动画时长 */
+@media (max-width: 768px) {
+  .animate-fade-in-down {
+    animation-duration: 0.4s;
+  }
+  
+  .animate-slide-in-left,
+  .animate-slide-in-right,
+  .animate-fade-in-scale {
+    animation-duration: 0.5s;
+  }
+  
+  /* 移动端减少动画延迟 */
+  .animate-slide-in-left {
+    animation-delay: 0.1s;
+  }
+  
+  .animate-fade-in-scale {
+    animation-delay: 0.15s;
+  }
+  
+  .animate-slide-in-right {
+    animation-delay: 0.2s;
+  }
+}
+
+/* ========== 骨架屏加载样式 ========== */
+
+/* 骨架屏闪烁动画 */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+/* 骨架屏容器 - 继承 learning-container 的样式 */
+.skeleton-loading {
+  /* 保持与 learning-container 一致的样式 */
+}
+
+/* 页面标题骨架 - 继承 page-header 的样式 */
+.skeleton-header {
+  /* 额外的骨架屏样式 */
+}
+
+.skeleton-title {
+  height: 36px;
+  min-height: 36px;
+  width: 60%;
+  max-width: 500px;
+  background: linear-gradient(
+    90deg,
+    var(--skeleton-base) 0%,
+    var(--skeleton-highlight) 50%,
+    var(--skeleton-base) 100%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite linear;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.skeleton-subtitle {
+  height: 20px;
+  min-height: 20px;
+  width: 40%;
+  max-width: 400px;
+  background: linear-gradient(
+    90deg,
+    var(--skeleton-base) 0%,
+    var(--skeleton-highlight) 50%,
+    var(--skeleton-base) 100%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite linear;
+  border-radius: 6px;
+}
+
+/* 骨架卡片 - 覆盖card的背景 */
+.skeleton-card {
+  padding: 1.5rem;
+  height: fit-content;
+  background: var(--card-bg) !important;
+}
+
+.skeleton-card-header {
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 1.5rem;
+}
+
+.skeleton-card-title {
+  height: 24px;
+  min-height: 24px;
+  width: 50%;
+  max-width: 200px;
+  background: linear-gradient(
+    90deg,
+    var(--skeleton-base) 0%,
+    var(--skeleton-highlight) 50%,
+    var(--skeleton-base) 100%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite linear;
+  border-radius: 6px;
+}
+
+/* 骨架列表 */
+.skeleton-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.skeleton-list-item {
+  height: 40px;
+  min-height: 40px;
+  background: linear-gradient(
+    90deg,
+    var(--skeleton-base) 0%,
+    var(--skeleton-highlight) 50%,
+    var(--skeleton-base) 100%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite linear;
+  border-radius: 8px;
+}
+
+.skeleton-list-item:nth-child(odd) {
+  width: 90%;
+}
+
+.skeleton-list-item:nth-child(even) {
+  width: 95%;
+}
+
+/* 骨架内容区 */
+.skeleton-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.skeleton-text-line {
+  height: 16px;
+  min-height: 16px;
+  background: linear-gradient(
+    90deg,
+    var(--skeleton-base) 0%,
+    var(--skeleton-highlight) 50%,
+    var(--skeleton-base) 100%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite linear;
+  border-radius: 4px;
+}
+
+.skeleton-text-line:nth-child(3n) {
+  width: 85%;
+}
+
+.skeleton-text-line:nth-child(3n+1) {
+  width: 95%;
+}
+
+.skeleton-text-line:nth-child(3n+2) {
+  width: 90%;
+}
+
+.skeleton-code-block {
+  height: 120px;
+  min-height: 120px;
+  background: linear-gradient(
+    90deg,
+    var(--skeleton-base) 0%,
+    var(--skeleton-highlight) 50%,
+    var(--skeleton-base) 100%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite linear;
+  border-radius: 8px;
+  margin: 1rem 0;
+}
+
+/* 骨架屏颜色变量 */
+:root {
+  --skeleton-base: #e0e0e0;
+  --skeleton-highlight: #f5f5f5;
+}
+
+html.dark-theme {
+  --skeleton-base: #2a2a2a;
+  --skeleton-highlight: #3a3a3a;
+}
+
+/* 骨架屏响应式 */
+@media (max-width: 768px) {
+  .skeleton-loading {
+    padding: 1rem;
+  }
+  
+  .skeleton-header {
+    padding: 1.5rem;
+  }
+  
+  .skeleton-title {
+    width: 80%;
+    height: 28px;
+  }
+  
+  .skeleton-subtitle {
+    width: 60%;
+    height: 18px;
+  }
+  
+  .skeleton-card {
+    padding: 1rem;
+  }
 }
 </style>

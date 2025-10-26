@@ -13,25 +13,37 @@ export const authMiddleware = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  const token = req.header('Authorization')?.replace('Bearer ', '');
+  console.log(`🔐 [后端 authMiddleware] 收到请求: ${req.method} ${req.path}`);
+  
+  const authHeader = req.header('Authorization');
+  console.log(`  📤 Authorization header:`, authHeader ? `${authHeader.substring(0, 20)}...` : '无');
+  
+  const token = authHeader?.replace('Bearer ', '');
   
   if (!token) {
+    console.log(`  ❌ 缺少 Token，返回 401`);
     res.status(401).json({ message: '未授权的访问，缺少Token' });
     return;
   }
 
   try {
+    console.log(`  🔍 开始验证 Token...`);
     const decoded = jwt.verify(token, JWT_SECRET) as { userId: string };
+    console.log(`  ✅ Token 解码成功，userId: ${decoded.userId}`);
+    
     const user = await User.findById(decoded.userId).select('-passwordHash');
     
     if (!user) {
+      console.log(`  ❌ 用户不存在: ${decoded.userId}`);
       res.status(401).json({ message: '用户不存在' });
       return;
     }
 
+    console.log(`  ✅ 用户验证成功: ${user.username} (${user.email})`);
     req.user = user;
     next();
-  } catch (error) {
+  } catch (error: any) {
+    console.log(`  ❌ Token 验证失败:`, error.message);
     res.status(401).json({ message: '无效的Token' });
   }
 };

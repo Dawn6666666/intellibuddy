@@ -24,13 +24,19 @@ request.interceptors.request.use(
     // 从 localStorage 获取 token (使用正确的 key: authToken)
     const token = localStorage.getItem('authToken');
     
+    console.log(`🌐 [Request] ${config.method?.toUpperCase()} ${config.url}`);
+    console.log('  📋 Token:', token ? `存在 (${token.substring(0, 20)}...)` : '❌ 不存在');
+    
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
+      console.log('  ✅ Authorization header 已设置');
+    } else {
+      console.warn('  ⚠️ 未设置 Authorization header');
     }
     
     // 开发环境打印请求信息
     if (import.meta.env.DEV) {
-      console.log(`[Request] ${config.method?.toUpperCase()} ${config.url}`, config.data || config.params);
+      console.log('  📦 请求数据:', config.data || config.params || '无');
     }
     
     return config;
@@ -48,24 +54,30 @@ request.interceptors.response.use(
   (response: AxiosResponse) => {
     const { data } = response;
     
+    console.log(`✅ [Response] ${response.config.url} - 状态码: ${response.status}`);
+    
     // 开发环境打印响应信息
     if (import.meta.env.DEV) {
-      console.log(`[Response] ${response.config.url}`, data);
+      console.log('  📦 响应数据:', data);
     }
     
     // 如果响应格式包含 success 字段
     if (data && typeof data.success !== 'undefined') {
+      console.log('  📋 响应格式: 包含 success 字段');
       if (!data.success) {
         // 业务逻辑错误
         const errorMessage = data.message || data.error || '操作失败';
+        console.error('  ❌ 业务逻辑错误:', errorMessage);
         ElMessage.error(errorMessage);
         return Promise.reject(new Error(errorMessage));
       }
       // 成功响应，返回 data 字段
+      console.log('  ✅ 请求成功');
       return data.data !== undefined ? data.data : data;
     }
     
     // 兼容没有 success 字段的响应
+    console.log('  📋 响应格式: 直接返回数据');
     return data;
   },
   (error: AxiosError<any>) => {

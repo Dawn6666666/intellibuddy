@@ -67,7 +67,9 @@ class PerformanceMonitor {
           const entries = list.getEntries();
           const lastEntry = entries[entries.length - 1] as any;
           this.metrics.LCP = lastEntry.renderTime || lastEntry.loadTime;
-          console.log('[Performance] LCP:', this.metrics.LCP.toFixed(2), 'ms');
+          if (this.metrics.LCP !== undefined) {
+            console.log('[Performance] LCP:', this.metrics.LCP.toFixed(2), 'ms');
+          }
         });
         observer.observe({ entryTypes: ['largest-contentful-paint'] });
         this.observers.push(observer);
@@ -282,6 +284,13 @@ export function preloadImage(src: string): Promise<void> {
 // 工具函数：预加载多个图片
 export function preloadImages(srcs: string[]): Promise<void[]> {
   return Promise.all(srcs.map(preloadImage));
+}
+
+// 类型声明
+interface IntersectionObserverInit {
+  root?: Element | null
+  rootMargin?: string
+  threshold?: number | number[]
 }
 
 // 工具函数：懒加载

@@ -130,7 +130,16 @@ app.use(globalRateLimitMiddleware);
 // --- API 路由 ---
 // 将 /me 接口单独出来，不使用 authRateLimitMiddleware
 app.get('/api/auth/me', authMiddleware, (req: express.Request, res: express.Response) => {
-  res.json((req as any).user);
+  const user = (req as any).user;
+  console.log(`👤 [后端 /auth/me] 返回用户信息:`, {
+    _id: user._id,
+    username: user.username,
+    email: user.email,
+    role: user.role,
+    avatarUrl: user.avatarUrl,
+    '完整对象': user
+  });
+  res.json(user);
 });
 app.use('/api/auth', authRateLimitMiddleware, authRoutes);
 app.use('/api/users', usersRoutes);

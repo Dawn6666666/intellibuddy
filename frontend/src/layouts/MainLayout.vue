@@ -202,13 +202,7 @@
     </header>
 
     <main class="main-content">
-      <router-view v-slot="{ Component, route }">
-        <transition :name="route.name === 'knowledge' ? '' : 'fade'" mode="out-in">
-          <keep-alive :include="['KnowledgeBaseView']">
-            <component :is="Component" :key="route.name === 'knowledge' ? undefined : route.name"/>
-          </keep-alive>
-        </transition>
-      </router-view>
+      <router-view />
     </main>
 
     <!-- 移动端底部导航 -->
@@ -233,7 +227,7 @@
 
 <script setup lang="ts">
 import '@fortawesome/fontawesome-free/css/all.css';
-import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { useUserStore } from '@/stores/user';
 import { useRouter, useRoute } from 'vue-router';
 import AIChatWindow from '@/components/AIChatWindow.vue';
@@ -248,6 +242,20 @@ const userStore = useUserStore();
 const themeStore = useThemeStore();
 const router = useRouter();
 const route = useRoute();
+
+// 监控 userStore.user 的变化
+console.log('🎨 [MainLayout] 组件初始化');
+console.log('  👤 当前用户:', userStore.user);
+console.log('  🔑 当前 token:', userStore.token ? '存在' : '不存在');
+console.log('  🖼️ avatarUrl:', userStore.user?.avatarUrl);
+console.log('  📝 完整用户对象:', JSON.stringify(userStore.user, null, 2));
+
+watch(() => userStore.user, (newUser, oldUser) => {
+  console.log('🔄 [MainLayout] userStore.user 发生变化');
+  console.log('  旧值:', oldUser);
+  console.log('  新值:', newUser);
+  console.log('  🖼️ 新 avatarUrl:', newUser?.avatarUrl);
+}, { deep: true });
 
 const showNotifications = ref(false);
 const notificationCount = ref(0);

@@ -43,7 +43,10 @@
       </div>
 
       <div class="toolbar-right">
-        <el-button type="primary" size="large" class="create-question-btn" @click="handleCreateQuestion">
+        <el-button type="primary"
+size="large"
+class="create-question-btn"
+@click="handleCreateQuestion">
           <i class="fa-solid fa-plus"></i> 创建题目
         </el-button>
       </div>

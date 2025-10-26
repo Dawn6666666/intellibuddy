@@ -6,7 +6,7 @@ import AuthCallbackView from '../views/AuthCallbackView.vue' // 1. 导入回调�
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
-    scrollBehavior(to, from, savedPosition) {
+    scrollBehavior(to, _from, savedPosition) {
         // 如果有保存的位置（浏览器前进后退），使用保存的位置
         if (savedPosition) {
             return savedPosition;
@@ -18,13 +18,7 @@ const router = createRouter({
                 behavior: 'smooth'
             };
         }
-        // 如果从学习页面返回知识库，不处理滚动（由组件自己控制）
-        if (to.name === 'knowledge' && from.name === 'learning') {
-            console.log('🔵 从学习页面返回知识库，由组件控制滚动位置');
-            return false; // 不滚动，让组件自己恢复位置
-        }
         // 默认滚动到顶部
-        console.log('🔴 默认行为：滚动到顶部', { to: to.name, from: from.name });
         return { top: 0 };
     },
     routes: [
@@ -135,7 +129,7 @@ const router = createRouter({
 })
 
 // 路由守卫
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, _from, next) => {
     const token = localStorage.getItem('authToken');
     
     // 需要认证的路由

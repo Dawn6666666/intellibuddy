@@ -8,9 +8,48 @@
     </div>
 
     <!-- 已加入的班级列表 -->
-    <div class="classes-section" v-loading="loading">
-      <el-row :gutter="20" v-if="myClasses.length > 0">
-        <el-col :xs="24" :sm="12" :lg="8" v-for="cls in myClasses" :key="cls._id">
+    <div class="classes-section">
+      <!-- 加载骨架屏 -->
+      <el-row :gutter="20" v-if="loading">
+        <el-col :xs="24"
+:sm="12"
+:lg="8"
+v-for="i in 3"
+:key="'skeleton-' + i">
+          <div class="class-card skeleton-card">
+            <div class="class-header">
+              <div class="class-info">
+                <div class="skeleton skeleton-title"></div>
+                <div class="skeleton skeleton-teacher"></div>
+              </div>
+              <div class="skeleton skeleton-badge"></div>
+            </div>
+            
+            <div class="class-content">
+              <div class="skeleton skeleton-description"></div>
+              <div class="skeleton skeleton-description" style="width: 70%;"></div>
+              <div class="class-meta" style="margin-top: 12px;">
+                <div class="skeleton skeleton-meta-item"></div>
+                <div class="skeleton skeleton-meta-item"></div>
+                <div class="skeleton skeleton-meta-item"></div>
+              </div>
+            </div>
+
+            <div class="class-footer">
+              <div class="skeleton skeleton-tag"></div>
+              <div class="skeleton skeleton-button"></div>
+            </div>
+          </div>
+        </el-col>
+      </el-row>
+
+      <!-- 实际班级列表 -->
+      <el-row :gutter="20" v-else-if="myClasses.length > 0">
+        <el-col :xs="24"
+:sm="12"
+:lg="8"
+v-for="cls in myClasses"
+:key="cls._id">
           <el-card class="class-card" shadow="hover" @click="viewClassDetail(cls)">
             <div class="class-header">
               <div class="class-info">
@@ -59,6 +98,7 @@
         </el-col>
       </el-row>
 
+      <!-- 空状态 -->
       <el-empty 
         v-else 
         description="还没有加入任何班级"
@@ -313,7 +353,10 @@
                   <div class="attempt-badge">
                     <i class="fa-solid fa-pen-to-square"></i>
                     第 {{ submission.attempt }} 次提交
-                    <el-tag v-if="submission.isLatest" type="success" size="small" style="margin-left: 8px;">
+                    <el-tag v-if="submission.isLatest"
+type="success"
+size="small"
+style="margin-left: 8px;">
                       最新
                     </el-tag>
                   </div>
@@ -799,8 +842,98 @@ onMounted(() => {
   color: var(--primary-color);
 }
 
-/* 班级卡片 */
+/* 骨架屏动画 */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(138, 127, 251, 0.1) 25%,
+    rgba(138, 127, 251, 0.2) 50%,
+    rgba(138, 127, 251, 0.1) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.skeleton-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  pointer-events: none;
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* 实际卡片淡入动画 */
 .class-card {
+  animation: fadeIn 0.4s ease-out;
+}
+
+.skeleton-title {
+  width: 60%;
+  height: 24px;
+  margin-bottom: 8px;
+}
+
+.skeleton-teacher {
+  width: 40%;
+  height: 16px;
+}
+
+.skeleton-badge {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+.skeleton-description {
+  width: 100%;
+  height: 16px;
+  margin-bottom: 8px;
+}
+
+.skeleton-meta-item {
+  width: 80px;
+  height: 16px;
+  border-radius: 6px;
+}
+
+.skeleton-tag {
+  width: 120px;
+  height: 24px;
+  border-radius: 4px;
+}
+
+.skeleton-button {
+  width: 90px;
+  height: 24px;
+  border-radius: 4px;
+}
+
+/* 班级卡片 */
+.class-card:not(.skeleton-card) {
   cursor: pointer;
   transition: all 0.3s ease;
   margin-bottom: 20px;
@@ -808,9 +941,18 @@ onMounted(() => {
   overflow: hidden;
 }
 
-.class-card:hover {
+.class-card:not(.skeleton-card):hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.skeleton-card {
+  cursor: default;
+}
+
+.skeleton-card:hover {
+  transform: none;
+  box-shadow: none;
 }
 
 .class-header {
@@ -1052,6 +1194,20 @@ onMounted(() => {
     flex-direction: column;
     gap: 12px;
     align-items: flex-start;
+  }
+
+  /* 骨架屏移动端适配 */
+  .skeleton-title {
+    width: 80%;
+  }
+
+  .skeleton-teacher {
+    width: 60%;
+  }
+
+  .skeleton-badge {
+    width: 40px;
+    height: 40px;
   }
 }
 

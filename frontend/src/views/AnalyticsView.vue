@@ -28,7 +28,10 @@
 
     <el-row :gutter="20" v-loading="loading" v-if="settingsStore.privacy.analytics">
       <!-- 综合概览 -->
-      <el-col :xs="24" :sm="24" :lg="24" class="section">
+      <el-col :xs="24"
+:sm="24"
+:lg="24"
+class="section">
         <el-card>
           <template #header>
             <div class="card-header">
@@ -65,7 +68,10 @@
       </el-col>
 
       <!-- 学习时间分布 -->
-      <el-col :xs="24" :sm="24" :lg="12" class="section">
+      <el-col :xs="24"
+:sm="24"
+:lg="12"
+class="section">
         <el-card>
           <template #header>
             <div class="card-header">
@@ -77,7 +83,10 @@
       </el-col>
 
       <!-- 一天中的学习分布 -->
-      <el-col :xs="24" :sm="24" :lg="12" class="section">
+      <el-col :xs="24"
+:sm="24"
+:lg="12"
+class="section">
         <el-card>
           <template #header>
             <div class="card-header">
@@ -89,7 +98,10 @@
       </el-col>
 
       <!-- 知识点掌握度分布 -->
-      <el-col :xs="24" :sm="24" :lg="12" class="section">
+      <el-col :xs="24"
+:sm="24"
+:lg="12"
+class="section">
         <el-card>
           <template #header>
             <div class="card-header">
@@ -101,7 +113,10 @@
       </el-col>
 
       <!-- 学科能力雷达图 -->
-      <el-col :xs="24" :sm="24" :lg="12" class="section">
+      <el-col :xs="24"
+:sm="24"
+:lg="12"
+class="section">
         <el-card>
           <template #header>
             <div class="card-header">
@@ -113,7 +128,10 @@
       </el-col>
 
       <!-- 学习趋势 -->
-      <el-col :xs="24" :sm="24" :lg="24" class="section">
+      <el-col :xs="24"
+:sm="24"
+:lg="24"
+class="section">
         <el-card>
           <template #header>
             <div class="card-header">
@@ -125,7 +143,10 @@
       </el-col>
 
       <!-- 错题分析 -->
-      <el-col :xs="24" :sm="24" :lg="12" class="section">
+      <el-col :xs="24"
+:sm="24"
+:lg="12"
+class="section">
         <el-card>
           <template #header>
             <div class="card-header">
@@ -159,7 +180,10 @@
       </el-col>
 
       <!-- 学科掌握情况 -->
-      <el-col :xs="24" :sm="24" :lg="12" class="section">
+      <el-col :xs="24"
+:sm="24"
+:lg="12"
+class="section">
         <el-card>
           <template #header>
             <div class="card-header">
