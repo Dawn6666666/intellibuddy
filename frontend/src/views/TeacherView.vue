@@ -1,8 +1,8 @@
 <template>
   <div class="teacher-view">
-    <el-tabs v-model="activeTab" class="teacher-tabs">
+    <div class="teacher-content">
       <!-- 班级管理 -->
-      <el-tab-pane label="班级管理" name="classes">
+      <div v-if="activeTab === 'classes'" class="tab-section">
         <div class="tab-content">
           <div class="header-actions">
             <h2>我的班级</h2>
@@ -97,10 +97,10 @@
 
           <el-empty v-else description="还没有创建班级" />
         </div>
-      </el-tab-pane>
+      </div>
 
       <!-- 作业管理 -->
-      <el-tab-pane label="作业管理" name="assignments">
+      <div v-if="activeTab === 'assignments'" class="tab-section">
         <div class="tab-content">
           <div class="header-actions">
             <h2>作业列表</h2>
@@ -200,10 +200,10 @@
             </el-table-column>
           </el-table>
         </div>
-      </el-tab-pane>
+      </div>
 
       <!-- 学生监控 -->
-      <el-tab-pane label="学生监控" name="students">
+      <div v-if="activeTab === 'students'" class="tab-section">
         <div class="tab-content">
           <div class="header-actions">
             <h2>学生学习情况</h2>
@@ -360,15 +360,266 @@
 
           <el-empty v-else description="请选择班级查看学生情况" />
         </div>
-      </el-tab-pane>
+      </div>
 
       <!-- 题库管理 -->
-      <el-tab-pane label="题库管理" name="question-bank">
+      <div v-if="activeTab === 'question-bank'" class="tab-section">
         <div class="tab-content">
           <QuestionBank />
         </div>
-      </el-tab-pane>
-    </el-tabs>
+      </div>
+
+      <!-- 数据分析 -->
+      <div v-if="activeTab === 'analytics'" class="tab-section">
+        <div class="tab-content">
+          <div class="header-actions">
+            <h2>数据分析</h2>
+            <el-select v-model="selectedAnalyticsClass" placeholder="选择班级" style="width: 200px;" @change="loadAnalyticsData">
+              <el-option
+                v-for="cls in classes"
+                :key="cls._id"
+                :label="cls.name"
+                :value="cls._id"
+              />
+            </el-select>
+          </div>
+
+          <div v-if="selectedAnalyticsClass" v-loading="analyticsLoading">
+            <!-- 班级概览 -->
+            <el-row :gutter="20" class="analytics-overview">
+              <el-col :xs="12" :sm="6">
+                <div class="analytics-stat-card">
+                  <div class="analytics-stat-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <i class="fa-solid fa-users"></i>
+                  </div>
+                  <div class="analytics-stat-content">
+                    <div class="analytics-stat-label">学生总数</div>
+                    <div class="analytics-stat-value">{{ analyticsOverview?.totalStudents || 0 }}</div>
+                  </div>
+                </div>
+              </el-col>
+              <el-col :xs="12" :sm="6">
+                <div class="analytics-stat-card">
+                  <div class="analytics-stat-icon" style="background: linear-gradient(135deg, #48c774 0%, #00b894 100%);">
+                    <i class="fa-solid fa-fire"></i>
+                  </div>
+                  <div class="analytics-stat-content">
+                    <div class="analytics-stat-label">活跃学生</div>
+                    <div class="analytics-stat-value">{{ analyticsOverview?.activeStudents || 0 }}</div>
+                  </div>
+                </div>
+              </el-col>
+              <el-col :xs="12" :sm="6">
+                <div class="analytics-stat-card">
+                  <div class="analytics-stat-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                    <i class="fa-solid fa-chart-line"></i>
+                  </div>
+                  <div class="analytics-stat-content">
+                    <div class="analytics-stat-label">平均掌握率</div>
+                    <div class="analytics-stat-value">{{ analyticsOverview?.masteryRate || 0 }}%</div>
+                  </div>
+                </div>
+              </el-col>
+              <el-col :xs="12" :sm="6">
+                <div class="analytics-stat-card">
+                  <div class="analytics-stat-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                    <i class="fa-solid fa-clipboard-check"></i>
+                  </div>
+                  <div class="analytics-stat-content">
+                    <div class="analytics-stat-label">作业完成率</div>
+                    <div class="analytics-stat-value">{{ analyticsOverview?.assignmentCompletionRate || 0 }}%</div>
+                  </div>
+                </div>
+              </el-col>
+            </el-row>
+
+            <!-- 学生排名 -->
+            <el-row :gutter="20" style="margin-top: 20px;">
+              <el-col :xs="24" :lg="12">
+                <el-card>
+                  <template #header>
+                    <div class="card-header">
+                      <span>🏆 学生排名</span>
+                      <el-select v-model="rankingSortBy" size="small" style="width: 120px;" @change="loadStudentRankings">
+                        <el-option label="按分数" value="score" />
+                        <el-option label="按学时" value="studyTime" />
+                        <el-option label="按进度" value="progress" />
+                      </el-select>
+                    </div>
+                  </template>
+                  <div class="rankings-list">
+                    <div 
+                      v-for="student in studentRankings.slice(0, 10)" 
+                      :key="student.userId"
+                      class="ranking-item"
+                    >
+                      <div class="ranking-rank" :class="{ 'top-three': student.rank <= 3 }">
+                        <span v-if="student.rank === 1">🥇</span>
+                        <span v-else-if="student.rank === 2">🥈</span>
+                        <span v-else-if="student.rank === 3">🥉</span>
+                        <span v-else>{{ student.rank }}</span>
+                      </div>
+                      <div class="ranking-info">
+                        <div class="ranking-name">{{ student.userName }}</div>
+                        <div class="ranking-stats">
+                          <span v-if="rankingSortBy === 'score'">平均分: {{ student.avgScore }}</span>
+                          <span v-else-if="rankingSortBy === 'studyTime'">学习时长: {{ formatDuration(student.totalTime) }}</span>
+                          <span v-else>进度: {{ student.progressRate }}%</span>
+                        </div>
+                      </div>
+                      <div class="ranking-badge">
+                        <el-progress 
+                          type="circle" 
+                          :percentage="rankingSortBy === 'score' ? student.avgScore : student.progressRate" 
+                          :width="50"
+                          :stroke-width="6"
+                          :color="getProgressColor(rankingSortBy === 'score' ? student.avgScore : student.progressRate)"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </el-card>
+              </el-col>
+
+              <!-- 薄弱知识点 -->
+              <el-col :xs="24" :lg="12">
+                <el-card>
+                  <template #header>
+                    <div class="card-header">
+                      <span>📚 薄弱知识点</span>
+                    </div>
+                  </template>
+                  <div class="weak-points-list">
+                    <div 
+                      v-for="point in weakPoints.slice(0, 8)" 
+                      :key="point.pointId"
+                      class="weak-point-item"
+                    >
+                      <div class="weak-point-info">
+                        <div class="weak-point-title">{{ point.title }}</div>
+                        <div class="weak-point-meta">
+                          <el-tag size="small" :type="getDifficultyColor(point.difficulty)">
+                            {{ getDifficultyName(point.difficulty) }}
+                          </el-tag>
+                          <span class="weak-point-subject">{{ point.subject }}</span>
+                        </div>
+                      </div>
+                      <div class="weak-point-stats">
+                        <div class="weak-point-score">
+                          <span class="label">平均分:</span>
+                          <span class="value" :style="{ color: getScoreColor(point.avgScore) }">
+                            {{ point.avgScore }}
+                          </span>
+                        </div>
+                        <div class="weak-point-mastery">
+                          <span class="label">掌握率:</span>
+                          <span class="value">{{ point.masteryRate }}%</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </el-card>
+              </el-col>
+            </el-row>
+
+            <!-- 学习趋势图表 -->
+            <el-row :gutter="20" style="margin-top: 20px;">
+              <el-col :xs="24">
+                <el-card>
+                  <template #header>
+                    <div class="card-header">
+                      <span>📈 班级学习趋势</span>
+                      <el-radio-group v-model="trendPeriod" size="small" @change="loadLearningTrend">
+                        <el-radio-button label="7d">最近7天</el-radio-button>
+                        <el-radio-button label="30d">最近30天</el-radio-button>
+                        <el-radio-button label="90d">最近90天</el-radio-button>
+                      </el-radio-group>
+                    </div>
+                  </template>
+                  <div ref="trendChartRef" class="chart-container"></div>
+                </el-card>
+              </el-col>
+            </el-row>
+
+            <!-- 作业统计 -->
+            <el-row :gutter="20" style="margin-top: 20px;">
+              <el-col :xs="24" :lg="12">
+                <el-card>
+                  <template #header>
+                    <div class="card-header">
+                      <span>📝 作业统计分析</span>
+                    </div>
+                  </template>
+                  <div v-if="assignmentAnalytics.summary">
+                    <el-row :gutter="20" style="margin-bottom: 20px;">
+                      <el-col :span="8">
+                        <div class="mini-stat">
+                          <div class="mini-stat-label">作业总数</div>
+                          <div class="mini-stat-value">{{ assignmentAnalytics.summary.totalAssignments }}</div>
+                        </div>
+                      </el-col>
+                      <el-col :span="8">
+                        <div class="mini-stat">
+                          <div class="mini-stat-label">平均提交率</div>
+                          <div class="mini-stat-value">{{ assignmentAnalytics.summary.avgSubmissionRate }}%</div>
+                        </div>
+                      </el-col>
+                      <el-col :span="8">
+                        <div class="mini-stat">
+                          <div class="mini-stat-label">平均分</div>
+                          <div class="mini-stat-value">{{ assignmentAnalytics.summary.avgScore }}</div>
+                        </div>
+                      </el-col>
+                    </el-row>
+                    <div ref="assignmentChartRef" class="chart-container-small"></div>
+                  </div>
+                </el-card>
+              </el-col>
+
+              <!-- 个性化建议 -->
+              <el-col :xs="24" :lg="12">
+                <el-card>
+                  <template #header>
+                    <div class="card-header">
+                      <span>💡 个性化建议</span>
+                    </div>
+                  </template>
+                  <div class="suggestions-list">
+                    <div 
+                      v-for="(suggestion, index) in suggestions" 
+                      :key="index"
+                      class="suggestion-item"
+                      :class="`suggestion-${suggestion.type}`"
+                    >
+                      <div class="suggestion-icon">
+                        <i v-if="suggestion.type === 'warning'" class="fa-solid fa-exclamation-triangle"></i>
+                        <i v-else-if="suggestion.type === 'success'" class="fa-solid fa-check-circle"></i>
+                        <i v-else class="fa-solid fa-info-circle"></i>
+                      </div>
+                      <div class="suggestion-content">
+                        <div class="suggestion-title">{{ suggestion.title }}</div>
+                        <div class="suggestion-description">{{ suggestion.description }}</div>
+                        <div class="suggestion-action">
+                          <strong>建议:</strong> {{ suggestion.action }}
+                        </div>
+                      </div>
+                      <el-tag 
+                        :type="suggestion.priority === 'high' ? 'danger' : suggestion.priority === 'medium' ? 'warning' : 'info'"
+                        size="small"
+                      >
+                        {{ suggestion.priority === 'high' ? '重要' : suggestion.priority === 'medium' ? '一般' : '提示' }}
+                      </el-tag>
+                    </div>
+                  </div>
+                </el-card>
+              </el-col>
+            </el-row>
+          </div>
+
+          <el-empty v-else description="请选择班级查看数据分析" />
+        </div>
+      </div>
+    </div>
 
     <!-- 创建班级对话框 -->
     <el-dialog v-model="createClassDialogVisible" title="创建班级" width="500px">
@@ -403,7 +654,9 @@
       v-model="createAssignmentDialogVisible" 
       :title="editingAssignmentId ? '编辑作业' : '创建作业'" 
       width="600px"
+      append-to-body
       @close="handleDialogClose"
+      :z-index="2000"
     >
       <el-form :model="assignmentForm" label-width="100px">
         <el-form-item label="作业标题" required>
@@ -443,6 +696,8 @@
             type="datetime"
             placeholder="选择截止时间"
             style="width: 100%;"
+            popper-class="date-picker-popper"
+            :teleported="true"
           />
         </el-form-item>
         <el-form-item label="总分">
@@ -880,10 +1135,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, onMounted, watch, nextTick, onUnmounted } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { Plus, User, Reading, CopyDocument, DocumentAdd } from '@element-plus/icons-vue';
+import { useRoute } from 'vue-router';
 import axios from 'axios';
+import * as echarts from 'echarts';
 import QuestionBank from '@/components/QuestionBank.vue';
 import { apiService as importedApiService } from '@/services/apiService';
 
@@ -900,9 +1157,21 @@ apiService.interceptors.request.use(config => {
   return config;
 });
 
+const route = useRoute();
 const activeTab = ref('classes');
 const loading = ref(false);
 const submitting = ref(false);
+
+// 根据路由 hash 设置活动标签
+watch(() => route.hash, (newHash) => {
+  const hash = newHash.replace('#', '');
+  if (hash && ['classes', 'assignments', 'students', 'question-bank', 'analytics'].includes(hash)) {
+    activeTab.value = hash;
+  } else if (!hash) {
+    // 如果没有 hash，默认显示班级管理
+    activeTab.value = 'classes';
+  }
+}, { immediate: true });
 
 // 班级相关
 const classes = ref<any[]>([]);
@@ -978,9 +1247,33 @@ const filteredAssignments = computed(() => {
 const selectedClassId = ref('');
 const studentStats = ref<any[]>([]);
 
+// 数据分析相关
+const selectedAnalyticsClass = ref('');
+const analyticsLoading = ref(false);
+const analyticsOverview = ref<any>(null);
+const studentRankings = ref<any[]>([]);
+const weakPoints = ref<any[]>([]);
+const learningTrend = ref<any>(null);
+const assignmentAnalytics = ref<any>({ summary: null, byType: [] });
+const suggestions = ref<any[]>([]);
+const rankingSortBy = ref('score');
+const trendPeriod = ref('30d');
+
+// 图表引用
+const trendChartRef = ref<HTMLElement>();
+const assignmentChartRef = ref<HTMLElement>();
+let trendChart: echarts.ECharts | null = null;
+let assignmentChart: echarts.ECharts | null = null;
+
 onMounted(() => {
   loadClasses();
   loadActiveStudents();
+});
+
+onUnmounted(() => {
+  // 清理图表
+  trendChart?.dispose();
+  assignmentChart?.dispose();
 });
 
 watch(activeTab, (newTab) => {
@@ -1599,6 +1892,268 @@ function isRecentlyActive(lastActive: string | Date) {
   const daysDiff = diff / (1000 * 60 * 60 * 24);
   return daysDiff < 7; // 7天内活跃
 }
+
+// ==================== 数据分析功能 ====================
+
+// 加载所有数据分析数据
+async function loadAnalyticsData() {
+  if (!selectedAnalyticsClass.value) return;
+  
+  analyticsLoading.value = true;
+  try {
+    await Promise.all([
+      loadAnalyticsOverview(),
+      loadStudentRankings(),
+      loadWeakPoints(),
+      loadLearningTrend(),
+      loadAssignmentAnalytics(),
+      loadSuggestions()
+    ]);
+    
+    await nextTick();
+    initCharts();
+  } catch (error) {
+    console.error('加载数据分析失败:', error);
+    ElMessage.error('加载数据分析失败');
+  } finally {
+    analyticsLoading.value = false;
+  }
+}
+
+// 加载班级概览
+async function loadAnalyticsOverview() {
+  try {
+    const response = await apiService.get(`/teacher-analytics/class/${selectedAnalyticsClass.value}/overview`);
+    analyticsOverview.value = response.data.overview;
+  } catch (error) {
+    console.error('加载班级概览失败:', error);
+  }
+}
+
+// 加载学生排名
+async function loadStudentRankings() {
+  try {
+    const response = await apiService.get(`/teacher-analytics/class/${selectedAnalyticsClass.value}/student-rankings`, {
+      params: { sortBy: rankingSortBy.value }
+    });
+    studentRankings.value = response.data.students || [];
+  } catch (error) {
+    console.error('加载学生排名失败:', error);
+  }
+}
+
+// 加载薄弱知识点
+async function loadWeakPoints() {
+  try {
+    const response = await apiService.get(`/teacher-analytics/class/${selectedAnalyticsClass.value}/weak-points`);
+    weakPoints.value = response.data.weakPoints || [];
+  } catch (error) {
+    console.error('加载薄弱知识点失败:', error);
+  }
+}
+
+// 加载学习趋势
+async function loadLearningTrend() {
+  try {
+    const response = await apiService.get(`/teacher-analytics/class/${selectedAnalyticsClass.value}/learning-trend`, {
+      params: { period: trendPeriod.value }
+    });
+    learningTrend.value = response.data;
+    await nextTick();
+    initTrendChart();
+  } catch (error) {
+    console.error('加载学习趋势失败:', error);
+  }
+}
+
+// 加载作业统计
+async function loadAssignmentAnalytics() {
+  try {
+    const response = await apiService.get(`/teacher-analytics/class/${selectedAnalyticsClass.value}/assignment-analytics`);
+    assignmentAnalytics.value = response.data;
+    await nextTick();
+    initAssignmentChart();
+  } catch (error) {
+    console.error('加载作业统计失败:', error);
+  }
+}
+
+// 加载建议
+async function loadSuggestions() {
+  try {
+    const response = await apiService.get(`/teacher-analytics/class/${selectedAnalyticsClass.value}/suggestions`);
+    suggestions.value = response.data.suggestions || [];
+  } catch (error) {
+    console.error('加载建议失败:', error);
+  }
+}
+
+// 初始化所有图表
+function initCharts() {
+  initTrendChart();
+  initAssignmentChart();
+}
+
+// 初始化趋势图表
+function initTrendChart() {
+  if (!trendChartRef.value || !learningTrend.value) return;
+
+  if (trendChart) {
+    trendChart.dispose();
+  }
+
+  trendChart = echarts.init(trendChartRef.value);
+  const trendData = learningTrend.value.trend || [];
+
+  const option = {
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: { type: 'cross' }
+    },
+    legend: {
+      data: ['学习时长(分钟)', '学习次数', '活跃学生数']
+    },
+    xAxis: {
+      type: 'category',
+      data: trendData.map((d: any) => d.date.slice(5)),
+      axisLabel: { rotate: 45 }
+    },
+    yAxis: [
+      {
+        type: 'value',
+        name: '分钟',
+        axisLabel: {
+          formatter: (value: number) => Math.round(value / 60)
+        }
+      },
+      {
+        type: 'value',
+        name: '次数/人数'
+      }
+    ],
+    series: [
+      {
+        name: '学习时长(分钟)',
+        type: 'line',
+        data: trendData.map((d: any) => d.totalDuration),
+        smooth: true,
+        areaStyle: {
+          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+            { offset: 0, color: 'rgba(102, 126, 234, 0.5)' },
+            { offset: 1, color: 'rgba(118, 75, 162, 0.1)' }
+          ])
+        },
+        lineStyle: { color: '#667eea' },
+        itemStyle: { color: '#667eea' }
+      },
+      {
+        name: '学习次数',
+        type: 'line',
+        yAxisIndex: 1,
+        data: trendData.map((d: any) => d.sessionCount),
+        smooth: true,
+        lineStyle: { color: '#f56c6c' },
+        itemStyle: { color: '#f56c6c' }
+      },
+      {
+        name: '活跃学生数',
+        type: 'line',
+        yAxisIndex: 1,
+        data: trendData.map((d: any) => d.activeStudents),
+        smooth: true,
+        lineStyle: { color: '#67c23a' },
+        itemStyle: { color: '#67c23a' }
+      }
+    ],
+    grid: { left: '10%', right: '10%', bottom: '25%', top: '15%' }
+  };
+
+  trendChart.setOption(option);
+}
+
+// 初始化作业统计图表
+function initAssignmentChart() {
+  if (!assignmentChartRef.value || !assignmentAnalytics.value.byType) return;
+
+  if (assignmentChart) {
+    assignmentChart.dispose();
+  }
+
+  assignmentChart = echarts.init(assignmentChartRef.value);
+  const byType = assignmentAnalytics.value.byType || [];
+
+  const typeNames: any = {
+    practice: '练习',
+    quiz: '测验',
+    homework: '作业',
+    exam: '考试'
+  };
+
+  const option = {
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: { type: 'shadow' }
+    },
+    legend: {
+      data: ['提交率', '平均分']
+    },
+    xAxis: {
+      type: 'category',
+      data: byType.map((t: any) => typeNames[t.type] || t.type)
+    },
+    yAxis: {
+      type: 'value',
+      max: 100,
+      name: '百分比(%)'
+    },
+    series: [
+      {
+        name: '提交率',
+        type: 'bar',
+        data: byType.map((t: any) => t.avgSubmissionRate),
+        itemStyle: {
+          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+            { offset: 0, color: '#667eea' },
+            { offset: 1, color: '#764ba2' }
+          ])
+        }
+      },
+      {
+        name: '平均分',
+        type: 'bar',
+        data: byType.map((t: any) => t.avgScore),
+        itemStyle: {
+          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+            { offset: 0, color: '#48c774' },
+            { offset: 1, color: '#00b894' }
+          ])
+        }
+      }
+    ],
+    grid: { left: '10%', right: '5%', bottom: '20%', top: '15%' }
+  };
+
+  assignmentChart.setOption(option);
+}
+
+// 辅助函数
+function getDifficultyColor(difficulty: string) {
+  const colorMap: any = {
+    easy: 'success',
+    medium: 'warning',
+    hard: 'danger'
+  };
+  return colorMap[difficulty] || 'info';
+}
+
+function getDifficultyName(difficulty: string) {
+  const nameMap: any = {
+    easy: '简单',
+    medium: '中等',
+    hard: '困难'
+  };
+  return nameMap[difficulty] || difficulty;
+}
 </script>
 
 <style scoped>
@@ -1608,13 +2163,17 @@ function isRecentlyActive(lastActive: string | Date) {
   margin: 0 auto;
 }
 
-.teacher-tabs {
+.teacher-content {
   background: var(--card-bg);
   border-radius: 12px;
   padding: 24px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
   border: 1px solid var(--card-border);
+}
+
+.tab-section {
+  width: 100%;
 }
 
 .tab-content {
@@ -2019,7 +2578,7 @@ function isRecentlyActive(lastActive: string | Date) {
 }
 
 /* 深色主题优化 */
-html:not(.light-theme) .teacher-tabs {
+html:not(.light-theme) .teacher-content {
   backdrop-filter: blur(var(--backdrop-blur));
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
@@ -2039,7 +2598,7 @@ html:not(.light-theme) .detail-section {
 }
 
 /* 浅色主题优化 */
-html.light-theme .teacher-tabs {
+html.light-theme .teacher-content {
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
 }
 
@@ -2053,67 +2612,67 @@ html.light-theme .class-card:hover {
 }
 
 /* Element Plus 组件全局主题适配 - Empty 组件 */
-.teacher-tabs :deep(.el-empty) {
+.teacher-content :deep(.el-empty) {
   background: transparent;
 }
 
-.teacher-tabs :deep(.el-empty__description p) {
+.teacher-content :deep(.el-empty__description p) {
   color: var(--text-secondary);
 }
 
 /* Element Plus 组件全局主题适配 - Table 组件 */
-.teacher-tabs :deep(.el-table) {
+.teacher-content :deep(.el-table) {
   background: var(--card-bg);
   color: var(--text-primary);
 }
 
-.teacher-tabs :deep(.el-table th.el-table__cell) {
+.teacher-content :deep(.el-table th.el-table__cell) {
   background: var(--bg-secondary);
   color: var(--text-primary);
   border-bottom: 1px solid var(--card-border);
 }
 
-.teacher-tabs :deep(.el-table tr) {
+.teacher-content :deep(.el-table tr) {
   background: var(--card-bg);
 }
 
-.teacher-tabs :deep(.el-table td.el-table__cell) {
+.teacher-content :deep(.el-table td.el-table__cell) {
   border-bottom: 1px solid var(--card-border);
   color: var(--text-primary);
 }
 
-.teacher-tabs :deep(.el-table__inner-wrapper::before),
-.teacher-tabs :deep(.el-table__inner-wrapper::after) {
+.teacher-content :deep(.el-table__inner-wrapper::before),
+.teacher-content :deep(.el-table__inner-wrapper::after) {
   background-color: var(--card-border);
 }
 
-.teacher-tabs :deep(.el-table__body tr:hover > td) {
+.teacher-content :deep(.el-table__body tr:hover > td) {
   background: var(--bg-secondary) !important;
 }
 
-.teacher-tabs :deep(.el-table__expand-icon) {
+.teacher-content :deep(.el-table__expand-icon) {
   color: var(--text-primary);
 }
 
-.teacher-tabs :deep(.el-table__expanded-cell) {
+.teacher-content :deep(.el-table__expanded-cell) {
   background: var(--bg-secondary);
 }
 
 /* Element Plus 组件全局主题适配 - Select 组件 */
-.teacher-tabs :deep(.el-select .el-input__wrapper) {
+.teacher-content :deep(.el-select .el-input__wrapper) {
   background: var(--card-bg);
   box-shadow: 0 0 0 1px var(--card-border) inset;
 }
 
-.teacher-tabs :deep(.el-select .el-input__wrapper:hover) {
+.teacher-content :deep(.el-select .el-input__wrapper:hover) {
   box-shadow: 0 0 0 1px var(--primary-color) inset;
 }
 
-.teacher-tabs :deep(.el-select .el-input__inner) {
+.teacher-content :deep(.el-select .el-input__inner) {
   color: var(--text-primary);
 }
 
-.teacher-tabs :deep(.el-select .el-input__suffix) {
+.teacher-content :deep(.el-select .el-input__suffix) {
   color: var(--text-secondary);
 }
 
@@ -2699,6 +3258,370 @@ html.light-theme .class-card:hover {
 
 :deep(.el-card__body) {
   color: var(--text-primary);
+  overflow: hidden;
+}
+
+/* ==================== 数据分析样式 ==================== */
+.analytics-overview {
+  margin-bottom: 20px;
+}
+
+.analytics-stat-card {
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+  margin-bottom: 16px;
+  border: 1px solid var(--card-border);
+}
+
+.analytics-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.analytics-stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: white;
+  flex-shrink: 0;
+}
+
+.analytics-stat-content {
+  flex: 1;
+}
+
+.analytics-stat-label {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+.analytics-stat-value {
+  font-size: 24px;
+  font-weight: bold;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+/* 学生排名列表 */
+.rankings-list {
+  max-height: 500px;
+  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
+.ranking-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  margin-bottom: 8px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.ranking-item:hover {
+  background: var(--bg-secondary);
+  transform: translateX(2px);
+}
+
+.ranking-rank {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--bg-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.ranking-rank.top-three {
+  font-size: 24px;
+}
+
+.ranking-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.ranking-name {
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.ranking-stats {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.ranking-badge {
+  flex-shrink: 0;
+}
+
+/* 薄弱知识点列表 */
+.weak-points-list {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.weak-point-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  margin-bottom: 8px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.weak-point-item:hover {
+  background: var(--bg-secondary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.weak-point-info {
+  flex: 1;
+  min-width: 0;
+  margin-right: 16px;
+}
+
+.weak-point-title {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.weak-point-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.weak-point-subject {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.weak-point-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-end;
+  flex-shrink: 0;
+}
+
+.weak-point-score,
+.weak-point-mastery {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+}
+
+.weak-point-stats .label {
+  color: var(--text-secondary);
+}
+
+.weak-point-stats .value {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* 图表容器 */
+.chart-container {
+  height: 320px;
+  width: 100%;
+}
+
+.chart-container-small {
+  height: 280px;
+  width: 100%;
+}
+
+/* 迷你统计 */
+.mini-stat {
+  text-align: center;
+  padding: 12px;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+}
+
+.mini-stat-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+.mini-stat-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+/* 建议列表 */
+.suggestions-list {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.suggestion-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--card-border);
+  transition: all 0.3s ease;
+}
+
+.suggestion-item:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.suggestion-warning {
+  background: linear-gradient(to right, rgba(245, 108, 108, 0.05), transparent);
+  border-left: 4px solid #f56c6c;
+}
+
+.suggestion-success {
+  background: linear-gradient(to right, rgba(103, 194, 58, 0.05), transparent);
+  border-left: 4px solid #67c23a;
+}
+
+.suggestion-info {
+  background: linear-gradient(to right, rgba(64, 158, 255, 0.05), transparent);
+  border-left: 4px solid #409eff;
+}
+
+.suggestion-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.suggestion-warning .suggestion-icon {
+  background: rgba(245, 108, 108, 0.1);
+  color: #f56c6c;
+}
+
+.suggestion-success .suggestion-icon {
+  background: rgba(103, 194, 58, 0.1);
+  color: #67c23a;
+}
+
+.suggestion-info .suggestion-icon {
+  background: rgba(64, 158, 255, 0.1);
+  color: #409eff;
+}
+
+.suggestion-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.suggestion-title {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+
+.suggestion-description {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+.suggestion-action {
+  font-size: 13px;
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+.suggestion-action strong {
+  color: var(--primary-color);
+}
+
+/* 响应式 - 数据分析 */
+@media (max-width: 768px) {
+  .analytics-stat-card {
+    padding: 16px;
+  }
+  
+  .analytics-stat-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
+  
+  .analytics-stat-value {
+    font-size: 20px;
+  }
+  
+  .chart-container,
+  .chart-container-small {
+    height: 250px;
+  }
+  
+  .ranking-item,
+  .weak-point-item,
+  .suggestion-item {
+    padding: 10px;
+  }
+  
+  .rankings-list,
+  .weak-points-list,
+  .suggestions-list {
+    max-height: 400px;
+  }
+}
+
+/* 日期选择器弹出层 z-index 修复 - 确保在对话框之上 */
+:deep(.el-picker__popper),
+:deep(.el-popper),
+:deep(.date-picker-popper) {
+  z-index: 3000 !important;
+}
+
+/* 全局修复 - 针对所有 Element Plus 日期选择器 */
+.el-picker__popper,
+.el-popper.is-light,
+.el-date-picker__popper {
+  z-index: 3000 !important;
 }
 </style>
 

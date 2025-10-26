@@ -68,6 +68,32 @@ const DEMO_ACCOUNTS = [
     wrongQuestionsTarget: 0,
     chatHistoryTarget: 0,
   },
+  {
+    username: 'demo_vip',
+    email: 'vip@intellibuddy.com',
+    password: 'Demo2025',
+    role: 'student',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=demo_vip',
+    description: 'VIP会员账号，展示会员体系、积分商城、高级功能',
+    progressTarget: 0.5, // 完成50%的知识点
+    studyTimeTarget: 28800, // 8小时学习时长
+    achievementTarget: 12, // 解锁12个成就
+    wrongQuestionsTarget: 15, // 15个错题
+    chatHistoryTarget: 30, // 30个AI对话记录
+  },
+  {
+    username: 'demo_admin',
+    email: 'admin@intellibuddy.com',
+    password: 'Demo2025',
+    role: 'admin',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=demo_admin',
+    description: '管理员账号，用于展示后台管理功能',
+    progressTarget: 0, // 管理员不需要学习进度
+    studyTimeTarget: 0,
+    achievementTarget: 0,
+    wrongQuestionsTarget: 0,
+    chatHistoryTarget: 0,
+  },
 ];
 
 // 示例 AI 对话内容

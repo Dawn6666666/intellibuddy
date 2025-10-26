@@ -5,42 +5,157 @@
         <img src="/favicon.png" alt="智学伴 Logo" class="header-logo" /> <span>智学伴</span>
       </div>
       
-      <!-- 移动端菜单按钮 -->
-      <button class="mobile-menu-btn" @click="toggleMobileMenu">
-        <i :class="mobileMenuOpen ? 'fa-solid fa-times' : 'fa-solid fa-bars'"></i>
+      <!-- 移动端汉堡菜单按钮（学生端和教师端共用） -->
+      <button 
+        class="menu-toggle mobile-only" 
+        @click="toggleMobileMenu"
+        :aria-label="isMobileMenuOpen ? '关闭菜单' : '打开菜单'"
+      >
+        <i :class="isMobileMenuOpen ? 'fa-solid fa-times' : 'fa-solid fa-bars'"></i>
       </button>
       
-      <!-- 导航菜单 -->
-      <nav class="navigation" :class="{ 'mobile-open': mobileMenuOpen }">
+      <!-- 导航菜单（仅桌面端显示） -->
+      <nav class="navigation desktop-nav">
         <!-- 学生端导航 - 仅对学生显示 -->
         <template v-if="userStore.user?.role === 'student'">
-          <router-link :to="{ name: 'dashboard' }" class="nav-item" @click="closeMobileMenu">
+          <router-link :to="{ name: 'dashboard' }" class="nav-item">
             <i class="fa-solid fa-chart-pie"></i> <span class="nav-text">仪表盘</span>
           </router-link>
-          <router-link :to="{ name: 'knowledge' }" class="nav-item" @click="closeMobileMenu">
+          <router-link :to="{ name: 'knowledge' }" class="nav-item">
             <i class="fa-solid fa-book"></i> <span class="nav-text">知识库</span>
           </router-link>
-          <router-link :to="{ name: 'wrong-questions' }" class="nav-item" @click="closeMobileMenu">
+          <router-link :to="{ name: 'wrong-questions' }" class="nav-item">
             <i class="fa-solid fa-book-bookmark"></i> <span class="nav-text">错题本</span>
           </router-link>
-          <router-link :to="{ name: 'my-classes' }" class="nav-item" @click="closeMobileMenu">
+          <router-link :to="{ name: 'my-classes' }" class="nav-item">
             <i class="fa-solid fa-users"></i> <span class="nav-text">我的班级</span>
           </router-link>
-          <router-link :to="{ name: 'profile' }" class="nav-item" @click="closeMobileMenu">
+          <router-link :to="{ name: 'profile' }" class="nav-item">
             <i class="fa-solid fa-user"></i> <span class="nav-text">我的档案</span>
           </router-link>
         </template>
         
         <!-- 教师端导航 - 对教师和管理员显示 -->
-        <router-link 
-          v-if="userStore.user?.role === 'teacher' || userStore.user?.role === 'admin'" 
-          :to="{ name: 'teacher' }" 
-          class="nav-item" 
-          @click="closeMobileMenu"
-        >
-          <i class="fa-solid fa-chalkboard-user"></i> <span class="nav-text">教师管理</span>
-        </router-link>
+        <template v-if="userStore.user?.role === 'teacher' || userStore.user?.role === 'admin'">
+          <a 
+            @click="navigateToTeacherTab('classes')" 
+            class="nav-item"
+            :class="{ 'router-link-active': isTeacherTabActive('classes') }"
+          >
+            <i class="fa-solid fa-chalkboard"></i> <span class="nav-text">班级管理</span>
+          </a>
+          <a 
+            @click="navigateToTeacherTab('assignments')" 
+            class="nav-item"
+            :class="{ 'router-link-active': isTeacherTabActive('assignments') }"
+          >
+            <i class="fa-solid fa-clipboard-list"></i> <span class="nav-text">作业管理</span>
+          </a>
+          <a 
+            @click="navigateToTeacherTab('students')" 
+            class="nav-item"
+            :class="{ 'router-link-active': isTeacherTabActive('students') }"
+          >
+            <i class="fa-solid fa-user-graduate"></i> <span class="nav-text">学生监控</span>
+          </a>
+          <a 
+            @click="navigateToTeacherTab('question-bank')" 
+            class="nav-item"
+            :class="{ 'router-link-active': isTeacherTabActive('question-bank') }"
+          >
+            <i class="fa-solid fa-database"></i> <span class="nav-text">题库管理</span>
+          </a>
+          <a 
+            @click="navigateToTeacherTab('analytics')" 
+            class="nav-item"
+            :class="{ 'router-link-active': isTeacherTabActive('analytics') }"
+          >
+            <i class="fa-solid fa-chart-line"></i> <span class="nav-text">数据分析</span>
+          </a>
+        </template>
       </nav>
+      
+      <!-- 移动端侧边栏菜单（学生端和教师端共用） -->
+      <transition name="slide">
+        <div v-if="isMobileMenuOpen" class="mobile-menu" @click.self="closeMobileMenu">
+          <nav class="mobile-nav">
+            <!-- 学生端导航 -->
+            <template v-if="userStore.user?.role === 'student'">
+              <router-link :to="{ name: 'dashboard' }" class="mobile-nav-item" @click="closeMobileMenu">
+                <i class="fa-solid fa-chart-pie"></i> <span>仪表盘</span>
+              </router-link>
+              <router-link :to="{ name: 'knowledge' }" class="mobile-nav-item" @click="closeMobileMenu">
+                <i class="fa-solid fa-book"></i> <span>知识库</span>
+              </router-link>
+              <router-link :to="{ name: 'wrong-questions' }" class="mobile-nav-item" @click="closeMobileMenu">
+                <i class="fa-solid fa-book-bookmark"></i> <span>错题本</span>
+              </router-link>
+              <router-link :to="{ name: 'my-classes' }" class="mobile-nav-item" @click="closeMobileMenu">
+                <i class="fa-solid fa-users"></i> <span>我的班级</span>
+              </router-link>
+              <router-link :to="{ name: 'profile' }" class="mobile-nav-item" @click="closeMobileMenu">
+                <i class="fa-solid fa-user"></i> <span>我的档案</span>
+              </router-link>
+              <router-link :to="{ name: 'account' }" class="mobile-nav-item" @click="closeMobileMenu">
+                <i class="fa-solid fa-gear"></i> <span>个人中心</span>
+              </router-link>
+              <router-link :to="{ name: 'settings' }" class="mobile-nav-item" @click="closeMobileMenu">
+                <i class="fa-solid fa-cog"></i> <span>设置</span>
+              </router-link>
+            </template>
+            
+            <!-- 教师端导航 -->
+            <template v-if="userStore.user?.role === 'teacher' || userStore.user?.role === 'admin'">
+              <a 
+                @click="navigateToTeacherTab('classes'); closeMobileMenu()" 
+                class="mobile-nav-item"
+                :class="{ 'router-link-active': isTeacherTabActive('classes') }"
+              >
+                <i class="fa-solid fa-chalkboard"></i> <span>班级管理</span>
+              </a>
+              <a 
+                @click="navigateToTeacherTab('assignments'); closeMobileMenu()" 
+                class="mobile-nav-item"
+                :class="{ 'router-link-active': isTeacherTabActive('assignments') }"
+              >
+                <i class="fa-solid fa-clipboard-list"></i> <span>作业管理</span>
+              </a>
+              <a 
+                @click="navigateToTeacherTab('students'); closeMobileMenu()" 
+                class="mobile-nav-item"
+                :class="{ 'router-link-active': isTeacherTabActive('students') }"
+              >
+                <i class="fa-solid fa-user-graduate"></i> <span>学生监控</span>
+              </a>
+              <a 
+                @click="navigateToTeacherTab('question-bank'); closeMobileMenu()" 
+                class="mobile-nav-item"
+                :class="{ 'router-link-active': isTeacherTabActive('question-bank') }"
+              >
+                <i class="fa-solid fa-database"></i> <span>题库管理</span>
+              </a>
+              <a 
+                @click="navigateToTeacherTab('analytics'); closeMobileMenu()" 
+                class="mobile-nav-item"
+                :class="{ 'router-link-active': isTeacherTabActive('analytics') }"
+              >
+                <i class="fa-solid fa-chart-line"></i> <span>数据分析</span>
+              </a>
+              <router-link :to="{ name: 'account' }" class="mobile-nav-item" @click="closeMobileMenu">
+                <i class="fa-solid fa-gear"></i> <span>个人中心</span>
+              </router-link>
+              <router-link :to="{ name: 'settings' }" class="mobile-nav-item" @click="closeMobileMenu">
+                <i class="fa-solid fa-cog"></i> <span>设置</span>
+              </router-link>
+            </template>
+            
+            <!-- 退出登录按钮（所有角色共用） -->
+            <button class="mobile-nav-item logout-btn" @click="handleLogout">
+              <i class="fa-solid fa-right-from-bracket"></i> <span>退出登录</span>
+            </button>
+          </nav>
+        </div>
+      </transition>
       
       <div class="user-actions">
         <button class="action-btn" title="切换主题" @click="themeStore.toggleTheme">
@@ -86,9 +201,6 @@
       </div>
     </header>
 
-    <!-- 移动端遮罩层 -->
-    <div class="mobile-overlay" :class="{ active: mobileMenuOpen }" @click="closeMobileMenu"></div>
-
     <main class="main-content">
       <router-view v-slot="{ Component, route }">
         <transition :name="route.name === 'knowledge' ? '' : 'fade'" mode="out-in">
@@ -107,48 +219,63 @@
     </button>
 
     <AIChatWindow v-if="userStore.isChatOpen" />
+    
+    <!-- 用户引导 -->
+    <UserGuide 
+      v-if="guideSteps.length > 0"
+      :steps="guideSteps" 
+      :storage-key="guideStorageKey"
+      @complete="handleGuideComplete"
+      @skip="handleGuideSkip"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import '@fortawesome/fontawesome-free/css/all.css';
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useUserStore } from '@/stores/user';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import AIChatWindow from '@/components/AIChatWindow.vue';
 import BottomNavigation from '@/components/BottomNavigation.vue';
 import NotificationPanel from '@/components/NotificationPanel.vue';
+import UserGuide from '@/components/UserGuide.vue';
 import { useThemeStore } from '@/stores/theme';
-import { useMobile } from '@/composables/useMobile';
 import { apiClient } from '@/services/apiService';
 import fabIcon from '@/assets/images/ai-chat-logo.png';
 
 const userStore = useUserStore();
 const themeStore = useThemeStore();
 const router = useRouter();
-const { isMobile, disableScroll, enableScroll } = useMobile();
+const route = useRoute();
 
 const showNotifications = ref(false);
 const notificationCount = ref(0);
+const isMobileMenuOpen = ref(false);
 
-const mobileMenuOpen = ref(false);
+// 检查教师端标签页是否激活
+const isTeacherTabActive = (tab: string) => {
+  return route.name === 'teacher' && route.hash === `#${tab}`;
+};
+
+// 导航到教师端标签页
+const navigateToTeacherTab = (tab: string) => {
+  router.push({ name: 'teacher', hash: `#${tab}` });
+};
 
 const toggleMobileMenu = () => {
-  mobileMenuOpen.value = !mobileMenuOpen.value;
-  if (mobileMenuOpen.value) {
-    disableScroll();
+  isMobileMenuOpen.value = !isMobileMenuOpen.value;
+  // 防止背景滚动
+  if (isMobileMenuOpen.value) {
+    document.body.style.overflow = 'hidden';
   } else {
-    enableScroll();
+    document.body.style.overflow = '';
   }
 };
 
 const closeMobileMenu = () => {
-  mobileMenuOpen.value = false;
-  enableScroll();
-};
-
-const toggleNotifications = () => {
-  showNotifications.value = !showNotifications.value;
+  isMobileMenuOpen.value = false;
+  document.body.style.overflow = '';
 };
 
 async function loadUnreadCount() {
@@ -191,9 +318,125 @@ const getAvatarUrl = () => {
 }
 
 const handleLogout = () => {
+  closeMobileMenu(); // 关闭移动菜单
   userStore.logout();
   router.push('/login');
 }
+
+// 用户引导配置
+const guideStorageKey = computed(() => {
+  const role = userStore.user?.role || 'student';
+  return `user-guide-completed-${role}`;
+});
+
+const guideSteps = computed(() => {
+  const role = userStore.user?.role;
+  
+  if (role === 'teacher' || role === 'admin') {
+    // 教师端引导
+    return [
+      {
+        title: '欢迎使用智学伴教师端',
+        description: '让我们快速了解如何使用教师管理功能，帮助您更好地管理班级和学生。',
+        icon: 'fa-solid fa-hand-wave',
+      },
+      {
+        title: '移动端导航菜单',
+        description: '在移动设备上，点击左上角的菜单按钮可以快速访问所有功能。',
+        icon: 'fa-solid fa-bars',
+        target: '.menu-toggle',
+        position: 'bottom' as const,
+      },
+      {
+        title: '班级管理',
+        description: '在这里您可以创建和管理班级，查看班级学生列表，以及管理班级设置。',
+        icon: 'fa-solid fa-chalkboard',
+        target: 'a[href*="teacher"][href*="classes"]',
+        position: 'bottom' as const,
+      },
+      {
+        title: '作业管理',
+        description: '发布作业、查看学生提交情况、批改作业，所有作业管理功能都在这里。',
+        icon: 'fa-solid fa-clipboard-list',
+        target: 'a[href*="teacher"][href*="assignments"]',
+        position: 'bottom' as const,
+      },
+      {
+        title: '学生监控',
+        description: '实时查看学生的学习进度、答题情况和知识点掌握程度，及时发现问题。',
+        icon: 'fa-solid fa-user-graduate',
+        target: 'a[href*="teacher"][href*="students"]',
+        position: 'bottom' as const,
+      },
+      {
+        title: '题库管理',
+        description: '管理您的题库，创建、编辑和组织题目，为作业和考试做准备。',
+        icon: 'fa-solid fa-database',
+        target: 'a[href*="teacher"][href*="question-bank"]',
+        position: 'bottom' as const,
+      },
+      {
+        title: 'AI 智能助教',
+        description: '点击右下角的 AI 助教，可以快速获取帮助、生成题目、分析数据等。',
+        icon: 'fa-solid fa-robot',
+        target: '.fab',
+        position: 'left' as const,
+      },
+    ];
+  } else {
+    // 学生端引导
+    return [
+      {
+        title: '欢迎来到智学伴',
+        description: '这是一个智能学习平台，让我们一起开始学习之旅吧！',
+        icon: 'fa-solid fa-graduation-cap',
+      },
+      {
+        title: '仪表盘',
+        description: '这里可以查看您的学习概况、最近的作业和学习进度。',
+        icon: 'fa-solid fa-chart-pie',
+        target: 'a[href="/app"]',
+        position: 'bottom' as const,
+      },
+      {
+        title: '知识库',
+        description: '浏览和学习各种知识点，AI 会根据您的学习情况智能推荐内容。',
+        icon: 'fa-solid fa-book',
+        target: 'a[href*="knowledge"]',
+        position: 'bottom' as const,
+      },
+      {
+        title: '错题本',
+        description: '自动收集您做错的题目，帮助您针对性地复习和巩固。',
+        icon: 'fa-solid fa-book-bookmark',
+        target: 'a[href*="wrong-questions"]',
+        position: 'bottom' as const,
+      },
+      {
+        title: '我的班级',
+        description: '查看您所在的班级、班级作业和同学动态。',
+        icon: 'fa-solid fa-users',
+        target: 'a[href*="my-classes"]',
+        position: 'bottom' as const,
+      },
+      {
+        title: 'AI 智能助教',
+        description: '遇到问题？点击右下角的 AI 助教，随时为您解答疑惑！',
+        icon: 'fa-solid fa-robot',
+        target: '.fab',
+        position: 'left' as const,
+      },
+    ];
+  }
+});
+
+const handleGuideComplete = () => {
+  console.log('用户引导完成');
+};
+
+const handleGuideSkip = () => {
+  console.log('用户跳过引导');
+};
 </script>
 
 <style scoped>
@@ -258,6 +501,7 @@ const handleLogout = () => {
   align-items: center;
   gap: 8px;
   text-decoration: none;
+  cursor: pointer;
 }
 
 .nav-item:hover {
@@ -265,7 +509,17 @@ const handleLogout = () => {
   color: var(--text-primary);
 }
 
-.router-link-exact-active {
+/* 激活状态样式 */
+/* 优先级1: 学生端精确匹配（router-link 自动添加） */
+a.nav-item.router-link-exact-active {
+  background-color: var(--primary-color);
+  color: white !important;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(138, 127, 251, 0.3);
+}
+
+/* 优先级2: 教师端手动激活（<a> 标签手动添加的类） */
+a.nav-item.router-link-active:not([href]) {
   background-color: var(--primary-color);
   color: white !important;
   font-weight: 500;
@@ -366,46 +620,117 @@ const handleLogout = () => {
   object-fit: cover;
 }
 
-/* 移动端导航菜单 */
-.mobile-menu-btn {
+/* 汉堡菜单按钮 */
+.menu-toggle {
   display: none;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  background: none;
+  background: transparent;
   border: none;
-  cursor: pointer;
-  font-size: 1.5rem;
   color: var(--text-primary);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 8px;
+  transition: color 0.3s ease;
 }
 
-/* 移动端遮罩层 */
-.mobile-overlay {
-  display: none;
+.menu-toggle:hover {
+  color: var(--primary-color);
+}
+
+/* 移动端侧边栏菜单 */
+.mobile-menu {
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
+  width: 100%;
+  height: 100vh;
   background: rgba(0, 0, 0, 0.5);
-  z-index: 999;
-  opacity: 0;
-  pointer-events: none;
+  z-index: 1100;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.mobile-nav {
+  width: 280px;
+  height: 100%;
+  background: var(--card-bg);
+  padding: 80px 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow-y: auto;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+}
+
+.mobile-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 24px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+}
+
+.mobile-nav-item:hover {
+  background: rgba(138, 127, 251, 0.1);
+  color: var(--text-primary);
+}
+
+.mobile-nav-item.router-link-exact-active,
+.mobile-nav-item.router-link-active {
+  background: var(--primary-color);
+  color: white;
+  font-weight: 500;
+}
+
+.mobile-nav-item i {
+  width: 20px;
+  text-align: center;
+}
+
+.logout-btn {
+  margin-top: auto;
+  color: #f56c6c;
+  border-top: 1px solid var(--card-border);
+}
+
+.logout-btn:hover {
+  background: rgba(245, 108, 108, 0.1);
+  color: #f56c6c;
+}
+
+/* 侧边栏滑入动画 */
+.slide-enter-active,
+.slide-leave-active {
   transition: opacity 0.3s ease;
 }
 
-.mobile-overlay.active {
-  opacity: 1;
-  pointer-events: auto;
+.slide-enter-active .mobile-nav,
+.slide-leave-active .mobile-nav {
+  transition: transform 0.3s ease;
+}
+
+.slide-enter-from,
+.slide-leave-to {
+  opacity: 0;
+}
+
+.slide-enter-from .mobile-nav {
+  transform: translateX(-100%);
+}
+
+.slide-leave-to .mobile-nav {
+  transform: translateX(-100%);
 }
 
 /* 移动端样式 */
 @media (max-width: 767px) {
-  .mobile-menu-btn {
-    display: flex;
-  }
-  
   .app-layout {
     padding: 80px 10px 70px;
   }
@@ -426,32 +751,14 @@ const handleLogout = () => {
     height: 32px;
   }
   
+  /* 移动端显示汉堡菜单按钮 */
+  .menu-toggle {
+    display: block;
+  }
+  
+  /* 移动端隐藏桌面导航 */
   .navigation {
-    position: fixed;
-    top: 76px;
-    left: -100%;
-    width: 280px;
-    height: calc(100vh - 76px);
-    background: var(--card-bg);
-    backdrop-filter: blur(var(--backdrop-blur));
-    flex-direction: column;
-    gap: 0;
-    padding: 1rem;
-    transition: left 0.3s ease;
-    z-index: 1000;
-    overflow-y: auto;
-    border-right: 1px solid var(--card-border);
-  }
-  
-  .navigation.mobile-open {
-    left: 0;
-  }
-  
-  .nav-item {
-    width: 100%;
-    padding: 12px 16px;
-    justify-content: flex-start;
-    font-size: 1rem;
+    display: none;
   }
   
   .user-actions {
@@ -467,10 +774,6 @@ const handleLogout = () => {
     right: 20px;
     width: 56px;
     height: 56px;
-  }
-  
-  .mobile-overlay {
-    display: block;
   }
 }
 
@@ -526,6 +829,25 @@ const handleLogout = () => {
 
 .notification-badge:empty {
   display: none;
+}
+
+/* 响应式显示控制 */
+.mobile-only {
+  display: none;
+}
+
+.desktop-only {
+  display: block;
+}
+
+@media (max-width: 767px) {
+  .mobile-only {
+    display: block;
+  }
+  
+  .desktop-only {
+    display: none !important;
+  }
 }
 </style>
 

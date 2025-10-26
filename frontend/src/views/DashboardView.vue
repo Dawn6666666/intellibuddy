@@ -64,20 +64,11 @@
         </div>
       </div>
     </div>
-
-    <!-- 新手引导 -->
-    <OnboardingTour
-      v-model="showTour"
-      :steps="tourSteps"
-      storage-key="dashboard-tour-completed"
-      @finish="onTourFinish"
-      @skip="onTourSkip"
-    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch, nextTick } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import { useUserStore } from '@/stores/user';
@@ -85,9 +76,7 @@ import { useKnowledgeStore } from '@/stores/knowledge';
 import { useSettingsStore } from '@/stores/settings';
 import KnowledgeGraph from '@/components/KnowledgeGraph.vue';
 import SkeletonLoader from '@/components/SkeletonLoader.vue';
-import OnboardingTour from '@/components/OnboardingTour.vue';
 import { apiGetStudyTimeSimple } from '@/services/apiService';
-import type { TourStep } from '@/components/OnboardingTour.vue';
 
 const userStore = useUserStore();
 const knowledgeStore = useKnowledgeStore();
@@ -97,31 +86,6 @@ const router = useRouter();
 
 const loading = ref(true);
 const studyTimeDisplay = ref('0小时 0分钟');
-const showTour = ref(false);
-
-// 新手引导步骤
-const tourSteps: TourStep[] = [
-  {
-    target: '[data-tour="welcome"]',
-    title: '欢迎来到智学伴！',
-    content:
-      '这里是您的学习主页，您可以快速开始今日的学习计划。点击"开始今日学习"按钮即可进入推荐的学习内容。',
-    placement: 'bottom',
-  },
-  {
-    target: '[data-tour="stats"]',
-    title: '学习进度统计',
-    content: '这里展示了您的学习进度和总学习时长。随着学习的深入，您会看到进度条逐渐增长！',
-    placement: 'bottom',
-  },
-  {
-    target: '[data-tour="graph"]',
-    title: '知识图谱',
-    content:
-      '这是智学伴的核心功能！知识图谱展示了所有知识点之间的关联关系。高亮路径是系统根据您的能力为您推荐的学习路径。点击任意知识点即可开始学习！',
-    placement: 'top',
-  },
-];
 
 // 加载学习时长统计
 const loadStudyTime = async () => {
@@ -158,15 +122,6 @@ const initDashboard = async () => {
     ElMessage.error('加载数据失败，请刷新页面重试');
   } finally {
     loading.value = false;
-
-    // 检查是否是首次访问，如果是则显示引导
-    await nextTick();
-    const tourCompleted = localStorage.getItem('dashboard-tour-completed');
-    if (!tourCompleted) {
-      setTimeout(() => {
-        showTour.value = true;
-      }, 800);
-    }
   }
 };
 
@@ -184,16 +139,6 @@ const startLearning = () => {
 // 前往设置
 const goToSettings = () => {
   router.push('/app/settings');
-};
-
-// 引导完成回调
-const onTourFinish = () => {
-  ElMessage.success('引导完成！开始您的学习之旅吧！');
-};
-
-// 跳过引导回调
-const onTourSkip = () => {
-  console.log('用户跳过了新手引导');
 };
 
 onMounted(() => {

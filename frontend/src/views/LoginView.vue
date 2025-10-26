@@ -39,7 +39,13 @@ const handleLogin = async (formEl: FormInstance | undefined) => {
       try {
         await userStore.login(loginForm)
         ElMessage.success('登录成功！')
-        await router.push('/app')
+        // 根据用户角色跳转到不同的首页
+        const userRole = userStore.user?.role
+        if (userRole === 'teacher' || userRole === 'admin') {
+          await router.push('/app/teacher')
+        } else {
+          await router.push('/app')
+        }
       } catch (error) {
         ElMessage.error(error as string)
       } finally {
@@ -58,7 +64,13 @@ const handleRegister = async (formEl: FormInstance | undefined) => {
       try {
         await userStore.register(registerForm)
         ElMessage.success('注册成功，已自动登录！')
-        await router.push('/app')
+        // 根据用户角色跳转到不同的首页
+        const userRole = userStore.user?.role
+        if (userRole === 'teacher' || userRole === 'admin') {
+          await router.push('/app/teacher')
+        } else {
+          await router.push('/app')
+        }
       } catch (error) {
         ElMessage.error(error as string)
       } finally {

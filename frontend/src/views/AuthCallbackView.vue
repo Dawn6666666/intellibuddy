@@ -25,7 +25,13 @@ onMounted(async () => {
 
       await userStore.handleAuth(token, user);
 
-      await router.push({name: 'dashboard'});
+      // 根据用户角色跳转到不同的首页
+      const userRole = user.role;
+      if (userRole === 'teacher' || userRole === 'admin') {
+        await router.push('/app/teacher');
+      } else {
+        await router.push({name: 'dashboard'});
+      }
     } catch (error) {
       console.error('通过 Token 登录失败:', error);
       await router.push({name: 'login'});

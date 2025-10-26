@@ -4,13 +4,14 @@ import KnowledgePoint from '../models/KnowledgePoint';
 import StudySession from '../models/StudySession';
 import WrongQuestion from '../models/WrongQuestion';
 import User from '../models/User';
+import UserProgress from '../models/UserProgress';
 
 const router = express.Router();
 
 // 学习时间分布统计
 router.get('/time-distribution', authMiddleware, async (req, res) => {
   try {
-    const userId = req.user!.userId;
+    const userId = req.user!._id;
     const { period = '7d' } = req.query;
 
     // 计算时间范围
@@ -81,9 +82,10 @@ router.get('/time-distribution', authMiddleware, async (req, res) => {
 // 知识点掌握度分析
 router.get('/knowledge-mastery', authMiddleware, async (req, res) => {
   try {
-    const userId = req.user!.userId;
+    const userId = req.user!._id;
 
-    const knowledgePoints = await KnowledgePoint.find({ userId });
+    // 从UserProgress获取掌握度数据
+    const userProgress = await UserProgress.find({ userId }).populate('pointId');
 
     // 按掌握度分组
     const masteryDistribution = {
@@ -94,8 +96,8 @@ router.get('/knowledge-mastery', authMiddleware, async (req, res) => {
       novice: 0       // 0-29
     };
 
-    knowledgePoints.forEach(kp => {
-      const level = kp.masteryLevel;
+    userProgress.forEach(up => {
+      const level = up.bestScore;
       if (level >= 90) masteryDistribution.expert++;
       else if (level >= 70) masteryDistribution.proficient++;
       else if (level >= 50) masteryDistribution.intermediate++;
@@ -105,8 +107,9 @@ router.get('/knowledge-mastery', authMiddleware, async (req, res) => {
 
     // 按学科分类统计
     const subjectStats: { [key: string]: any } = {};
-    knowledgePoints.forEach(kp => {
-      const subject = kp.subject || '未分类';
+    for (const up of userProgress) {
+      const kp = await KnowledgePoint.findOne({ id: up.pointId });
+      const subject = kp?.subject || '未分类';
       if (!subjectStats[subject]) {
         subjectStats[subject] = {
           total: 0,
@@ -116,11 +119,11 @@ router.get('/knowledge-mastery', authMiddleware, async (req, res) => {
         };
       }
       subjectStats[subject].total++;
-      subjectStats[subject].totalMastery += kp.masteryLevel;
-      if (kp.masteryLevel >= 80) {
+      subjectStats[subject].totalMastery += up.bestScore;
+      if (up.bestScore >= 80) {
         subjectStats[subject].mastered++;
       }
-    });
+    }
 
     // 计算平均掌握度
     Object.keys(subjectStats).forEach(subject => {
@@ -130,9 +133,10 @@ router.get('/knowledge-mastery', authMiddleware, async (req, res) => {
     });
 
     // 按难度统计
-    const difficultyStats: { [key: string]: any } = {};
-    knowledgePoints.forEach(kp => {
-      const difficulty = kp.difficulty || 'medium';
+    const difficultyStats: { [key: number]: any } = {};
+    for (const up of userProgress) {
+      const kp = await KnowledgePoint.findOne({ id: up.pointId });
+      const difficulty = kp?.difficulty || 3;
       if (!difficultyStats[difficulty]) {
         difficultyStats[difficulty] = {
           total: 0,
@@ -142,11 +146,11 @@ router.get('/knowledge-mastery', authMiddleware, async (req, res) => {
         };
       }
       difficultyStats[difficulty].total++;
-      difficultyStats[difficulty].totalMastery += kp.masteryLevel;
-      if (kp.masteryLevel >= 80) {
+      difficultyStats[difficulty].totalMastery += up.bestScore;
+      if (up.bestScore >= 80) {
         difficultyStats[difficulty].mastered++;
       }
-    });
+    }
 
     Object.keys(difficultyStats).forEach(difficulty => {
       const stats = difficultyStats[difficulty];
@@ -161,13 +165,13 @@ router.get('/knowledge-mastery', authMiddleware, async (req, res) => {
         ...stats
       })),
       byDifficulty: Object.entries(difficultyStats).map(([difficulty, stats]) => ({
-        difficulty,
-        difficultyName: difficulty === 'easy' ? '简单' : difficulty === 'medium' ? '中等' : '困难',
+        difficulty: Number(difficulty),
+        difficultyName: Number(difficulty) <= 2 ? '简单' : Number(difficulty) <= 3 ? '中等' : '困难',
         ...stats
       })),
-      total: knowledgePoints.length,
-      avgMastery: knowledgePoints.length > 0
-        ? Math.round(knowledgePoints.reduce((sum, kp) => sum + kp.masteryLevel, 0) / knowledgePoints.length)
+      total: userProgress.length,
+      avgMastery: userProgress.length > 0
+        ? Math.round(userProgress.reduce((sum, up) => sum + up.bestScore, 0) / userProgress.length)
         : 0
     });
   } catch (error) {
@@ -179,9 +183,9 @@ router.get('/knowledge-mastery', authMiddleware, async (req, res) => {
 // 学习能力雷达图数据
 router.get('/ability-radar', authMiddleware, async (req, res) => {
   try {
-    const userId = req.user!.userId;
+    const userId = req.user!._id;
 
-    const knowledgePoints = await KnowledgePoint.find({ userId });
+    const userProgress = await UserProgress.find({ userId });
     const sessions = await StudySession.find({ userId });
     const wrongQuestions = await WrongQuestion.find({ userId });
 
@@ -196,23 +200,24 @@ router.get('/ability-radar', authMiddleware, async (req, res) => {
     };
 
     // 简化计算：基于知识点掌握度和学习历史
-    if (knowledgePoints.length > 0) {
-      const avgMastery = knowledgePoints.reduce((sum, kp) => sum + kp.masteryLevel, 0) / knowledgePoints.length;
+    if (userProgress.length > 0) {
+      const avgMastery = userProgress.reduce((sum, up) => sum + up.bestScore, 0) / userProgress.length;
       
       // 记忆力：基于掌握度
       abilities.memory = Math.min(100, avgMastery);
       
       // 理解力：基于学习次数和掌握度
-      const avgReviewCount = knowledgePoints.reduce((sum, kp) => sum + kp.reviewCount, 0) / knowledgePoints.length;
-      abilities.understanding = Math.min(100, avgMastery * 0.7 + Math.min(avgReviewCount * 5, 30));
+      const avgAttempts = userProgress.reduce((sum, up) => sum + up.quizAttempts, 0) / userProgress.length;
+      abilities.understanding = Math.min(100, avgMastery * 0.7 + Math.min(avgAttempts * 5, 30));
       
       // 应用力：基于练习情况
-      const practiceRate = sessions.length / knowledgePoints.length;
+      const practiceRate = sessions.length / userProgress.length;
       abilities.application = Math.min(100, avgMastery * 0.6 + Math.min(practiceRate * 20, 40));
       
       // 分析力：基于错题改正率
+      const masteredWrong = wrongQuestions.filter(wq => wq.mastered).length;
       const wrongRate = wrongQuestions.length > 0
-        ? wrongQuestions.filter(wq => wq.correctedCount > 0).length / wrongQuestions.length
+        ? masteredWrong / wrongQuestions.length
         : 0.5;
       abilities.analysis = Math.min(100, avgMastery * 0.5 + wrongRate * 50);
       
@@ -247,7 +252,7 @@ router.get('/ability-radar', authMiddleware, async (req, res) => {
 // 学习趋势预测
 router.get('/learning-trend', authMiddleware, async (req, res) => {
   try {
-    const userId = req.user!.userId;
+    const userId = req.user!._id;
 
     // 获取最近90天的学习数据
     const startDate = new Date();
@@ -258,7 +263,10 @@ router.get('/learning-trend', authMiddleware, async (req, res) => {
       createdAt: { $gte: startDate }
     }).sort({ createdAt: 1 });
 
-    const knowledgePoints = await KnowledgePoint.find({ userId });
+    const userProgress = await UserProgress.find({ 
+      userId,
+      createdAt: { $gte: startDate }
+    });
 
     // 按周统计
     const weeklyStats: { [key: string]: any } = {};
@@ -280,13 +288,15 @@ router.get('/learning-trend', authMiddleware, async (req, res) => {
     });
 
     // 计算每周新增知识点
-    knowledgePoints.forEach(kp => {
-      const weekStart = new Date(kp.createdAt);
-      weekStart.setDate(weekStart.getDate() - weekStart.getDay());
-      const weekKey = weekStart.toISOString().split('T')[0];
+    userProgress.forEach(up => {
+      if (up.createdAt) {
+        const weekStart = new Date(up.createdAt);
+        weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+        const weekKey = weekStart.toISOString().split('T')[0];
 
-      if (weeklyStats[weekKey]) {
-        weeklyStats[weekKey].knowledgeCount++;
+        if (weeklyStats[weekKey]) {
+          weeklyStats[weekKey].knowledgeCount++;
+        }
       }
     });
 
@@ -357,16 +367,15 @@ router.get('/learning-trend', authMiddleware, async (req, res) => {
 // 错题分析
 router.get('/wrong-questions-analysis', authMiddleware, async (req, res) => {
   try {
-    const userId = req.user!.userId;
+    const userId = req.user!._id;
 
-    const wrongQuestions = await WrongQuestion.find({ userId })
-      .populate('knowledgePointId', 'title subject');
+    const wrongQuestions = await WrongQuestion.find({ userId });
 
     // 按知识点分组
     const byKnowledge: { [key: string]: any } = {};
-    wrongQuestions.forEach(wq => {
-      const kpId = wq.knowledgePointId?._id?.toString() || 'unknown';
-      const kpTitle = (wq.knowledgePointId as any)?.title || '未知知识点';
+    for (const wq of wrongQuestions) {
+      const kpId = wq.pointId || 'unknown';
+      const kpTitle = wq.pointTitle || '未知知识点';
 
       if (!byKnowledge[kpId]) {
         byKnowledge[kpId] = {
@@ -379,11 +388,11 @@ router.get('/wrong-questions-analysis', authMiddleware, async (req, res) => {
       }
 
       byKnowledge[kpId].count++;
-      if (wq.correctedCount > 0) {
+      if (wq.mastered) {
         byKnowledge[kpId].corrected++;
       }
-      byKnowledge[kpId].totalAttempts += wq.attemptCount;
-    });
+      byKnowledge[kpId].totalAttempts += wq.retryCount;
+    }
 
     // 计算平均尝试次数
     Object.keys(byKnowledge).forEach(kpId => {
@@ -400,7 +409,7 @@ router.get('/wrong-questions-analysis', authMiddleware, async (req, res) => {
     // 按题型分组
     const byType: { [key: string]: number } = {};
     wrongQuestions.forEach(wq => {
-      const type = wq.questionType || 'unknown';
+      const type = wq.type || 'unknown';
       byType[type] = (byType[type] || 0) + 1;
     });
 
@@ -411,9 +420,9 @@ router.get('/wrong-questions-analysis', authMiddleware, async (req, res) => {
 
     res.json({
       total: wrongQuestions.length,
-      corrected: wrongQuestions.filter(wq => wq.correctedCount > 0).length,
+      corrected: wrongQuestions.filter(wq => wq.mastered).length,
       correctionRate: wrongQuestions.length > 0
-        ? Math.round((wrongQuestions.filter(wq => wq.correctedCount > 0).length / wrongQuestions.length) * 100)
+        ? Math.round((wrongQuestions.filter(wq => wq.mastered).length / wrongQuestions.length) * 100)
         : 0,
       byKnowledge: Object.entries(byKnowledge)
         .map(([_, stats]) => stats)
@@ -421,7 +430,7 @@ router.get('/wrong-questions-analysis', authMiddleware, async (req, res) => {
         .slice(0, 10),
       byType: Object.entries(byType).map(([type, count]) => ({
         type,
-        typeName: type === 'single' ? '单选' : type === 'multiple' ? '多选' : type === 'judge' ? '判断' : '其他',
+        typeName: type === 'single' ? '单选' : type === 'multiple' ? '多选' : type === 'boolean' ? '判断' : '其他',
         count
       })),
       recentTrend: {
@@ -438,10 +447,10 @@ router.get('/wrong-questions-analysis', authMiddleware, async (req, res) => {
 // 综合学习报告
 router.get('/comprehensive-report', authMiddleware, async (req, res) => {
   try {
-    const userId = req.user!.userId;
+    const userId = req.user!._id;
 
     const user = await User.findById(userId);
-    const knowledgePoints = await KnowledgePoint.find({ userId });
+    const userProgress = await UserProgress.find({ userId });
     const sessions = await StudySession.find({ userId });
     const wrongQuestions = await WrongQuestion.find({ userId });
 
@@ -449,8 +458,8 @@ router.get('/comprehensive-report', authMiddleware, async (req, res) => {
     const totalDuration = sessions.reduce((sum, s) => sum + (s.duration || 0), 0);
 
     // 计算平均掌握度
-    const avgMastery = knowledgePoints.length > 0
-      ? knowledgePoints.reduce((sum, kp) => sum + kp.masteryLevel, 0) / knowledgePoints.length
+    const avgMastery = userProgress.length > 0
+      ? userProgress.reduce((sum, up) => sum + up.bestScore, 0) / userProgress.length
       : 0;
 
     // 最近7天活跃度
@@ -483,11 +492,11 @@ router.get('/comprehensive-report', authMiddleware, async (req, res) => {
     res.json({
       user: {
         username: user?.username,
-        joinDate: user?.createdAt
+        joinDate: (user as any)?.createdAt
       },
       overview: {
-        totalKnowledge: knowledgePoints.length,
-        masteredKnowledge: knowledgePoints.filter(kp => kp.masteryLevel >= 80).length,
+        totalKnowledge: userProgress.length,
+        masteredKnowledge: userProgress.filter(up => up.bestScore >= 80).length,
         avgMastery: Math.round(avgMastery),
         totalDuration,
         totalSessions: sessions.length,

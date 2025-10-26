@@ -159,9 +159,25 @@ router.beforeEach((to, from, next) => {
                 console.error('解析用户信息失败:', e);
             }
         }
-        // 没有权限，返回首页
+        // 没有权限，返回首页（学生首页）
         next('/app');
         return;
+    }
+    
+    // 如果教师访问 /app（学生首页），重定向到教师管理页
+    if (to.path === '/app' || to.name === 'dashboard') {
+        const userStr = localStorage.getItem('user');
+        if (userStr) {
+            try {
+                const user = JSON.parse(userStr);
+                if (user.role === 'teacher' || user.role === 'admin') {
+                    next('/app/teacher');
+                    return;
+                }
+            } catch (e) {
+                console.error('解析用户信息失败:', e);
+            }
+        }
     }
     
     next();

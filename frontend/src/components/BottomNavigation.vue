@@ -1,5 +1,6 @@
 <template>
-  <nav class="bottom-nav" v-if="isMobile">
+  <!-- 只在学生端的移动设备上显示底部导航 -->
+  <nav class="bottom-nav" v-if="isMobile && userStore.user?.role === 'student'">
     <router-link
       v-for="item in navItems"
       :key="item.path"
@@ -22,20 +23,8 @@ const route = useRoute();
 const isMobile = ref(false);
 const userStore = useUserStore();
 
-// 导航项配置
+// 导航项配置（只用于学生端）
 const navItems = computed(() => {
-  // 教师和管理员只显示教师管理
-  if (userStore.user?.role === 'teacher' || userStore.user?.role === 'admin') {
-    return [
-      {
-        path: '/app/teacher',
-        icon: 'fa-solid fa-chalkboard-user',
-        label: '教师管理',
-      },
-    ];
-  }
-  
-  // 学生显示完整的学习功能导航
   return [
     {
       path: '/app',
@@ -62,6 +51,11 @@ const navItems = computed(() => {
 
 // 判断是否激活
 const isActive = (path: string) => {
+  // 精确匹配首页
+  if (path === '/app') {
+    return route.path === '/app';
+  }
+  // 其他路径使用 startsWith 匹配
   return route.path.startsWith(path);
 };
 

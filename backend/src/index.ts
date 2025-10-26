@@ -40,6 +40,7 @@ import pointsRoutes from './routes/points';
 import notificationRoutes from './routes/notification';
 import questionRoutes from './routes/question';
 import statsRoutes from './routes/stats';
+import teacherAnalyticsRoutes from './routes/teacher-analytics';
 import User, {IUser} from './models/User';
 
 // 导入中间件
@@ -58,13 +59,29 @@ if (!mongoUri) {
     console.error("错误: MONGO_URI 未在 .env 文件中定义");
     process.exit(1);
 }
-mongoose.connect(mongoUri)
+
+// MongoDB 连接配置 - 增强 DNS 和超时设置
+const mongooseOptions = {
+    serverSelectionTimeoutMS: 10000, // 增加服务器选择超时时间
+    socketTimeoutMS: 45000, // Socket 超时时间
+    family: 4, // 强制使用 IPv4（某些网络环境下 IPv6 可能有问题）
+};
+
+mongoose.connect(mongoUri, mongooseOptions)
     .then(async () => {
-        console.log("成功连接到 MongoDB Atlas");
+        console.log("✓ 成功连接到 MongoDB");
         // 创建数据库索引以优化查询性能
         await createDatabaseIndexes();
     })
-    .catch(err => console.error("无法连接到 MongoDB:", err));
+    .catch(err => {
+        console.error("✗ 无法连接到 MongoDB:", err.message);
+        console.error("\n可能的解决方案：");
+        console.error("1. 检查网络连接和防火墙设置");
+        console.error("2. 确认 MongoDB Atlas IP 白名单已添加 0.0.0.0/0（允许所有 IP）");
+        console.error("3. 尝试使用标准 MongoDB URI 格式（而非 mongodb+srv://）");
+        console.error("4. 如果在中国大陆，可能需要使用 VPN 或代理");
+        console.error("5. 检查 .env 文件中的 MONGO_URI 是否正确配置\n");
+    });
 
 // --- CORS 配置 ---
 const corsOptions = {
@@ -141,6 +158,7 @@ app.use('/api/points', pointsRoutes);
 app.use('/api/notification', notificationRoutes);
 app.use('/api/question', questionRoutes);
 app.use('/api/stats', statsRoutes);
+app.use('/api/teacher-analytics', teacherAnalyticsRoutes);
 
 // --- GitHub 认证路由 ---
 app.get('/api/auth/github',

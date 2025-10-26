@@ -120,3 +120,13 @@ const backgroundColors = computed(() => {
 <style scoped>
 /* 保持为空或只包含 App.vue 自身的样式 */
 </style>
+
+<style>
+/* 全局修复：Element Plus 日期选择器在对话框中的 z-index 问题 */
+.el-picker__popper,
+.el-popper.is-light,
+.el-date-picker__popper,
+.el-popper[data-popper-placement] {
+  z-index: 3000 !important;
+}
+</style>
